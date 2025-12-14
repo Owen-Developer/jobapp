@@ -3181,7 +3181,7 @@ async function getUserData() {
                         }
                         if(!reportWorker){
                             document.getElementById("repWorkerEmpty").style.display = "block";
-                            document.getElementById("workerReportCol").style.display = "none";
+                            document.getElementById("workerReportContent").style.display = "none";
                         } else {
                             makeJobReport(reportWorker);
                         }                        
