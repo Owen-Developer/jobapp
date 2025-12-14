@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://kit.fontawesome.com/515deb5b82.js" crossorigin="anonymous"></script>
+    <link rel="shortcut icon" href="images/icons/favicon.png" type="image/x-icon">
+    <title>Job Tracker | Home</title>
+</head>
+<body>
+    <div class="reports"></div>
+
+    <div class="home-bg"></div>
+    <div class="home-top padding starter">
+        <a href="account.html?admin=true" class="home-pfp">
+            <i class="fa-solid fa-user"></i>
+        </a>
+        <div>
+            <div class="home-welcome">Welcome back</div>
+            <div class="home-name">Admin Harry</div>
+        </div>
+        <i class="fa-regular fa-bell home-noti"></i>
+    </div>
+
+    <div class="rep-container padding">
+        <div class="starter">
+            <div class="admin-head">Reporting</div>
+            <div class="admin-para">Track your reports and analytics.</div>
+        </div>
+
+        <div class="rep-col">
+            <div class="rep-toggle starter">
+                <div class="rep-toggle-option" style="color: white;">Daily</div>
+                <div class="rep-toggle-option" style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);">Weekly</div>
+                <div class="rep-toggle-option">Monthly</div>
+                <span class="rep-toggle-left"></span>
+            </div>
+
+            <div class="rep-card-flex starter">
+                <div class="rep-card">
+                    <div class="rep-card-head"><span style="background-color: var(--primary);"></span> Total Revenue</div>
+                    <div class="rep-card-num" id="totalRevenueNum">£2,180 <img src="images/icons/uptrend.png" /></div>
+                    <div class="rep-card-txt" id="totalRevenueText">+8.6% from last month</div>
+                </div>
+                <div class="rep-card">
+                    <div class="rep-card-head"><span style="background-color: rgb(0, 180, 0);"></span> Labour Cost</div>
+                    <div class="rep-card-num" id="totalLabourNum">£700 <img src="images/icons/uptrend.png" /></div>
+                    <div class="rep-card-txt" id="totalLabourText">+5.2% from last month</div>
+                </div>
+                <div class="rep-card">
+                    <div class="rep-card-head"><span style="background-color: rgb(209, 195, 0);"></span> Material Cost</div>
+                    <div class="rep-card-num" id="totalMaterialNum">£100 <img src="images/icons/downtrend.png" /></div>
+                    <div class="rep-card-txt" id="totalMaterialText">-1.6% from last month</div>
+                </div>
+                <div class="rep-card">
+                    <div class="rep-card-head"><span style="background-color: red;"></span> Total Profit</div>
+                    <div class="rep-card-num" id="totalProfitNum">£1,060 <img src="images/icons/uptrend.png" /></div>
+                    <div class="rep-card-txt" id="totalProfitText">+9.4% from last month</div>
+                </div>
+            </div>
+
+            <div class="rep-job-col starter" id="jobReportCol">
+                <div class="rep-head">Job Reports</div>
+                <div class="rep-search" id="repJobSearch">
+                    <img src="images/icons/search.png" />
+                    <input type="text" placeholder="Search Jobs" />
+
+                    <div class="search-drop">
+
+                    </div>
+                </div>
+                <div class="emp-wrapper" id="repJobEmpty" style="margin-bottom: 25px;">
+                    <img src="images/nodata.svg" class="emp-icon" />
+                    <div class="emp-head">No Jobs Found</div>
+                    <div class="emp-para">We couldn't find any jobs in<br> the database. Try again later.</div>
+                </div>
+                <div class="rep-job-wrapper">
+                    <div class="rep-job-name">Boiler Repair For Luke</div>
+                    <div class="rep-job-date">Completed 25/12/2025</div>
+                    <div class="rep-circ-container">
+                        <div class="rep-circ circ-fill" id="circLabour"></div>
+                        <div class="rep-circ circ-fill" id="circMaterials"></div>
+                        <div class="rep-circ circ-fill" id="circExtra"></div>
+                        <div class="rep-circ-mid"></div>
+                        <div class="rep-circ-content">
+                            <div class="rep-circ-head">£140</div>
+                            <div class="rep-circ-txt">Total Cost</div>
+                        </div>
+                    </div>
+                    <div class="rep-job-legend">
+                        <div><span style="background-color: hsl(222, 100%, 34%);"></span> Labour £75</div>
+                        <div><span style="background-color: hsl(222, 100%, 54%);"></span> Materials £58</div>
+                        <div><span style="background-color: hsl(222, 100%, 74%);"></span> Extra £7</div>
+                    </div>
+
+                    <!-- 
+                        gonna hagve a expandable box for customer price, which drops down all detail prices.
+                        then gonna have a netr profit box like first section under
+                    -->
+                    <div class="rep-exp">
+                        <div class="rep-exp-top">
+                            <div class="rep-exp-head">End Price: <span class="rep-exp-head">£540</span></div>
+                            <img src="images/icons/chevron.png" class="rep-exp-chev" />
+                        </div>
+
+                        <div class="rep-exp-drop">
+                            <div class="rep-exp-section">
+                                <div>
+                                    <div class="rep-exp-name">Labour Charge</div>
+                                    <div class="rep-exp-txt">3 hours worked</div>
+                                </div>
+                                <div class="rep-exp-num">£250</div>
+                            </div>
+                            <div class="rep-exp-section">
+                                <div>
+                                    <div class="rep-exp-name">Materials Charge</div>
+                                    <div class="rep-exp-txt">£58 worth used</div>
+                                </div>
+                                <div class="rep-exp-num">£250</div>
+                            </div>
+                            <div class="rep-exp-section" style="padding-bottom: 0;">
+                                <div>
+                                    <div class="rep-exp-name">Extra Charges</div>
+                                    <div class="rep-exp-txt">Weekend call-out</div>
+                                </div>
+                                <div class="rep-exp-num">£40</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="rep-prof">
+                        <div class="rep-prof-head"><span style="background-color: var(--primary);"></span> Job Profit</div>
+                        <div class="rep-prof-num">£400 <img src="images/icons/uptrend.png" /></div>
+                        <div class="rep-prof-txt">+8.6% from average profit</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="emp-wrapper" id="repWorkerEmpty" style="margin-bottom: 25px;">
+                <img src="images/nodata.svg" class="emp-icon" />
+                <div class="emp-head">No Workers Found</div>
+                <div class="emp-para">We couldn't find any workers<br> with completed jobs. Try again later.</div>
+            </div>
+            <div class="rep-worker-col" id="workerReportCol">
+                <div class="rep-worker-head">Worker Performance</div>
+                <div class="rep-search" id="repWorkerSearch">
+                    <img src="images/icons/search.png" />
+                    <input type="text" placeholder="Search Workers" />
+
+                    <div class="search-drop">
+                        
+                    </div>
+                </div>
+                
+                <div class="rep-worker-name"></div>
+                <div class="rep-worker-flex">
+                    <div class="rep-worker-card">
+                        <div class="rep-worker-chart">
+                            <span style="height: 10px;"></span>
+                            <span style="height: 12px;"></span>
+                            <span style="height: 14px;"></span>
+                            <span style="height: 22px;"></span>
+                            <span style="height: 34px;"></span>
+                            <span style="height: 42px;"></span>
+                            <span style="height: 43px;"></span>
+                            <span style="height: 36px;"></span>
+                            <span style="height: 30px;"></span>
+                            <span style="height: 32px;"></span>
+                        </div>
+                        <div class="rep-worker-label">Hours worked</div>
+                        <div class="rep-worker-num">225</div>
+                    </div>
+                    <div class="rep-worker-card">
+                        <div class="rep-worker-chart">
+                            <span style="height: 14px;"></span>
+                            <span style="height: 30px;"></span>
+                            <span style="height: 32px;"></span>
+                            <span style="height: 22px;"></span>
+                            <span style="height: 12px;"></span>
+                            <span style="height: 14px;"></span>
+                            <span style="height: 22px;"></span>
+                            <span style="height: 36px;"></span>
+                            <span style="height: 42px;"></span>
+                            <span style="height: 43px;"></span>
+                        </div>
+                        <div class="rep-worker-label">Jobs completed</div>
+                        <div class="rep-worker-num">84</div>
+                    </div>
+                    <div class="rep-worker-card">
+                        <div class="rep-worker-chart">
+                            <span style="height: 10px;"></span>
+                            <span style="height: 12px;"></span>
+                            <span style="height: 14px;"></span>
+                            <span style="height: 22px;"></span>
+                            <span style="height: 34px;"></span>
+                            <span style="height: 42px;"></span>
+                            <span style="height: 43px;"></span>
+                            <span style="height: 36px;"></span>
+                            <span style="height: 30px;"></span>
+                            <span style="height: 32px;"></span>
+                        </div>
+                        <div class="rep-worker-label">Avg Job Speed</div>
+                        <div class="rep-worker-num">2h 20m</div>
+                    </div>
+                    <div class="rep-worker-card">
+                        <div class="rep-worker-chart">
+                            <span style="height: 10px;"></span>
+                            <span style="height: 12px;"></span>
+                            <span style="height: 14px;"></span>
+                            <span style="height: 22px;"></span>
+                            <span style="height: 34px;"></span>
+                            <span style="height: 42px;"></span>
+                            <span style="height: 43px;"></span>
+                            <span style="height: 36px;"></span>
+                            <span style="height: 30px;"></span>
+                            <span style="height: 32px;"></span>
+                        </div>
+                        <div class="rep-worker-label">Avg Job Profit</div>
+                        <div class="rep-worker-num">£430</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div style="height: 120px;"></div>
+    <script src="script.js"></script>
+</body>
+</html>

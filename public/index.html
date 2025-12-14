@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://kit.fontawesome.com/515deb5b82.js" crossorigin="anonymous"></script>
+    <link rel="shortcut icon" href="images/icons/favicon.png" type="image/x-icon">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#2A6BFF">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ExamScope">
+    <link rel="apple-touch-icon" href="/icons/favicon.png">
+    <title>Job Tracker | Home</title>
+</head>
+<body>
+    <div class="home"></div>
+
+    <div class="home-bg"></div>
+    <div class="home-top padding starter">
+        <a href="account.html" class="home-pfp">
+            <i class="fa-solid fa-user"></i>
+        </a>
+        <div>
+            <div class="home-welcome">Welcome back</div>
+            <div class="home-name">David Wilson</div>
+        </div>
+        <i class="fa-regular fa-bell home-noti">
+        </i>
+    </div>
+    <div class="home-mid padding starter">
+        <div class="home-title">Let's get your day started<br> the right way!</div>
+        <div class="home-search">
+            <img src="images/icons/search.png" />
+            <input type="text" placeholder="Search Jobs" />
+
+            <div class="search-drop">
+                <!-- 
+                    <div class="search-option">Boiler <span>Rep</span>air For Luke</div>
+                -->
+            </div>
+        </div>
+    </div>
+
+    <div class="job-container padding starter">
+        <div class="job-label">Your Jobs</div>
+
+        <div class="job-ul">
+            <!-- 
+                <div class="job-wrapper">
+                    <div class="job-head">Boiler Repair For Luke</div>
+                    <div class="job-col">
+                        <div class="job-flex">
+                            <i class="fa-regular fa-user job-icon"></i>
+                            <div class="job-txt">Luke Smith</div>
+                        </div>
+                        <div class="job-flex">
+                            <i class="fa-regular fa-compass job-icon"></i>
+                            <div class="job-txt">North West, Burren, R93 A9R7</div>
+                        </div>
+                        <div class="job-flex">
+                            <i class="fa-regular fa-clock job-icon"></i>
+                            <div class="job-txt">25/12/2025 - 2:30pm</div>
+                        </div>
+                    </div>
+                    <a href="timer.html" class="btn-job">Start Job</a>
+                </div>
+            -->
+        </div>
+
+        <div class="emp-wrapper" id="jobEmpty">
+            <img src="images/nodata.svg" class="emp-icon" />
+            <div class="emp-head">No Jobs Found</div>
+            <div class="emp-para">We couldn't find any upcoming jobs<br> for you. Try again later.</div>
+        </div>
+    </div>
+
+    <div class="thank-modal">
+        <div class="thank-wrapper">
+            <i class="fa-solid fa-check thank-modal-check"></i>
+            <div class="thank-modal-title">Thank You!</div>
+            <div class="thank-modal-para">Your <span class="thank-modal-para" id="thankStr"></span> job been successfully<br> saved. Thank you!</div>
+            <div class="btn-thank-modal">Okay</div>
+        </div>
+    </div>
+
+
+    <script src="script.js"></script>
+</body>
+</html>

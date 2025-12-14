@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://kit.fontawesome.com/515deb5b82.js" crossorigin="anonymous"></script>
+    <link rel="shortcut icon" href="images/icons/favicon.png" type="image/x-icon">
+    <title>Job Tracker | Home</title>
+</head>
+<body>
+    <div class="workers"></div>
+
+    <div class="home-bg"></div>
+    <div class="home-top padding starter">
+        <a href="account.html?admin=true" class="home-pfp">
+            <i class="fa-solid fa-user"></i>
+        </a>
+        <div>
+            <div class="home-welcome">Welcome back</div>
+            <div class="home-name">Admin Harry</div>
+        </div>
+        <i class="fa-regular fa-bell home-noti"></i>
+    </div>
+
+    <div class="work-container padding">
+        <div class="starter">
+            <div class="admin-head">Your Workers</div>
+            <div class="admin-para">Manage and track your workers.</div>
+            <div class="work-btn-flex">
+                <div class="work-new-btn"><i class="fa-solid fa-plus"></i> New Worker</div>
+            </div>
+        </div>
+
+        <div class="work-col starter">
+            <div class="home-search" id="workSearch">
+                <img src="images/icons/search.png" />
+                <input type="text" placeholder="Search Workers" />
+
+                <div class="search-drop">
+                    <!-- 
+                        <div class="search-option">John <span>Smi</span>th</div>
+                    -->
+                </div>
+            </div>
+
+            <div class="emp-wrapper" id="workerEmpty">
+                <img src="images/nodata.svg" class="emp-icon" />
+                <div class="emp-head">No Workers Found</div>
+                <div class="emp-para">We couldn't find any workers in<br> the database. Try again later.</div>
+            </div>
+
+            <!-- 
+            <div class="work-wrapper">
+                <div class="work-top">
+                    <div class="work-pfp"><i class="fa-solid fa-user"></i></div>
+                    <div>
+                        <div class="work-name">Jonathan Smith</div>
+                        <div class="work-role">Senior Plumber</div>
+                    </div>
+                </div>
+
+                <div class="work-ul">
+                    <div class="work-li">
+                        <div class="work-label">Phone</div>
+                        <div class="work-txt">07924 12556</div>
+                    </div>
+                    <div class="work-li">
+                        <div class="work-label">Email</div>
+                        <div class="work-txt">jsmith22@gmail.com</div>
+                    </div>
+                    <div class="work-li">
+                        <div class="work-label">Next Job</div>
+                        <div class="work-txt">25/12/25 - 06:30am</div>
+                    </div>
+                </div>
+
+                <div class="work-up-col">
+                    <div class="work-up-head">Upcoming Jobs</div>
+                    <div class="work-up-ul">
+                        <div class="work-up-li">
+                            <span style="background-color: hsl(222, 100%, 48%);"></span>
+                            <div class="work-up-flex">
+                                <div class="work-up-left">
+                                    <div class="work-up-name">Boiler repair for Luke</div>
+                                    <div class="work-up-btn">View Details</div>
+                                </div>
+                                <div class="work-up-date">31/12/2025</div>
+                            </div>
+                        </div>
+                        <div class="work-up-li">
+                            <span style="background-color: hsl(222, 100%, 68%);"></span>
+                            <div class="work-up-flex">
+                                <div class="work-up-left">
+                                    <div class="work-up-name">Boiler repair for Luke</div>
+                                    <div class="work-up-btn">View Details</div>
+                                </div>
+                                <div class="work-up-date">31/12/2025</div>
+                            </div>
+                        </div>
+                        <div class="work-up-li">
+                            <span style="background-color: hsl(222, 100%, 88%);"></span>
+                            <div class="work-up-flex">
+                                <div class="work-up-left">
+                                    <div class="work-up-name">Boiler repair for Luke</div>
+                                    <div class="work-up-btn">View Details</div>
+                                </div>
+                                <div class="work-up-date">31/12/2025</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="work-btn">Assign Job</div>
+            </div>
+             -->
+        </div>
+    </div>
+
+    <div class="new-modal padding" id="newWorkerModal">
+        <form class="new-wrapper" id="newWorkerForm">
+            <i class="fa-solid fa-xmark new-xmark"></i>
+            <div class="new-title">New Worker</div>
+            <div class="new-col">
+                <div class="new-label">Worker Name</div>
+                <input name="name" type="text" placeholder="Enter Name" class="new-input" id="workerName" required />
+
+                <div class="new-label">Worker Role</div>
+                <input name="role" type="text" placeholder="Enter Role" class="new-input" id="workerRole" required />
+
+                <div class="new-label">Email</div>
+                <input name="email" type="text" placeholder="Enter Email" class="new-input" id="workerEmail" required />
+                <div id="emailError" class="new-error">This email is taken.</div>
+                <div id="invalidError" class="new-error">This email is invalid.</div>
+
+                <div class="new-label">Phone Number</div>
+                <input name="phone" type="text" placeholder="Enter Phone" class="new-input" id="workerPhone" required />
+
+                <div class="new-label">Password</div>
+                <input name="password" type="password" placeholder="Create Password" class="new-input" id="workerPassword" style="margin-bottom: 12px;" required />
+            </div>
+            <div id="serverError" class="new-error">There was an error, try again.</div>
+            <button type="submit" class="new-btn" id="createWorkerBtn">Create Worker</button>
+        </form>
+    </div>
+
+    <div class="new-modal padding" id="newJobModal">
+        <form id="newJobForm" class="new-wrapper">
+            <i class="fa-solid fa-xmark new-xmark"></i>
+            <div class="new-title">Create New Job</div>
+            <div class="new-col">
+                <div class="new-label">Job Title</div>
+                <input type="text" placeholder="Enter Title" class="new-input" id="jobName" name="jobName" required />
+
+                <div class="new-label">Customer Name</div>
+                <input type="text" placeholder="Enter Name" class="new-input" id="customerName" name="customerName" required />
+
+                <div class="new-label">Customer Address</div>
+                <input type="text" placeholder="Enter Address" class="new-input" id="customerAddress" name="customerAddress" required />
+
+                <div class="new-label">Job Date</div>
+                <div class="new-selector new-date-selector" id="jobDateSelector"><div>3rd December 2025</div> <img src="images/icons/chevron.png" class="new-chev" />
+                </div>
+                <input type="hidden" name="jobDate" id="jobDateInput">
+
+                <div class="new-label">Job Time</div>
+                <input type="text" placeholder="E.g. 08:30am" class="new-input" id="jobTime" name="jobTime" required />
+                
+                <div class="new-label">Job Cost</div>
+                <input type="text" placeholder="Enter Cost" class="new-input" id="jobCost" name="jobCost" required style="margin-bottom: 0;" />
+
+                <input type="hidden" name="worker" id="workerInput" value="" />
+                <input type="hidden" name="workerId" id="idInput" value="" />
+            </div>
+            <div id="workerError" class="new-error">Please select a worker.</div>
+            <button type="submit" class="new-btn" id="createJobBtn">Create Job</button>
+        </form>
+    </div>
+
+    <div class="date-modal padding">
+        <div class="new-change">
+            <div class="edit-change-flex">
+                <div class="edit-change-col">
+                    <div class="edit-change-chev">
+                        <img src="images/icons/chevron.png" />
+                    </div>
+                    <div class="edit-change-num">10</div>
+                    <div class="edit-change-label">Day</div>
+                    <div class="edit-change-chev edit-change-chev2">
+                        <img src="images/icons/chevron.png" />
+                    </div>
+                </div>
+                <div class="edit-change-col">
+                    <div class="edit-change-chev">
+                        <img src="images/icons/chevron.png" />
+                    </div>
+                    <div class="edit-change-num">11</div>
+                    <div class="edit-change-label">Month</div>
+                    <div class="edit-change-chev edit-change-chev2">
+                        <img src="images/icons/chevron.png" />
+                    </div>
+                </div>
+                <div class="edit-change-col">
+                    <div class="edit-change-chev">
+                        <img src="images/icons/chevron.png" />
+                    </div>
+                    <div class="edit-change-num">25</div>
+                    <div class="edit-change-label">Year</div>
+                    <div class="edit-change-chev edit-change-chev2">
+                        <img src="images/icons/chevron.png" />
+                    </div>
+                </div>
+            </div>
+            <div class="edit-change-bottom">
+                <div class="btn-edit-change btn-change-cancel">Cancel</div>
+                <div class="btn-edit-change btn-change-save">Save</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="thank-modal" id="thankJobCreation">
+        <div class="thank-wrapper">
+            <i class="fa-solid fa-check thank-modal-check"></i>
+            <div class="thank-modal-title">Thank You!</div>
+            <div class="thank-modal-para">Your <span class="thank-modal-para" id="thankStr"></span> job been successfully<br> created. Thank you!</div>
+            <div class="btn-thank-modal">Okay</div>
+        </div>
+    </div>
+
+    <div class="thank-modal" id="thankWorkerCreation">
+        <div class="thank-wrapper">
+            <i class="fa-solid fa-check thank-modal-check"></i>
+            <div class="thank-modal-title">Thank You!</div>
+            <div class="thank-modal-para">Your <span class="thank-modal-para" id="thankStr"></span> new worker been successfully<br> created. Thank you!</div>
+            <div class="btn-thank-modal">Okay</div>
+        </div>
+    </div>
+
+
+
+    <div style="height: 120px;"></div>
+    <script src="script.js"></script>
+</body>
+</html>

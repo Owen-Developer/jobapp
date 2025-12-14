@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://kit.fontawesome.com/515deb5b82.js" crossorigin="anonymous"></script>
+    <link rel="shortcut icon" href="images/icons/favicon.png" type="image/x-icon">
+    <title>Job Tracker | Home</title>
+</head>
+<body>
+    <div class="account"></div>
+
+    <div class="home-bg"></div>
+    <div class="acc-container padding">
+        <div class="acc-back"><img src="images/icons/chevron.png" /> Home</div>
+        <div class="acc-title starter">Account Settings</div>
+        <div class="acc-profile starter">
+            <div class="acc-pfp">
+                <i class="fa-solid fa-user"></i>
+            </div>
+            <div>
+                <div class="acc-name">Harry Wilson</div>
+                <div class="acc-email">harrywilson20@gmail.com</div>
+            </div>
+        </div>
+
+        <div class="acc-wrapper starter">
+            <div class="acc-head">General</div>
+            <div class="acc-ul">
+                <div class="acc-section" id="editProfileBtn">
+                    <i class="fa-solid fa-user acc-icon"></i>
+                    <div>
+                        <div class="acc-label">Edit Profile</div>
+                        <div class="acc-txt">Change you profile info</div>
+                    </div>
+                    <img src="images/icons/chevron.png" class="acc-chevron" />
+                </div>
+                <div class="acc-section" id="newPasswordBtn">
+                    <i class="fa-solid fa-lock acc-icon"></i>
+                    <div>
+                        <div class="acc-label">Change Password</div>
+                        <div class="acc-txt">Update your password</div>
+                    </div>
+                    <img src="images/icons/chevron.png" class="acc-chevron" />
+                </div>
+                <div class="acc-section" id="newContactBtn">
+                    <i class="fa-solid fa-phone acc-icon"></i>
+                    <div>
+                        <div class="acc-label">Contact Support</div>
+                        <div class="acc-txt">Contact our support team</div>
+                    </div>
+                    <img src="images/icons/chevron.png" class="acc-chevron" />
+                </div>
+                <div class="acc-section" id="newPushBtn">
+                    <i class="fa-solid fa-bell acc-icon"></i>
+                    <div>
+                        <div class="acc-label">Notifications</div>
+                        <div class="acc-txt">Manage your notifications</div>
+                    </div>
+                    <img src="images/icons/chevron.png" class="acc-chevron" />
+                </div>
+                <div class="acc-section" id="newLogout">
+                    <i class="fa-solid fa-right-from-bracket acc-icon"></i>
+                    <div>
+                        <div class="acc-label">Log Out</div>
+                        <div class="acc-txt">log out of your account</div>
+                    </div>
+                    <img src="images/icons/chevron.png" class="acc-chevron" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="prof-modal padding" id="profileModal">
+        <div class="prof-top">
+            <img src="images/icons/chevron.png" class="prof-chev" id="profileBack" />
+            <div class="prof-title">Edit profile</div>
+        </div>
+
+        <div class="prof-pfp-holder">
+            <div class="prof-pfp">
+                <i class="fa-solid fa-user prof-pfp-user"></i>
+            </div>
+            <i class="fa-solid fa-camera prof-pfp-camera"></i>
+        </div>
+
+        <div class="prof-wrapper">
+            <div class="prof-col">
+                <div class="prof-label">Full name</div>
+                <input type="text" placeholder="Enter name" class="prof-input" id="profileName" />
+            </div>
+            <div class="prof-col">
+                <div class="prof-label">Contact email</div>
+                <input type="text" placeholder="Enter email" class="prof-input" id="profileEmail" />
+            </div>
+            <div class="prof-col">
+                <div class="prof-label">Phone number</div>
+                <input type="text" placeholder="Enter phone" class="prof-input" id="profilePhone" />
+            </div>
+        </div>
+
+        <div class="prof-btn" id="saveProfileBtn">Save Changes</div>
+    </div>
+
+    <div class="new-modal padding" id="changePasswordModal">
+        <div class="new-wrapper">
+            <i class="fa-solid fa-xmark new-xmark"></i>
+            <div class="new-title">Change Password</div>
+            <div class="new-col">
+                <div class="new-label">Current Password</div>
+                <input type="password" placeholder="Current password" class="new-input" id="currentPassword" />
+                <div id="invalidError" class="new-error">Incorrect password.</div>
+
+                <div class="new-label">New Password</div>
+                <input type="password" placeholder="New password" class="new-input" id="newPassword" />
+
+                <div class="new-label">Confirm Password</div>
+                <input type="password" placeholder="Confirm password" class="new-input" id="confirmPassword" style="margin-bottom: 0;" />
+            </div>
+            <div id="diffError" class="new-error">Passwords do not match.</div>
+            <div id="randomError" class="new-error">Something went wrong, try again.</div>
+            <div class="new-btn" id="changePasswordBtn">Change Password</div>
+        </div>
+    </div>
+
+    <div class="thank-modal" id="thankPassword">
+        <div class="thank-wrapper">
+            <i class="fa-solid fa-check thank-modal-check"></i>
+            <div class="thank-modal-title">Thank You!</div>
+            <div class="thank-modal-para">Your <span class="thank-modal-para" id="thankStr"></span> password been successfully<br> changed. Thank you!</div>
+            <div class="btn-thank-modal">Okay</div>
+        </div>
+    </div>
+
+    <div class="new-modal padding" id="contactModal">
+        <div class="new-wrapper">
+            <i class="fa-solid fa-xmark new-xmark"></i>
+            <div class="new-title">Contact Support</div>
+            <div class="new-col">
+                <div class="new-label">Name</div>
+                <input type="password" placeholder="Enter name" class="new-input" id="contactName" />
+
+                <div class="new-label">Email</div>
+                <input type="password" placeholder="Enter email" class="new-input" id="contactEmail" />
+
+                <div class="new-label">Message</div>
+                <textarea id="contactMessage" placeholder="Enter message" class="new-area" style="margin-bottom: 0;"></textarea>
+            </div>
+            <div class="new-btn" id="contactSendBtn">Send Message</div>
+        </div>
+    </div>
+
+    <div class="thank-modal" id="thankContact">
+        <div class="thank-wrapper">
+            <i class="fa-solid fa-check thank-modal-check"></i>
+            <div class="thank-modal-title">Thank You!</div>
+            <div class="thank-modal-para">Your <span class="thank-modal-para" id="thankStr"></span> message been successfully<br> delivered. Thank you!</div>
+            <div class="btn-thank-modal">Okay</div>
+        </div>
+    </div>
+
+    <div class="prof-modal padding" id="pushModal">
+        <div class="prof-top">
+            <img src="images/icons/chevron.png" class="prof-chev" id="pushBack" />
+            <div class="prof-title">Notifications</div>
+        </div>
+
+        <div class="push-wrapper">
+            <div class="push-section">
+                <div class="push-left">
+                    <div class="push-head">New Jobs</div>
+                    <div class="push-txt">When you are assigned to a job, you will be notified.</div>
+                </div>
+                <div class="push-toggle push-toggle-active"><span class="push-toggle-right"></span></div>
+            </div>
+            <div class="push-section">
+                <div class="push-left">
+                    <div class="push-head">Job Updates</div>
+                    <div class="push-txt">You will be notified if your job's details change.</div>
+                </div>
+                <div class="push-toggle push-toggle-active"><span class="push-toggle-right"></span></div>
+            </div>
+            <div class="push-section">
+                <div class="push-left">
+                    <div class="push-head">System Updates</div>
+                    <div class="push-txt">If there is a software update, you will be notified.</div>
+                </div>
+                <div class="push-toggle"><span class="push-toggle-left"></span></div>
+            </div>
+            <div class="push-section" style="border-bottom: 0;">
+                <div class="push-left">
+                    <div class="push-head">Weekly Reports</div>
+                    <div class="push-txt">You will be notified for job and performance reports.</div>
+                </div>
+                <div class="push-toggle"><span class="push-toggle-left"></span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="book-delete-modal padding" id="logoutModal">
+        <div class="book-delete-wrapper">
+            <i class="fa-solid fa-triangle-exclamation book-delete-icon"></i>
+            <div class="book-delete-title">Log Out</div>
+            <div class="book-delete-para">Are you sure you want to log<br> out of your account?</div>
+            <div class="book-delete-flex">
+                <div class="btn-book-nodelete">No, cancel.</div>
+                <div class="btn-book-delete-booking">Yes, log out!</div>
+            </div>
+        </div>
+    </div>
+
+
+    <div style="height: 120px;"></div>
+    <script src="script.js"></script>
+</body>
+</html>

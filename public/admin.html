@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://kit.fontawesome.com/515deb5b82.js" crossorigin="anonymous"></script>
+    <link rel="shortcut icon" href="images/icons/favicon.png" type="image/x-icon">
+    <title>Job Tracker | Home</title>
+</head>
+<body>
+    <div class="admin"></div>
+
+    <div class="home-bg"></div>
+    <div class="home-top padding starter">
+        <a href="account.html?admin=true" class="home-pfp">
+            <i class="fa-solid fa-user"></i>
+        </a>
+        <div>
+            <div class="home-welcome">Welcome back</div>
+            <div class="home-name">Admin Harry</div>
+        </div>
+        <i class="fa-regular fa-bell home-noti"></i>
+    </div>
+
+    <div class="admin-container padding">
+        <div class="starter" style="display: flex; flex-direction: column;">
+            <div class="admin-head">Admin Dashboard</div>
+            <div class="admin-para">Manage and track your workers' jobs.</div>
+            <div class="admin-table-btn"><i class="fa-solid fa-plus"></i> New Job</div>
+        </div>
+
+        <div class="admin-table starter">
+            <div class="admin-table-content">
+                <div>
+                    <div class="admin-table-head">All Jobs</div>
+                    <div class="admin-table-para">Manage and track all jobs</div>
+                </div>
+                <div class="admin-filter-btn"><img src="images/icons/filter.png" /> Filter</div>
+            </div>
+    
+            <div class="emp-wrapper" id="jobEmpty" style="padding-bottom: 25px;">
+                <img src="images/nodata.svg" class="emp-icon" />
+                <div class="emp-head">No Jobs Found</div>
+                <div class="emp-para">We couldn't find any upcoming jobs<br> for you. Try again later.</div>
+            </div>
+            <div class="admin-table-scroll">
+                <div class="admin-table-col">
+                    <div class="admin-table-top">
+                        <div class="admin-table-label">Due Date</div>
+                        <div class="admin-table-label">Customer</div>
+                        <div class="admin-table-label">Address</div>
+                        <div class="admin-table-label">Worker</div>
+                        <div class="admin-table-label">Status</div>
+                        <div class="admin-table-label">Actions</div>
+                        <div class="admin-table-label">Time worked</div>
+                        <div class="admin-table-label">Materials</div>
+                        <div class="admin-table-label">Job notes</div>
+                    </div>
+                    <!-- 
+                    <div class="admin-table-row">
+                        <div class="admin-table-txt">25/12 - 3:30pm</div>
+                        <div class="admin-table-txt fow500">Liam Knowles</div>
+                        <div class="admin-table-txt">Manchester, Main Street, R94 A8R2</div>
+                        <div class="admin-table-txt">John Hartnett</div>
+                        <div class="admin-table-txt">
+                            <div class="admin-table-status admin-status-pending">Pending</div>
+                        </div>
+                        <div class="admin-table-icon">
+                            <i class="fa-regular fa-pen-to-square admin-edit-icon"></i>
+                            <i class="fa-regular fa-trash-can admin-delete-icon"></i>
+                        </div>
+                        <div class="admin-table-txt">0 minutes</div>
+                        <div class="admin-table-txt">
+                            <div class="admin-material-btn">View Materials</div>
+                        </div>
+                        <div class="admin-table-txt">Jon notes here.</div>
+                    </div>
+                    <div class="admin-table-row">
+                        <div class="admin-table-txt">18/01 - 08:00am</div>
+                        <div class="admin-table-txt fow500">Joshua Smith</div>
+                        <div class="admin-table-txt">Liverpool, Long Street, R91 B1R0</div>
+                        <div class="admin-table-txt">Steve Jones</div>
+                        <div class="admin-table-txt">
+                            <div class="admin-table-status admin-status-active">In Progress</div>
+                        </div>
+                        <div class="admin-table-icon">
+                            <i class="fa-regular fa-pen-to-square admin-edit-icon"></i>
+                            <i class="fa-regular fa-trash-can admin-delete-icon"></i>
+                        </div>
+                        <div class="admin-table-txt">6 minutes</div>
+                        <div class="admin-table-txt">
+                            <div class="admin-material-btn">View Materials</div>
+                        </div>
+                        <div class="admin-table-txt">
+                            <div class="admin-table-notes">Lorem ipsum dolor amet...<br><span>Read more</span></div>
+                        </div>
+                    </div>
+                    <div class="admin-table-row">
+                        <div class="admin-table-txt">30/01 - 12:30pm</div>
+                        <div class="admin-table-txt fow500">Liam Knowles</div>
+                        <div class="admin-table-txt">Manchester, Main Street, R94 A8R2</div>
+                        <div class="admin-table-txt">John Hartnett</div>
+                        <div class="admin-table-txt">
+                            <div class="admin-table-status admin-status-complete">Completed</div>
+                        </div>
+                        <div class="admin-table-icon">
+                            <i class="fa-regular fa-pen-to-square admin-edit-icon"></i>
+                            <i class="fa-regular fa-trash-can admin-delete-icon"></i>
+                        </div>
+                        <div class="admin-table-txt">48 minutes</div>
+                        <div class="admin-table-txt">
+                            <div class="admin-material-btn">View Materials</div>
+                        </div>
+                        <div class="admin-table-txt">Job notes here.</div>
+                    </div>
+                    -->
+                </div>
+            </div>
+        </div>
+
+        <div class="admin-rep-head starter">Monthly Report</div>
+        <div class="rep-card-flex starter">
+            <div class="rep-card">
+                <div class="rep-card-head"><span style="background-color: var(--primary);"></span> Total Revenue</div>
+                <div class="rep-card-num" id="totalRevenueNum">£2,180 <img src="images/icons/uptrend.png" /></div>
+                <div class="rep-card-txt" id="totalRevenueText">+8.6% from last month</div>
+            </div>
+            <div class="rep-card">
+                <div class="rep-card-head"><span style="background-color: rgb(0, 180, 0);"></span> Labour Cost</div>
+                <div class="rep-card-num" id="totalLabourNum">£700 <img src="images/icons/uptrend.png" /></div>
+                <div class="rep-card-txt" id="totalLabourText">+5.2% from last month</div>
+            </div>
+            <div class="rep-card">
+                <div class="rep-card-head"><span style="background-color: rgb(209, 195, 0);"></span> Material Cost</div>
+                <div class="rep-card-num" id="totalMaterialNum">£100 <img src="images/icons/downtrend.png" /></div>
+                <div class="rep-card-txt" id="totalMaterialText">-1.6% from last month</div>
+            </div>
+            <div class="rep-card">
+                <div class="rep-card-head"><span style="background-color: red;"></span> Total Profit</div>
+                <div class="rep-card-num" id="totalProfitNum">£1,060 <img src="images/icons/uptrend.png" /></div>
+                <div class="rep-card-txt" id="totalProfitText">+9.4% from last month</div>
+            </div>
+        </div>
+        <a href="reports.html" class="btn-admin-rep">All Reports</a>
+    </div>
+
+    <div class="read-modal padding">
+        <div class="read-wrapper"><i class="fa-solid fa-xmark read-close"></i> <div></div></div>
+    </div>
+
+    <div class="new-modal padding" id="newJobModal">
+        <form id="newJobForm" class="new-wrapper">
+            <i class="fa-solid fa-xmark new-xmark"></i>
+            <div class="new-title">Create New Job</div>
+            <div class="new-col">
+                <div class="new-label">Job Title</div>
+                <input type="text" placeholder="Enter Title" class="new-input" id="jobName" name="jobName" required />
+
+                <div class="new-label">Customer Name</div>
+                <input type="text" placeholder="Enter Name" class="new-input" id="customerName" name="customerName" required />
+
+                <div class="new-label">Customer Address</div>
+                <input type="text" placeholder="Enter Address" class="new-input" id="customerAddress" name="customerAddress" required />
+
+                <div class="new-label">Job Date</div>
+                <div class="new-selector new-date-selector" id="jobDateSelector"><div>3rd December 2025</div> <img src="images/icons/chevron.png" class="new-chev" />
+                </div>
+                <input type="hidden" name="jobDate" id="jobDateInput">
+
+                <div class="new-label">Job Time</div>
+                <input type="text" placeholder="E.g. 08:30am" class="new-input" id="jobTime" name="jobTime" required />
+
+                <div class="new-label">Job Cost</div>
+                <input type="text" placeholder="Enter Cost" class="new-input" id="jobCost" name="jobCost" required />
+
+                <div class="new-label">Assign Worker</div>
+                <div class="new-selector new-worker-selector" id="workerSelector" style="margin-bottom: 0;"><div>Select Worker</div>
+                </div>
+                <input type="hidden" name="worker" id="workerInput" value="" />
+                <input type="hidden" name="workerId" id="idInput" value="" />
+            </div>
+            <div id="workerError" class="new-error">Please select a worker.</div>
+            <button type="submit" class="new-btn" id="createJobBtn">Create Job</button>
+        </form>
+    </div>
+
+    <div class="new-modal padding" id="editJobModal">
+        <form id="editJobForm" class="new-wrapper">
+            <i class="fa-solid fa-xmark new-xmark"></i>
+            <div class="new-title">Edit Job</div>
+            <div class="new-col">
+                <input type="hidden" name="jobId" id="jobId" value="" />
+                <div class="new-label">Job Title</div>
+                <input type="text" placeholder="Enter Title" class="new-input" id="editName" name="editName" required />
+
+                <div class="new-label">Customer Name</div>
+                <input type="text" placeholder="Enter Name" class="new-input" id="editCustomerName" name="editCustomerName" required />
+
+                <div class="new-label">Customer Address</div>
+                <input type="text" placeholder="Enter Address" class="new-input" id="editCustomerAddress" name="editCustomerAddress" required />
+
+                <div class="new-label">Job Date</div>
+                <div class="new-selector new-date-selector" id="editDateSelector"><div>3rd December 2025</div> <img src="images/icons/chevron.png" class="new-chev" />
+                </div>
+                <input type="hidden" name="editDate" id="editDateInput" />
+
+                <div class="new-label">Job Time</div>
+                <input type="text" placeholder="E.g. 08:30am" class="new-input" id="editTime" name="editTime" required />
+
+                <div class="new-label">Job Cost</div>
+                <input type="text" placeholder="Enter Cost" class="new-input" id="editCost" name="editCost" required />
+
+                <div class="new-label">Assign Worker</div>
+                <div class="new-selector new-worker-selector" id="editWorkerSelector" style="margin-bottom: 0;"><div>Select Worker</div>
+                </div>
+                <input type="hidden" name="editWorker" id="editWorkerInput" value="" />
+                <input type="hidden" name="editWorkerId" id="editIdInput" value="" />
+            </div>
+            <div id="editWorkerError" class="new-error new-error-bottom">Please select a worker.</div>
+            <button type="submit" class="new-btn" id="editJobBtn">Save Changes</button>
+        </form>
+    </div>
+
+    <div class="new-modal padding" id="materialsModal">
+        <div class="new-wrapper">
+            <i class="fa-solid fa-xmark new-xmark"></i>
+            <div class="mat-head">Materials Used</div>
+
+            <div class="mat-col">
+                <div class="mat-wrapper">
+                    <div class="mat-amount">250mm used</div>
+                    <div class="mat-name">Copper Pipes</div>
+                    <div class="mat-flex">
+                        <div class="mat-cost">Cost: <span>£50</span></div>
+                        <div class="mat-cost">Charged: <span>£68</span></div>
+                    </div>
+                </div>
+                <div class="mat-wrapper">
+                    <div class="mat-amount">250mm used</div>
+                    <div class="mat-name">Copper Pipes</div>
+                    <div class="mat-flex">
+                        <div class="mat-cost">Cost: <span>£50</span></div>
+                        <div class="mat-cost">Charged: <span>£68</span></div>
+                    </div>
+                </div>
+                <div class="mat-wrapper">
+                    <div class="mat-amount">250mm used</div>
+                    <div class="mat-name">Copper Pipes</div>
+                    <div class="mat-flex">
+                        <div class="mat-cost">Cost: <span>£50</span></div>
+                        <div class="mat-cost">Charged: <span>£68</span></div>
+                    </div>
+                </div>
+            </div>
+            <a href="/pricing.html?admin=true" class="mat-btn">All Materials</a>
+        </div>
+    </div>
+
+    <div class="date-modal padding">
+        <div class="new-change">
+            <div class="edit-change-flex">
+                <div class="edit-change-col">
+                    <div class="edit-change-chev">
+                        <img src="images/icons/chevron.png" />
+                    </div>
+                    <div class="edit-change-num">10</div>
+                    <div class="edit-change-label">Day</div>
+                    <div class="edit-change-chev edit-change-chev2">
+                        <img src="images/icons/chevron.png" />
+                    </div>
+                </div>
+                <div class="edit-change-col">
+                    <div class="edit-change-chev">
+                        <img src="images/icons/chevron.png" />
+                    </div>
+                    <div class="edit-change-num">11</div>
+                    <div class="edit-change-label">Month</div>
+                    <div class="edit-change-chev edit-change-chev2">
+                        <img src="images/icons/chevron.png" />
+                    </div>
+                </div>
+                <div class="edit-change-col">
+                    <div class="edit-change-chev">
+                        <img src="images/icons/chevron.png" />
+                    </div>
+                    <div class="edit-change-num">25</div>
+                    <div class="edit-change-label">Year</div>
+                    <div class="edit-change-chev edit-change-chev2">
+                        <img src="images/icons/chevron.png" />
+                    </div>
+                </div>
+            </div>
+            <div class="edit-change-bottom">
+                <div class="btn-edit-change btn-change-cancel">Cancel</div>
+                <div class="btn-edit-change btn-change-save">Save</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="assign-modal padding">
+        <div class="assign-wrapper">
+            <i class="fa-solid fa-xmark assign-close"></i>
+            <div class="assign-head">Choose a Worker</div>
+            <!-- 
+                <div class="edit-mat-option">John Smith <i class="fa-solid fa-check"></i></div>
+             -->
+        </div>
+    </div>
+
+    <div class="exam-modal">
+        <div class="exam-modal-wrapper">
+            <i class="fa-solid fa-xmark exam-modal-close"></i>
+            <div class="exam-modal-title">Filters</div>
+
+            <div class="exam-modal-section">
+                <div class="exam-modal-label">Completion Status</div>
+                <div class="exam-modal-flex">
+                    <div class="exam-modal-box"><i class="fa-solid fa-check exam-modal-check"></i></div>
+                    <div class="exam-modal-txt">Pending <span class="exam-modal-txt exam-modal-amount">(34)</span></div>
+                </div>
+                <div class="exam-modal-flex">
+                    <div class="exam-modal-box"><i class="fa-solid fa-check exam-modal-check"></i></div>
+                    <div class="exam-modal-txt">In Progress <span class="exam-modal-txt exam-modal-amount">(26)</span></div>
+                </div>
+                <div class="exam-modal-flex">
+                    <div class="exam-modal-box"><i class="fa-solid fa-check exam-modal-check"></i></div>
+                    <div class="exam-modal-txt">Completed <span class="exam-modal-txt exam-modal-amount">(21)</span></div>
+                </div>
+            </div>
+            <div class="exam-modal-section">
+                <div class="exam-modal-label">Due Date</div>
+                <div class="exam-modal-flex">
+                    <div class="exam-modal-box"><i class="fa-solid fa-check exam-modal-check"></i></div>
+                    <div class="exam-modal-txt">Today</div>
+                </div>
+                <div class="exam-modal-flex">
+                    <div class="exam-modal-box"><i class="fa-solid fa-check exam-modal-check"></i></div>
+                    <div class="exam-modal-txt">This Month</div>
+                </div>
+                <div class="exam-modal-flex">
+                    <div class="exam-modal-box"><i class="fa-solid fa-check exam-modal-check"></i></div>
+                    <div class="exam-modal-txt">This Year</div>
+                </div>
+            </div>
+
+            <div class="btn-exam-modal btn-modal-clear" id="saveFilterBtn">Save Changes</div>
+        </div>
+    </div>
+
+    <div class="thank-modal" id="thankJobCreation">
+        <div class="thank-wrapper">
+            <i class="fa-solid fa-check thank-modal-check"></i>
+            <div class="thank-modal-title">Thank You!</div>
+            <div class="thank-modal-para">Your <span class="thank-modal-para" id="thankStr"></span> job been successfully<br> created. Thank you!</div>
+            <div class="btn-thank-modal">Okay</div>
+        </div>
+    </div>
+
+    <div class="thank-modal" id="thankJobEdit">
+        <div class="thank-wrapper">
+            <i class="fa-solid fa-check thank-modal-check"></i>
+            <div class="thank-modal-title">Thank You!</div>
+            <div class="thank-modal-para">Your <span class="thank-modal-para" id="thankStr"></span> job been successfully<br> edited. Thank you!</div>
+            <div class="btn-thank-modal">Okay</div>
+        </div>
+    </div>
+
+    <div class="thank-modal" id="thankDelete">
+        <div class="thank-wrapper">
+            <i class="fa-solid fa-check thank-modal-check"></i>
+            <div class="thank-modal-title">Thank You!</div>
+            <div class="thank-modal-para">Your <span class="thank-modal-para" id="thankStr"></span> job been successfully<br> deleted. Thank you!</div>
+            <div class="btn-thank-modal">Okay</div>
+        </div>
+    </div>
+
+    <div class="book-delete-modal padding" id="deleteJob">
+        <div class="book-delete-wrapper">
+            <i class="fa-solid fa-triangle-exclamation book-delete-icon"></i>
+            <div class="book-delete-title">Delete Job</div>
+            <div class="book-delete-para">Are you sure you want to<br> delete this job?</div>
+            <div class="book-delete-flex">
+                <div class="btn-book-nodelete">No, keep it.</div>
+                <div class="btn-book-delete-booking">Yes, delete!</div>
+            </div>
+        </div>
+    </div>
+
+
+    <div style="height: 120px;"></div>
+    <script src="script.js"></script>
+</body>
+</html>

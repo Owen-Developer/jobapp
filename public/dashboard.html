@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://kit.fontawesome.com/515deb5b82.js" crossorigin="anonymous"></script>
+    <link rel="shortcut icon" href="images/icons/favicon.png" type="image/x-icon">
+    <title>Job Tracker | Home</title>
+</head>
+<body class="dash-body">
+    <div class="dashboard"></div>
+
+    <div class="header-container">
+        <div class="header">
+            <a href="/" class="header-group">
+                <div class="header-name">JobTracker</div>
+            </a>
+            <!-- 
+                <div class="header-search-wrapper">
+                    <input type="text" class="header-inp" placeholder="Search for anything..." />
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                </div>
+                -->
+    
+            <div class="header-nav">
+                <a href="/" class="header-link">Home</a>
+                <a href="/welcome" class="header-link">About us</a>
+                <a href="/welcome#features" class="header-link">Features</a>
+                <a href="/welcome#faqs" class="header-link">FAQs</a>
+                <a href="/welcome#contact" class="header-link">Contact us</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="side-nav">
+        <a href="/" class="side-section active-section">
+            <i class="fa-solid fa-house side-icon"></i>
+            <div class="side-txt">Home</div>
+        </a>
+        <div class="side-section library-section" id="sideNoti">
+            <i class="fa-solid fa-bell side-icon"></i>
+            <div class="side-txt">Notifications</div>
+        </div>
+        <div class="side-section mode-section" id="sideNewJob">
+            <i class="fa-solid fa-plus side-icon"></i>
+            <div class="side-txt">New Job</div>
+        </div>
+
+        <div class="side-split"></div>
+
+        <div class="side-section logout-section logged-element" id="sideLog">
+            <i class="fa-solid fa-right-from-bracket side-icon"></i>
+            <div class="side-txt">Log Out</div>
+        </div>     
+    </div>
+
+
+    <div class="dash-holder">
+        <div class="dash-container">
+            <div class="dash-top">
+                <div class="dash-title">Dashboard</div>
+
+                <div class="dash-btn dash-worker-btn" id="newWorkerBtn">Add Worker</div>
+                <div class="dash-btn dash-new-btn" id="newJobBtn"><i class="fa-solid fa-plus"></i> New Job</div>
+            </div>
+    
+            <div class="dash-bento">
+                <div class="dash-card-flex">
+                    <div class="dash-card">
+                        <div class="dash-card-head"><span style="background-color: var(--primary);"></span> Total Revenue</div>
+                        <div class="dash-card-num" id="totalRevenueNum">£2,180 <img src="images/icons/uptrend.png" /></div>
+                        <div class="dash-card-txt" id="totalRevenueText">+8.6% from last month</div>
+                    </div>
+                    <div class="dash-card">
+                        <div class="dash-card-head"><span style="background-color: rgb(0, 180, 0);"></span> Labour Cost</div>
+                        <div class="dash-card-num" id="totalLabourNum">£700 <img src="images/icons/uptrend.png" /></div>
+                        <div class="dash-card-txt" id="totalLabourText">+5.2% from last month</div>
+                    </div>
+                    <div class="dash-card">
+                        <div class="dash-card-head"><span style="background-color: rgb(209, 195, 0);"></span> Material Cost</div>
+                        <div class="dash-card-num" id="totalMaterialNum">£100 <img src="images/icons/downtrend.png" /></div>
+                        <div class="dash-card-txt" id="totalMaterialText">-1.6% from last month</div>
+                    </div>
+                    <div class="dash-card">
+                        <div class="dash-card-head"><span style="background-color: red;"></span> Total Profit</div>
+                        <div class="dash-card-num" id="totalProfitNum">£1,060 <img src="images/icons/uptrend.png" /></div>
+                        <div class="dash-card-txt" id="totalProfitText">+9.4% from last month</div>
+                    </div>
+                </div>
+
+                <div class="dash-flex">
+                    <div class="dash-left">
+                        <div class="dash-table">
+                            <div class="admin-table-content">
+                                <div>
+                                    <div class="admin-table-head">All Jobs</div>
+                                    <div class="admin-table-para">Manage and track all jobs</div>
+                                </div>
+                                <div class="admin-filter-btn"><img src="images/icons/filter.png" /> Filter</div>
+                            </div>
+                    
+                            <div class="dash-table-scroll">
+                                <div class="dash-table-col">
+                                    <div class="admin-table-top">
+                                        <div class="admin-table-label">Due Date</div>
+                                        <div class="admin-table-label">Customer</div>
+                                        <div class="admin-table-label">Address</div>
+                                        <div class="admin-table-label">Worker</div>
+                                        <div class="admin-table-label">Status</div>
+                                        <div class="admin-table-label">Actions</div>
+                                        <div class="admin-table-label">Time worked</div>
+                                        <div class="admin-table-label">Materials</div>
+                                        <div class="admin-table-label">Job notes</div>
+                                    </div>
+                                    <!-- 
+                                        <div class="admin-table-row">
+                                            <div class="admin-table-txt">25/12 - 3:30pm</div>
+                                            <div class="admin-table-txt fow500">Liam Knowles</div>
+                                            <div class="admin-table-txt">Manchester, Main Street, R94 A8R2</div>
+                                            <div class="admin-table-txt">John Hartnett</div>
+                                            <div class="admin-table-txt">
+                                                <div class="admin-table-status admin-status-pending">Pending</div>
+                                            </div>
+                                            <div class="admin-table-icon">
+                                                <i class="fa-regular fa-pen-to-square admin-edit-icon"></i>
+                                                <i class="fa-regular fa-trash-can admin-delete-icon"></i>
+                                                <i class="fa-solid fa-chart-line admin-report-icon"></i>
+                                            </div>
+                                            <div class="admin-table-txt">0 minutes</div>
+                                            <div class="admin-table-txt">
+                                                <div class="admin-material-btn">View Materials</div>
+                                            </div>
+                                            <div class="admin-table-txt">Jon notes here.</div>
+                                        </div>
+                                    -->
+                                </div>
+                            </div>
+                            <div class="emp-wrapper" id="dashEmpty" style="padding-bottom: 25px;">
+                                <img src="images/nodata.svg" class="emp-icon" />
+                                <div class="emp-head">No Jobs Found</div>
+                                <div class="emp-para">We couldn't find any upcoming jobs<br> for you. Try again later.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dash-right">
+                        <div class="dash-work-search" id="repWorkerSearch">
+                            <img src="images/icons/search.png" />
+                            <input type="text" placeholder="Search Workers" />
+
+                            <div class="search-drop"></div>
+                        </div>
+                        <div class="emp-wrapper" id="dashWorkerEmpty">
+                            <div class="emp-head">No Workers Found</div>
+                            <div class="emp-para">We couldn't find any workers<br> in the database. Try again later.</div>
+                        </div>
+                        <div class="dash-work-col">
+                            <div class="work-wrapper">
+                                <div class="work-top">
+                                    <div class="work-pfp"><i class="fa-solid fa-user"></i></div>
+                                    <div>
+                                        <div class="work-name">Jonathan Smith</div>
+                                        <div class="work-role">Senior Plumber</div>
+                                    </div>
+                                </div>
+    
+                                <div class="work-ul">
+                                    <div class="work-li">
+                                        <div class="work-label">Phone</div>
+                                        <div class="work-txt">07924 12556</div>
+                                    </div>
+                                    <div class="work-li">
+                                        <div class="work-label">Email</div>
+                                        <div class="work-txt">jsmith22@gmail.com</div>
+                                    </div>
+                                    <div class="work-li">
+                                        <div class="work-label">Next Job</div>
+                                        <div class="work-txt">25/12/25 - 06:30am</div>
+                                    </div>
+                                </div>
+    
+                                <div class="work-up-col">
+                                    <div class="work-up-head">Upcoming Jobs</div>
+                                    <div class="work-up-ul">
+                                        <div class="work-up-li">
+                                            <span style="background-color: hsl(222, 100%, 48%);"></span>
+                                            <div class="work-up-flex">
+                                                <div class="work-up-left">
+                                                    <div class="work-up-name">Boiler repair for Luke</div>
+                                                    <div class="work-up-btn">View Details</div>
+                                                </div>
+                                                <div class="work-up-date">31/12/2025</div>
+                                            </div>
+                                        </div>
+                                        <div class="work-up-li">
+                                            <span style="background-color: hsl(222, 100%, 68%);"></span>
+                                            <div class="work-up-flex">
+                                                <div class="work-up-left">
+                                                    <div class="work-up-name">Boiler repair for Luke</div>
+                                                    <div class="work-up-btn">View Details</div>
+                                                </div>
+                                                <div class="work-up-date">31/12/2025</div>
+                                            </div>
+                                        </div>
+                                        <div class="work-up-li">
+                                            <span style="background-color: hsl(222, 100%, 88%);"></span>
+                                            <div class="work-up-flex">
+                                                <div class="work-up-left">
+                                                    <div class="work-up-name">Boiler repair for Luke</div>
+                                                    <div class="work-up-btn">View Details</div>
+                                                </div>
+                                                <div class="work-up-date">31/12/2025</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+    
+                                <div class="work-btn-flex">
+                                    <div class="work-btn" id="assignBtn">Assign Job</div>
+                                    <div class="work-btn work-report-btn" id="viewReportBtn">View Report</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dash-pric-flex" id="materials">
+                    <div class="pric-wrapper">
+                        <div class="pric-top">
+                            <div class="pric-head">Labour & Rates</div>
+                            <div class="pric-btn" id="editLabourBtn"><i class="fa-regular fa-pen-to-square"></i> Edit</div>
+                        </div>
+                        <div class="pric-ul" id="labourUl">
+                            <!-- 
+                            <div class="pric-li">
+                                <div class="pric-label">Hourly labour cost</div>
+                                <div class="pric-txt">£18</div>
+                            </div>
+                            <div class="pric-li">
+                                <div class="pric-label">Hourly labour charge</div>
+                                <div class="pric-txt">£50</div>
+                            </div>
+                            <div class="pric-li">
+                                <div class="pric-label">Day rate cost</div>
+                                <div class="pric-txt">£200</div>
+                            </div>
+                            <div class="pric-li">
+                                <div class="pric-label">Day rate charge</div>
+                                <div class="pric-txt">£350</div>
+                            </div>
+                            <div class="pric-li">
+                                <div class="pric-label">Call out fee</div>
+                                <div class="pric-txt">£10</div>
+                            </div>
+                             -->
+                        </div>
+                    </div>
+
+                    <div class="pric-wrapper">
+                        <div class="pric-top">
+                            <div class="pric-head">Extra Charges</div>
+                            <div class="pric-btn" id="editChargesBtn"><i class="fa-regular fa-pen-to-square"></i> Edit</div>
+                        </div>
+                        <div class="pric-ul" id="chargeUl">
+                            <!-- 
+                            <div class="pric-li">
+                                <div class="pric-label">Charge 1</div>
+                                <div class="pric-txt">£30</div>
+                            </div>
+                            <div class="pric-li">
+                                <div class="pric-label">Charge 2</div>
+                                <div class="pric-txt">£30</div>
+                            </div>
+                            <div class="pric-li">
+                                <div class="pric-label">Charge 3</div>
+                                <div class="pric-txt">£30</div>
+                            </div>
+                            <div class="pric-li">
+                                <div class="pric-label">Charge 4</div>
+                                <div class="pric-txt">£30</div>
+                            </div>
+                            <div class="pric-li">
+                                <div class="pric-label">Charge 5</div>
+                                <div class="pric-txt">£30</div>
+                            </div>
+                             -->
+                        </div>
+                        <div class="pric-new-btn" id="newChargeBtn"><i class="fa-solid fa-plus"></i> New Charge</div>
+                    </div>
+
+                    <div class="pric-wrapper">
+                        <div class="pric-top">
+                            <div class="pric-head">Materials</div>
+                            <div class="pric-selector" id="pricMaterialSelector"><div>Parts</div> <img src="images/icons/chevron.png" />
+                                <div class="pric-drop">
+                                    <div class="pric-option pric-option-active">Parts <i class="fa-solid fa-check"></i></div>
+                                    <div class="pric-option">Pipework <i class="fa-solid fa-check"></i></div>
+                                    <div class="pric-option">Fittings <i class="fa-solid fa-check"></i></div>
+                                    <div class="pric-option">Consumables <i class="fa-solid fa-check"></i></div>
+                                    <div class="pric-option">Other items <i class="fa-solid fa-check"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pric-ul" id="materialUl">
+                            <!-- 
+                            <div class="pric-li">
+                                <div class="pric-label">Material 1</div>
+                                <div class="pric-txt">£18 <div></div> £30</div>
+                            </div>
+                            <div class="pric-li">
+                                <div class="pric-label">Material 2</div>
+                                <div class="pric-txt">£18 <div></div> £30</div>
+                            </div>
+                            <div class="pric-li">
+                                <div class="pric-label">Material 3</div>
+                                <div class="pric-txt">£18 <div></div> £30</div>
+                            </div>
+                            <div class="pric-li">
+                                <div class="pric-label">Material 4</div>
+                                <div class="pric-txt">£18 <div></div> £30</div>
+                            </div>
+                            <div class="pric-li">
+                                <div class="pric-label">Material 5</div>
+                                <div class="pric-txt">£18 <div></div> £30</div>
+                            </div>
+                             -->
+                        </div>
+                        <div class="pric-new-btn" id="pricManageBtn">Manage</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="read-modal padding">
+        <div class="read-wrapper"><i class="fa-solid fa-xmark read-close"></i> <div></div></div>
+    </div>
+
+    <div class="new-modal dash-modal padding" id="newJobModal">
+        <form id="newJobForm" class="new-wrapper">
+            <i class="fa-solid fa-xmark new-xmark"></i>
+            <div class="new-title">Create New Job</div>
+            <div class="new-col">
+                <div class="new-label">Job Title</div>
+                <input type="text" placeholder="Enter Title" class="new-input" id="jobName" name="jobName" required />
+
+                <div class="new-label">Customer Name</div>
+                <input type="text" placeholder="Enter Name" class="new-input" id="customerName" name="customerName" required />
+
+                <div class="new-label">Customer Address</div>
+                <input type="text" placeholder="Enter Address" class="new-input" id="customerAddress" name="customerAddress" required />
+
+                <div class="new-label">Job Date</div>
+                <div class="new-selector new-date-selector" id="jobDateSelector"><div>3rd December 2025</div> <img src="images/icons/chevron.png" class="new-chev" />
+                </div>
+                <input type="hidden" name="jobDate" id="jobDateInput">
+
+                <div class="new-label">Job Time</div>
+                <input type="text" placeholder="E.g. 08:30am" class="new-input" id="jobTime" name="jobTime" required />
+
+                <div class="new-label">Job Cost</div>
+                <input type="text" placeholder="Enter Cost" class="new-input" id="jobCost" name="jobCost" required />
+
+                <div class="new-label new-worker-label">Assign Worker</div>
+                <div class="new-selector new-worker-selector" id="workerSelector" style="margin-bottom: 0;"><div>Select Worker</div>
+                </div>
+                <input type="hidden" name="worker" id="workerInput" value="" />
+                <input type="hidden" name="workerId" id="idInput" value="" />
+            </div>
+            <div id="workerError" class="new-error">Please select a worker.</div>
+            <button type="submit" class="new-btn" id="createJobBtn">Create Job</button>
+        </form>
+    </div>
+
+    <div class="new-modal dash-modal padding" id="editJobModal">
+        <form id="editJobForm" class="new-wrapper">
+            <i class="fa-solid fa-xmark new-xmark"></i>
+            <div class="new-title">Edit Job</div>
+            <div class="new-col">
+                <input type="hidden" name="jobId" id="jobId" value="" />
+                <div class="new-label">Job Title</div>
+                <input type="text" placeholder="Enter Title" class="new-input" id="editName" name="editName" required />
+
+                <div class="new-label">Customer Name</div>
+                <input type="text" placeholder="Enter Name" class="new-input" id="editCustomerName" name="editCustomerName" required />
+
+                <div class="new-label">Customer Address</div>
+                <input type="text" placeholder="Enter Address" class="new-input" id="editCustomerAddress" name="editCustomerAddress" required />
+
+                <div class="new-label">Job Date</div>
+                <div class="new-selector new-date-selector" id="editDateSelector"><div>3rd December 2025</div> <img src="images/icons/chevron.png" class="new-chev" />
+                </div>
+                <input type="hidden" name="editDate" id="editDateInput" />
+
+                <div class="new-label">Job Time</div>
+                <input type="text" placeholder="E.g. 08:30am" class="new-input" id="editTime" name="editTime" required />
+
+                <div class="new-label">Job Cost</div>
+                <input type="text" placeholder="Enter Cost" class="new-input" id="editCost" name="editCost" required />
+
+                <div class="new-label">Assign Worker</div>
+                <div class="new-selector new-worker-selector" id="editWorkerSelector" style="margin-bottom: 0;"><div>Select Worker</div>
+                </div>
+                <input type="hidden" name="editWorker" id="editWorkerInput" value="" />
+                <input type="hidden" name="editWorkerId" id="editIdInput" value="" />
+            </div>
+            <div id="editWorkerError" class="new-error new-error-bottom">Please select a worker.</div>
+            <button type="submit" class="new-btn" id="editJobBtn">Save Changes</button>
+        </form>
+    </div>
+
+    <div class="new-modal dash-modal padding" id="jobReportModal">
+        <div class="rep-job-wrapper">
+            <i class="fa-solid fa-xmark new-xmark"></i>
+            <div class="rep-job-name">Boiler Repair For Luke</div>
+            <div class="rep-job-date">Completed 25/12/2025</div>
+            <div class="rep-circ-container">
+                <div class="rep-circ circ-fill" id="circLabour"></div>
+                <div class="rep-circ circ-fill" id="circMaterials"></div>
+                <div class="rep-circ circ-fill" id="circExtra"></div>
+                <div class="rep-circ-mid"></div>
+                <div class="rep-circ-content">
+                    <div class="rep-circ-head">£140</div>
+                    <div class="rep-circ-txt">Total Cost</div>
+                </div>
+            </div>
+            <div class="rep-job-legend">
+                <div><span style="background-color: hsl(222, 100%, 34%);"></span> Labour £75</div>
+                <div><span style="background-color: hsl(222, 100%, 54%);"></span> Materials £58</div>
+                <div><span style="background-color: hsl(222, 100%, 74%);"></span> Extra £7</div>
+            </div>
+
+            <!-- 
+                gonna hagve a expandable box for customer price, which drops down all detail prices.
+                then gonna have a netr profit box like first section under
+            -->
+            <div class="rep-exp">
+                <div class="rep-exp-top">
+                    <div class="rep-exp-head">End Price: <span class="rep-exp-head">£540</span></div>
+                    <img src="images/icons/chevron.png" class="rep-exp-chev" />
+                </div>
+
+                <div class="rep-exp-drop">
+                    <div class="rep-exp-section">
+                        <div>
+                            <div class="rep-exp-name">Labour Charge</div>
+                            <div class="rep-exp-txt">3 hours worked</div>
+                        </div>
+                        <div class="rep-exp-num">£250</div>
+                    </div>
+                    <div class="rep-exp-section">
+                        <div>
+                            <div class="rep-exp-name">Materials Charge</div>
+                            <div class="rep-exp-txt">£58 worth used</div>
+                        </div>
+                        <div class="rep-exp-num">£250</div>
+                    </div>
+                    <div class="rep-exp-section" style="padding-bottom: 0;">
+                        <div>
+                            <div class="rep-exp-name">Extra Charges</div>
+                            <div class="rep-exp-txt">Weekend call-out</div>
+                        </div>
+                        <div class="rep-exp-num">£40</div>
+                    </div>
+                </div>
+            </div>
+            <div class="rep-prof">
+                <div class="rep-prof-head"><span style="background-color: var(--primary);"></span> Job Profit</div>
+                <div class="rep-prof-num">£400 <img src="images/icons/uptrend.png" /></div>
+                <div class="rep-prof-txt">+8.6% from average profit</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="new-modal dash-modal padding" id="workerReportModal">
+        <div class="new-wrapper" style="max-width: none; width: auto;">
+            <i class="fa-solid fa-xmark new-xmark"></i>
+            <div class="rep-job-col" style="margin-top: 0;">
+                <div class="rep-worker-head" style="text-align: center; margin-bottom: 15px;">Worker Performance</div>
+                <div class="dash-perf-flex">
+                    <div class="rep-worker-card">
+                        <div class="rep-worker-chart">
+                            <span style="height: 10px;"></span>
+                            <span style="height: 12px;"></span>
+                            <span style="height: 14px;"></span>
+                            <span style="height: 22px;"></span>
+                            <span style="height: 34px;"></span>
+                            <span style="height: 42px;"></span>
+                            <span style="height: 43px;"></span>
+                            <span style="height: 36px;"></span>
+                            <span style="height: 30px;"></span>
+                            <span style="height: 32px;"></span>
+                        </div>
+                        <div class="rep-worker-label">Hours worked</div>
+                        <div class="rep-worker-num">225</div>
+                    </div>
+                    <div class="rep-worker-card">
+                        <div class="rep-worker-chart">
+                            <span style="height: 14px;"></span>
+                            <span style="height: 30px;"></span>
+                            <span style="height: 32px;"></span>
+                            <span style="height: 22px;"></span>
+                            <span style="height: 12px;"></span>
+                            <span style="height: 14px;"></span>
+                            <span style="height: 22px;"></span>
+                            <span style="height: 36px;"></span>
+                            <span style="height: 42px;"></span>
+                            <span style="height: 43px;"></span>
+                        </div>
+                        <div class="rep-worker-label">Jobs completed</div>
+                        <div class="rep-worker-num">84</div>
+                    </div>
+                </div>
+                <div class="dash-perf-flex">
+                    <div class="rep-worker-card">
+                        <div class="rep-worker-chart">
+                            <span style="height: 10px;"></span>
+                            <span style="height: 12px;"></span>
+                            <span style="height: 14px;"></span>
+                            <span style="height: 22px;"></span>
+                            <span style="height: 34px;"></span>
+                            <span style="height: 42px;"></span>
+                            <span style="height: 43px;"></span>
+                            <span style="height: 36px;"></span>
+                            <span style="height: 30px;"></span>
+                            <span style="height: 32px;"></span>
+                        </div>
+                        <div class="rep-worker-label">Avg Job Speed</div>
+                        <div class="rep-worker-num">2h 20m</div>
+                    </div>
+                    <div class="rep-worker-card">
+                        <div class="rep-worker-chart">
+                            <span style="height: 10px;"></span>
+                            <span style="height: 12px;"></span>
+                            <span style="height: 14px;"></span>
+                            <span style="height: 22px;"></span>
+                            <span style="height: 34px;"></span>
+                            <span style="height: 42px;"></span>
+                            <span style="height: 43px;"></span>
+                            <span style="height: 36px;"></span>
+                            <span style="height: 30px;"></span>
+                            <span style="height: 32px;"></span>
+                        </div>
+                        <div class="rep-worker-label">Avg Job Profit</div>
+                        <div class="rep-worker-num">£430</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="new-modal dash-modal padding" id="newWorkerModal">
+        <form class="new-wrapper" id="newWorkerForm">
+            <i class="fa-solid fa-xmark new-xmark"></i>
+            <div class="new-title">New Worker</div>
+            <div class="new-col">
+                <div class="new-label">Worker Name</div>
+                <input name="name" type="text" placeholder="Enter Name" class="new-input" id="workerName" required />
+
+                <div class="new-label">Worker Role</div>
+                <input name="role" type="text" placeholder="Enter Role" class="new-input" id="workerRole" required />
+
+                <div class="new-label">Email</div>
+                <input name="email" type="text" placeholder="Enter Email" class="new-input" id="workerEmail" required />
+                <div id="emailError" class="new-error">This email is taken.</div>
+                <div id="invalidError" class="new-error">This email is invalid.</div>
+
+                <div class="new-label">Phone Number</div>
+                <input name="phone" type="text" placeholder="Enter Phone" class="new-input" id="workerPhone" required />
+
+                <div class="new-label">Password</div>
+                <input name="password" type="password" placeholder="Create Password" class="new-input" id="workerPassword" style="margin-bottom: 12px;" required />
+            </div>
+            <div id="serverError" class="new-error">There was an error, try again.</div>
+            <button type="submit" class="new-btn" id="createWorkerBtn">Create Worker</button>
+        </form>
+    </div>
+
+    <div class="date-modal dash-modal padding">
+        <div class="new-change" style="width: 400px; max-width: calc(100% - 20px);">
+            <div class="edit-change-flex">
+                <div class="edit-change-col">
+                    <div class="edit-change-chev">
+                        <img src="images/icons/chevron.png" />
+                    </div>
+                    <div class="edit-change-num">10</div>
+                    <div class="edit-change-label">Day</div>
+                    <div class="edit-change-chev edit-change-chev2">
+                        <img src="images/icons/chevron.png" />
+                    </div>
+                </div>
+                <div class="edit-change-col">
+                    <div class="edit-change-chev">
+                        <img src="images/icons/chevron.png" />
+                    </div>
+                    <div class="edit-change-num">11</div>
+                    <div class="edit-change-label">Month</div>
+                    <div class="edit-change-chev edit-change-chev2">
+                        <img src="images/icons/chevron.png" />
+                    </div>
+                </div>
+                <div class="edit-change-col">
+                    <div class="edit-change-chev">
+                        <img src="images/icons/chevron.png" />
+                    </div>
+                    <div class="edit-change-num">25</div>
+                    <div class="edit-change-label">Year</div>
+                    <div class="edit-change-chev edit-change-chev2">
+                        <img src="images/icons/chevron.png" />
+                    </div>
+                </div>
+            </div>
+            <div class="edit-change-bottom">
+                <div class="btn-edit-change btn-change-cancel">Cancel</div>
+                <div class="btn-edit-change btn-change-save">Save</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="assign-modal dash-modal padding">
+        <div class="assign-wrapper" style="width: 400px; max-width: calc(100% - 20px);">
+            <i class="fa-solid fa-xmark assign-close"></i>
+            <div class="assign-head">Choose a Worker</div>
+            <!-- 
+                <div class="edit-mat-option">John Smith <i class="fa-solid fa-check"></i></div>
+             -->
+        </div>
+    </div>
+
+    <div class="new-modal dash-modal" id="filterModal">
+        <div class="new-wrapper">
+            <i class="fa-solid fa-xmark new-xmark"></i>
+            <div class="exam-modal-title">Filters</div>
+
+            <div class="exam-modal-section">
+                <div class="exam-modal-label">Completion Status</div>
+                <div class="exam-modal-flex">
+                    <div class="exam-modal-box"><i class="fa-solid fa-check exam-modal-check"></i></div>
+                    <div class="exam-modal-txt">Pending <span class="exam-modal-txt exam-modal-amount">(34)</span></div>
+                </div>
+                <div class="exam-modal-flex">
+                    <div class="exam-modal-box"><i class="fa-solid fa-check exam-modal-check"></i></div>
+                    <div class="exam-modal-txt">In Progress <span class="exam-modal-txt exam-modal-amount">(26)</span></div>
+                </div>
+                <div class="exam-modal-flex">
+                    <div class="exam-modal-box"><i class="fa-solid fa-check exam-modal-check"></i></div>
+                    <div class="exam-modal-txt">Completed <span class="exam-modal-txt exam-modal-amount">(21)</span></div>
+                </div>
+            </div>
+            <div class="exam-modal-section">
+                <div class="exam-modal-label">Due Date</div>
+                <div class="exam-modal-flex">
+                    <div class="exam-modal-box"><i class="fa-solid fa-check exam-modal-check"></i></div>
+                    <div class="exam-modal-txt">Today</div>
+                </div>
+                <div class="exam-modal-flex">
+                    <div class="exam-modal-box"><i class="fa-solid fa-check exam-modal-check"></i></div>
+                    <div class="exam-modal-txt">This Month</div>
+                </div>
+                <div class="exam-modal-flex">
+                    <div class="exam-modal-box"><i class="fa-solid fa-check exam-modal-check"></i></div>
+                    <div class="exam-modal-txt">This Year</div>
+                </div>
+            </div>
+
+            <div class="btn-exam-modal btn-modal-clear" id="saveFilterBtn">Save Changes</div>
+        </div>
+    </div>
+
+    <div class="thank-modal" id="thankJobCreation">
+        <div class="thank-wrapper">
+            <i class="fa-solid fa-check thank-modal-check"></i>
+            <div class="thank-modal-title">Thank You!</div>
+            <div class="thank-modal-para">Your <span class="thank-modal-para" id="thankStr"></span> job been successfully<br> created. Thank you!</div>
+            <div class="btn-thank-modal">Okay</div>
+        </div>
+    </div>
+
+    <div class="thank-modal" id="thankJobEdit">
+        <div class="thank-wrapper">
+            <i class="fa-solid fa-check thank-modal-check"></i>
+            <div class="thank-modal-title">Thank You!</div>
+            <div class="thank-modal-para">Your <span class="thank-modal-para" id="thankStr"></span> job been successfully<br> edited. Thank you!</div>
+            <div class="btn-thank-modal">Okay</div>
+        </div>
+    </div>
+
+    <div class="thank-modal" id="thankWorkerCreation">
+        <div class="thank-wrapper">
+            <i class="fa-solid fa-check thank-modal-check"></i>
+            <div class="thank-modal-title">Thank You!</div>
+            <div class="thank-modal-para">Your new<span class="thank-modal-para" id="thankStr"></span> worker has been successfully<br> created. Thank you!</div>
+            <div class="btn-thank-modal">Okay</div>
+        </div>
+    </div>
+
+    <div class="thank-modal" id="thankDelete">
+        <div class="thank-wrapper">
+            <i class="fa-solid fa-check thank-modal-check"></i>
+            <div class="thank-modal-title">Thank You!</div>
+            <div class="thank-modal-para">Your <span class="thank-modal-para" id="thankStr"></span> job been successfully<br> deleted. Thank you!</div>
+            <div class="btn-thank-modal">Okay</div>
+        </div>
+    </div>
+
+    <div class="new-modal dash-modal padding" id="deleteJob">
+        <div class="new-wrapper" style="text-align: center;">
+            <i class="fa-solid fa-xmark new-xmark"></i>
+            <i class="fa-solid fa-triangle-exclamation book-delete-icon"></i>
+            <div class="book-delete-title">Delete Job</div>
+            <div class="book-delete-para">Are you sure you want to<br> delete this job?</div>
+            <div class="book-delete-flex">
+                <div class="btn-book-nodelete">No, keep it.</div>
+                <div class="btn-book-delete-booking">Yes, delete!</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="new-modal dash-modal padding" id="labourModal">
+        <form id="labourForm" class="new-wrapper">
+            <i class="fa-solid fa-xmark new-xmark"></i>
+            <div class="new-title">Labour & Rates</div>
+            <div class="new-col">
+                <div class="new-label">Hourly Labour Charge</div>
+                <input type="text" placeholder="Labour Charge £" class="new-input" id="hourlyLabourCharge" />
+
+                <div class="new-label">Hourly Labour Cost</div>
+                <input type="text" placeholder="Labour Cost £" class="new-input" id="hourlyLabourCost" />
+
+                <div class="new-label">Day Rate Charge</div>
+                <input type="text" placeholder="Day Rate Charge £" class="new-input" id="dayRateCharge" />
+                
+                <div class="new-label">Day Rate Cost</div>
+                <input type="text" placeholder="Day Rate Cost £" class="new-input" id="dayRateCost" />
+
+                <div class="new-label">Call Out Fee</div>
+                <input type="text" placeholder="Call Out Fee £" class="new-input" id="calloutFee" style="margin-bottom: 0;" />
+
+            </div>
+            <button type="submit" class="new-btn">Save Changes</button>
+        </form>
+    </div>
+
+    <div class="new-modal dash-modal padding" id="chargeModal">
+        <form id="chargeForm" class="new-wrapper">
+            <i class="fa-solid fa-xmark new-xmark"></i>
+            <div class="new-title">Extra Charges</div>
+            <div class="new-col">
+                <!-- 
+                    <div class="new-label">Option 1</div>
+                    <div class="new-inp-flex">
+                        <input type="text" placeholder="Cost £" class="new-input" id="workerName" />
+                        <input type="text" placeholder="Charge £" class="new-input" id="workerName" />
+                    </div>
+                -->
+
+            </div>
+            <button type="submit" class="new-btn">Save Changes</button>
+        </form>
+    </div>
+
+    <div class="new-modal dash-modal padding" id="createCharge">
+        <div class="new-wrapper">
+            <i class="fa-solid fa-xmark new-xmark"></i>
+            <div class="new-title">New Charge</div>
+            <div class="new-col">
+                <div class="new-label">Charge name</div>
+                <input type="text" placeholder="Enter name" class="new-input" id="newChargeName" />
+
+                <div class="new-label">Charge cost</div>
+                <input type="text" placeholder="Enter Cost" class="new-input" id="newChargeCost" style="margin-bottom: 0;" />
+            </div>
+            <div id="chargeError" class="new-error new-error-bottom">Please fill in the fields.</div>
+            <div class="new-btn" id="createChargeBtn">Save Changes</div>
+        </div>
+    </div>
+
+    <div class="new-modal dash-modal padding" id="materialModal">
+        <form id="materialForm" class="new-wrapper">
+            <i class="fa-solid fa-xmark new-xmark"></i>
+            <div class="new-title">Materials</div>
+            <div class="new-col">
+                <!-- 
+                    <div class="new-label">Option 1</div>
+                    <div class="new-inp-flex">
+                        <input type="text" placeholder="Cost £" class="new-input" id="workerName" />
+                        <input type="text" placeholder="Charge £" class="new-input" id="workerName" />
+                    </div>
+                -->
+
+            </div>
+            <button type="submit" class="new-btn">Save Changes</button>
+        </form>
+    </div>
+
+    <div class="thank-modal" id="thankPrice">
+        <div class="thank-wrapper">
+            <i class="fa-solid fa-check thank-modal-check"></i>
+            <div class="thank-modal-title">Thank You!</div>
+            <div class="thank-modal-para">Your <span class="thank-modal-para" id="thankStr"></span> prices have been successfully<br> updated. Thank you!</div>
+            <div class="btn-thank-modal">Okay</div>
+        </div>
+    </div>
+
+
+    <div style="height: 120px;"></div>
+    <script src="script.js"></script>
+</body>
+</html>

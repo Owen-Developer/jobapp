@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://kit.fontawesome.com/515deb5b82.js" crossorigin="anonymous"></script>
+    <link rel="shortcut icon" href="images/icons/favicon.png" type="image/x-icon">
+    <title>Job Tracker | Home</title>
+</head>
+<body>
+    <div class="pricing"></div>
+
+    <div class="home-bg"></div>
+    <div class="home-top padding starter">
+        <a href="account.html?admin=true" class="home-pfp">
+            <i class="fa-solid fa-user"></i>
+        </a>
+        <div>
+            <div class="home-welcome">Welcome back</div>
+            <div class="home-name">Admin Harry</div>
+        </div>
+        <i class="fa-regular fa-bell home-noti"></i>
+    </div>
+
+    <div class="pric-container padding">
+        <div class="starter">
+            <div class="admin-head">Pricing Dashboard</div>
+            <div class="admin-para">Manage your pricing and charging rates.</div>
+        </div>
+
+        <div class="pric-col">
+            <div class="pric-wrapper starter">
+                <div class="pric-top">
+                    <div class="pric-head">Labour & Rates</div>
+                    <div class="pric-btn" id="editLabourBtn"><i class="fa-regular fa-pen-to-square"></i> Edit</div>
+                </div>
+                <div class="pric-ul" id="labourUl">
+                    <!-- 
+                        <div class="pric-li">
+                            <div class="pric-label">Hourly labour cost</div>
+                            <div class="pric-txt">£18</div>
+                        </div>
+                        <div class="pric-li">
+                            <div class="pric-label">Hourly labour charge</div>
+                            <div class="pric-txt">£50</div>
+                        </div>
+                        <div class="pric-li">
+                            <div class="pric-label">Day rate cost</div>
+                            <div class="pric-txt">£200</div>
+                        </div>
+                        <div class="pric-li">
+                            <div class="pric-label">Day rate charge</div>
+                            <div class="pric-txt">£350</div>
+                        </div>
+                        <div class="pric-li">
+                            <div class="pric-label">Call out fee</div>
+                            <div class="pric-txt">£10</div>
+                        </div>
+                    -->
+                </div>
+            </div>
+
+            <div class="pric-wrapper starter">
+                <div class="pric-top">
+                    <div class="pric-head">Extra Charges</div>
+                    <div class="pric-btn" id="editChargesBtn"><i class="fa-regular fa-pen-to-square"></i> Edit</div>
+                </div>
+                <div class="pric-ul" id="chargeUl">
+                    <!-- 
+                        <div class="pric-li">
+                            <div class="pric-label">Charge 1</div>
+                            <div class="pric-txt">£30</div>
+                        </div>
+                    -->
+                </div>
+                <div class="pric-new-btn" id="newChargeBtn"><i class="fa-solid fa-plus"></i> New Charge</div>
+            </div>
+
+            <div class="pric-wrapper starter">
+                <div class="pric-top">
+                    <div class="pric-head">Materials</div>
+                    <div class="pric-selector" id="pricMaterialSelector"><div>Parts</div> <img src="images/icons/chevron.png" />
+                        <div class="pric-drop">
+                            <div class="pric-option pric-option-active">Parts <i class="fa-solid fa-check"></i></div>
+                            <div class="pric-option">Pipework <i class="fa-solid fa-check"></i></div>
+                            <div class="pric-option">Fittings <i class="fa-solid fa-check"></i></div>
+                            <div class="pric-option">Consumables <i class="fa-solid fa-check"></i></div>
+                            <div class="pric-option">Other items <i class="fa-solid fa-check"></i></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="pric-ul" id="materialUl">
+                    <!-- 
+                        <div class="pric-li">
+                            <div class="pric-label">Material 1</div>
+                            <div class="pric-txt">£18 <div></div> £30</div>
+                        </div>
+                    -->
+                </div>
+                <div class="pric-new-btn" id="pricManageBtn">Manage</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="new-modal padding" id="labourModal">
+        <form id="labourForm" class="new-wrapper">
+            <i class="fa-solid fa-xmark new-xmark"></i>
+            <div class="new-title">Labour & Rates</div>
+            <div class="new-col">
+                <div class="new-label">Hourly Labour Charge</div>
+                <input type="text" placeholder="Labour Charge £" class="new-input" id="hourlyLabourCharge" />
+
+                <div class="new-label">Hourly Labour Cost</div>
+                <input type="text" placeholder="Labour Cost £" class="new-input" id="hourlyLabourCost" />
+
+                <div class="new-label">Day Rate Charge</div>
+                <input type="text" placeholder="Day Rate Charge £" class="new-input" id="dayRateCharge" />
+                
+                <div class="new-label">Day Rate Cost</div>
+                <input type="text" placeholder="Day Rate Cost £" class="new-input" id="dayRateCost" />
+
+                <div class="new-label">Call Out Fee</div>
+                <input type="text" placeholder="Call Out Fee £" class="new-input" id="calloutFee" style="margin-bottom: 0;" />
+
+            </div>
+            <button type="submit" class="new-btn">Save Changes</button>
+        </form>
+    </div>
+
+    <div class="new-modal padding" id="chargeModal">
+        <form id="chargeForm" class="new-wrapper">
+            <i class="fa-solid fa-xmark new-xmark"></i>
+            <div class="new-title">Extra Charges</div>
+            <div class="new-col">
+                <!-- 
+                    <div class="new-label">Option 1</div>
+                    <div class="new-inp-flex">
+                        <input type="text" placeholder="Cost £" class="new-input" id="workerName" />
+                        <input type="text" placeholder="Charge £" class="new-input" id="workerName" />
+                    </div>
+                -->
+
+            </div>
+            <button type="submit" class="new-btn">Save Changes</button>
+        </form>
+    </div>
+
+    <div class="new-modal padding" id="createCharge">
+        <div class="new-wrapper">
+            <i class="fa-solid fa-xmark new-xmark"></i>
+            <div class="new-title">New Charge</div>
+            <div class="new-col">
+                <div class="new-label">Charge name</div>
+                <input type="text" placeholder="Enter name" class="new-input" id="newChargeName" />
+
+                <div class="new-label">Charge cost</div>
+                <input type="text" placeholder="Enter Cost" class="new-input" id="newChargeCost" style="margin-bottom: 0;" />
+            </div>
+            <div id="chargeError" class="new-error new-error-bottom">Please fill in the fields.</div>
+            <div class="new-btn" id="createChargeBtn">Save Changes</div>
+        </div>
+    </div>
+
+    <div class="new-modal padding" id="materialModal">
+        <form id="materialForm" class="new-wrapper">
+            <i class="fa-solid fa-xmark new-xmark"></i>
+            <div class="new-title">Materials</div>
+            <div class="new-col">
+                <!-- 
+                    <div class="new-label">Option 1</div>
+                    <div class="new-inp-flex">
+                        <input type="text" placeholder="Cost £" class="new-input" id="workerName" />
+                        <input type="text" placeholder="Charge £" class="new-input" id="workerName" />
+                    </div>
+                -->
+
+            </div>
+            <button type="submit" class="new-btn">Save Changes</button>
+        </form>
+    </div>
+
+    <div class="thank-modal" id="thankPrice">
+        <div class="thank-wrapper">
+            <i class="fa-solid fa-check thank-modal-check"></i>
+            <div class="thank-modal-title">Thank You!</div>
+            <div class="thank-modal-para">Your <span class="thank-modal-para" id="thankStr"></span> prices have been successfully<br> updated. Thank you!</div>
+            <div class="btn-thank-modal">Okay</div>
+        </div>
+    </div>
+
+
+    <div style="height: 120px;"></div>
+    <script src="script.js"></script>
+</body>
+</html>
