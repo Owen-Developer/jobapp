@@ -35,13 +35,11 @@ button {
     opacity: 0;
     transition: 0.6s ease !important;
 }
-/*
 .starter {
     transform: translateY(50px);
     opacity: 0;
     transition: 0.6s ease !important;
 }
-*/
 :root {
     --primary: #2A6BFF;
 }
