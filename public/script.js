@@ -168,9 +168,11 @@ async function getUserData() {
         let userData;
         if(data.message == "success"){
             userData = data.userData;
-        } else {
+        } else if(data.message == "nouser") {
             userData = "nouser";
             if(!document.querySelector(".login") && !document.querySelector(".setup")) window.location.href = "/login.html";
+        } else if(data.message == "setup"){
+            if(!document.querySelector(".login") && !document.querySelector(".setup")) window.location.href = "/setup.html";
         }
 
         document.querySelectorAll(".starter").forEach((el, idx) => {

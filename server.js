@@ -204,35 +204,46 @@ app.get("/api/get-jobs", (req, res) => {
 });
 
 app.get("/api/get-user", (req, res) => {
-    db.query("select * from users where id = ?", [req.session.userId], (err, result) => {
-        if(err){
-            console.error(err);
-        }
-
-        if(result.length == 0){
-            return res.json({ message: 'failure' });
-        }
-
-        let userData = result[0];
-        userData.password_hash = "";
-        db.query("select * from notifications where user_id = ? or reciever = ? order by id desc", [req.session.userId, "admin"], (err, result) => {
+    if(!req.session.userId){
+        db.query("select * from users", (err, result) => {
             if(err){
                 console.error(err);
             }
 
-            let notifications = [];
-            result.forEach(noti => {
-                if(userData.perms == "admin" && (noti.reciever == "admin" || userData.id == noti.user_id)){
-                    notifications.push(noti);
-                } else if(userData.perms == "worker" && noti.reciever == "worker"){
-                    notifications.push(noti);
-                }
-            });
-            userData.notifications = notifications;
-
-            return res.json({ message: 'success', userData: userData });
+            if(result.length == 0){
+                return res.json({ message: 'setup' });
+            } else {
+                return res.json({ message: 'nouser' });
+            }
         });
-    });
+    } else {
+        db.query("select * from users where id = ?", [req.session.userId], (err, result) => {
+            if(err){
+                console.error(err);
+            }
+    
+            let userData = result[0];
+            userData.password_hash = "";
+            db.query("select * from notifications where user_id = ? or reciever = ? order by id desc", [req.session.userId, "admin"], (err, result) => {
+                if(err){
+                    console.error(err);
+                }
+    
+                let notifications = [];
+                result.forEach(noti => {
+                    if(userData.perms == "admin" && (noti.reciever == "admin" || userData.id == noti.user_id)){
+                        notifications.push(noti);
+                    } else if(userData.perms == "worker" && noti.reciever == "worker"){
+                        notifications.push(noti);
+                    }
+                });
+                userData.notifications = notifications;
+    
+                return res.json({ message: 'success', userData: userData });
+            });
+        });
+    }
+
 });
 
 app.post("/api/mark-read", (req, res) => {
