@@ -675,6 +675,52 @@ app.get("/api/find-admin", (req, res) => {
     });
 });
 
+app.post("/api/delete-worker", (req, res) => {
+    db.query("delete from users where id = ?", [req.body.id], (err, result) => {
+        if(err){
+            console.error(err);
+        }
+
+        return res.json({ message: 'success' });
+    });
+});
+
+app.post("/api/create-material", (req, res) => {
+    const { name, cost, charge, type, unit } = req.body;
+    let defaultValue;
+    if(unit == "units"){
+        defaultValue = 5;
+    } else if(unit == "m"){
+        defaultValue = 3;
+    } else if(unit == "mm"){
+        defaultValue = 25;
+    } else if(unit == "g"){
+        defaultValue = 100;
+    } else if(unit == "kg"){
+        defaultValue = 3;
+    } else if(unit == "ml"){
+        defaultValue = 250;
+    }
+    
+    db.query("insert into prices (type, name, unit, default_value, cost, charge, area) values (?, ?, ?, ?, ?, ?, ?)", [type, name, unit, defaultValue, Number(cost.replace("£", "")), Number(charge.replace("£", "")), "materials"], (err, result) => {
+        if(err){
+            console.error(err);
+        }
+
+        return res.json({ message: 'success' });
+    });
+});
+
+app.post("/api/delete-price", (req, res) => {
+    db.query("delete from prices where id = ?", [req.body.id], (err, result) => {
+        if(err){
+            console.error(err);
+        }
+
+        return res.json({ message: 'success' });
+    });
+});
+
 
 
 

@@ -580,7 +580,6 @@ async function getUserData() {
                     let nowTime = getTime();
                     let previousElapsed = localStorage.getItem("pauseElapsed");
                     localStorage.setItem("pauseElapsed", plusTime(getElapsed(nowTime, localStorage.getItem("pauseStart")), previousElapsed));
-                    console.log("newElapsed: " + localStorage.getItem("pauseElapsed"));
                 } else {
                     clearInterval(timeInt);
                     document.querySelector(".tim-btn-pause").textContent = "Continue";
@@ -643,7 +642,6 @@ async function getUserData() {
                             }
                         });
                     } else {
-                        console.log("NO JOB FOUND?");
                     }
                 } catch (error) {
                     console.error('Error fetching data:', error);
@@ -946,7 +944,6 @@ async function getUserData() {
 
             document.querySelector(".edit-save-btn").addEventListener("click", () => {
                 async function sendSummary() {
-                    console.log(charges);
                     const dataToSend = { jobId: params.get("job"), date: date, notes: document.querySelector(".edit-para-area").value, materials: materials, charges: charges };
                     try {
                         const response = await fetch('/api/send-summary', {
@@ -1508,6 +1505,9 @@ async function getUserData() {
                             newOption.innerHTML = worker.name + '<i class="fa-solid fa-check"></i>';
                             document.querySelector(".assign-wrapper").appendChild(newOption);
                         });
+                        if(workers.length == 0){
+                            document.getElementById("assignEmpty").style.display = "block";
+                        }
 
                         document.querySelectorAll(".new-worker-selector").forEach(selector => {
                             selector.addEventListener("click", () => {
@@ -1612,7 +1612,6 @@ async function getUserData() {
                                         let matRow;
                                         prices.forEach(row => {
                                             if(row.area == "materials"){
-                                                console.log(row.name + " vs " + mat.split("-")[0]);
                                                 if(mat.split("-")[0] == row.name){
                                                     matRow = row;
                                                 }
@@ -2178,6 +2177,7 @@ async function getUserData() {
                             });
 
                             newWrapper.innerHTML = `
+                                <i class="fa-regular fa-trash-can work-delete"></i>
                                 <div class="work-top">
                                     <div class="work-pfp"><i class="fa-solid fa-user"></i></div>
                                     <div>
@@ -2220,6 +2220,51 @@ async function getUserData() {
                                 btn.addEventListener("click", () => {
                                     window.location.href = "/admin.html?admin=true&jobId=" + newWrapper.id.split("-")[1];
                                 });
+                            });
+
+                            newWrapper.querySelector("i.work-delete").addEventListener("click", () => {
+                                document.getElementById("deleteWorkerModal").style.opacity = "1";
+                                document.getElementById("deleteWorkerModal").style.pointerEvents = "auto";
+                            });
+                            document.getElementById("deleteWorkerModal").querySelector(".btn-book-delete-booking").addEventListener("click", () => {
+                                async function deleteWorker() {
+                                    const dataToSend = { id: worker.id };
+                                    try {
+                                        const response = await fetch('/api/delete-worker', {
+                                            method: 'POST',
+                                            credentials: 'include',
+                                            headers: {
+                                                'Content-Type': 'application/json', 
+                                            },
+                                            body: JSON.stringify(dataToSend), 
+                                        });
+
+                                        if (!response.ok) {
+                                            const errorData = await response.json();
+                                            console.error('Error:', errorData.message);
+                                            return;
+                                        }
+
+                                        const data = await response.json();
+                                        if(data.message == "success"){
+                                            window.location.reload();
+                                        }
+                                    } catch (error) {
+                                        console.error('Error posting data:', error);
+                                    }
+                                }
+                                deleteWorker();
+                            });
+
+                            document.getElementById("deleteWorkerModal").addEventListener("click", (e) => {
+                                if(!document.querySelector(".book-delete-wrapper").contains(e.target)){
+                                    document.getElementById("deleteWorkerModal").style.opacity = "0";
+                                    document.getElementById("deleteWorkerModal").style.pointerEvents = "none";
+                                } 
+                            });
+                            document.getElementById("deleteWorkerModal").querySelector(".btn-book-nodelete").addEventListener("click", () => {
+                                document.getElementById("deleteWorkerModal").style.opacity = "0";
+                                document.getElementById("deleteWorkerModal").style.pointerEvents = "none";
                             });
                         });
                         if(document.querySelectorAll(".work-wrapper").length == 0){
@@ -2338,7 +2383,6 @@ async function getUserData() {
                                     document.getElementById("serverError").style.display = "none";
                                 }, 2000);
                             } else if(responseData.message == "success") {
-                                console.log("SUCCESS");
                             }
                         });
 
@@ -2409,19 +2453,88 @@ async function getUserData() {
                                     newInput.classList.add("new-section");
                                     newInput.id = "input-" + li.id.split("-")[1];
                                     newInput.innerHTML = `
-                                        <div class="new-label">${li.querySelector(".pric-label").textContent}</div>
+                                        <div class="new-label">${li.querySelector(".pric-label").textContent} <i class="fa-regular fa-trash-can new-delete-icon"></i></div>
                                         <div class="new-inp-flex">
                                             <input required type="text" placeholder="Cost £" class="new-input" value="Cost ${li.querySelector(".pric-txt").innerHTML.slice(0, li.querySelector(".pric-txt").innerHTML.indexOf("<") - 1)}" />
                                             <input required type="text" placeholder="Charge £" class="new-input" value="Charge ${li.querySelector(".pric-txt").innerHTML.slice(li.querySelector(".pric-txt").innerHTML.lastIndexOf(">") + 1)}" />
                                         </div>
                                     `;
                                     document.getElementById("materialModal").querySelector(".new-col").appendChild(newInput);
+
+                                    newInput.querySelector("i.new-delete-icon").addEventListener("click", () => {
+                                        newInput.style.display = "none";
+                                        li.style.display = "none";
+
+                                        async function deleteCharge() {
+                                            const dataToSend = { id: li.id.split("-")[1] };
+                                            try {
+                                                const response = await fetch('/api/delete-price', {
+                                                    method: 'POST',
+                                                    credentials: 'include',
+                                                    headers: {
+                                                        'Content-Type': 'application/json', 
+                                                    },
+                                                    body: JSON.stringify(dataToSend), 
+                                                });
+
+                                                if (!response.ok) {
+                                                    const errorData = await response.json();
+                                                    console.error('Error:', errorData.message);
+                                                    return;
+                                                }
+
+                                                const data = await response.json();
+                                            } catch (error) {
+                                                console.error('Error posting data:', error);
+                                            }
+                                        }
+                                        deleteCharge();
+                                    });
                                 }
                             });
 
                             document.getElementById("materialModal").querySelectorAll(".new-section")[document.getElementById("materialModal").querySelectorAll(".new-section").length - 1].querySelector(".new-inp-flex").style.marginBottom = "0px";
                             document.getElementById("materialModal").style.opacity = "1";
                             document.getElementById("materialModal").style.pointerEvents = "auto";
+                        });
+                        document.getElementById("pricMatBtn").addEventListener("click", () => {
+                            document.getElementById("newMaterialModal").style.opacity = "1";
+                            document.getElementById("newMaterialModal").style.pointerEvents = "auto";
+                        });
+                        document.getElementById("newMaterialForm").addEventListener("submit", async (e) => {
+                            e.preventDefault(); 
+                            const formData = new FormData(e.target);
+                            const data = Object.fromEntries(formData.entries());
+
+                            const res = await fetch(url + "/api/create-material", {
+                                method: "POST",
+                                credentials: 'include',
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify(data)
+                            });
+
+                            const responseData = await res.json();
+                            if(responseData.message == "success") {
+                                document.getElementById("newMaterialModal").style.opacity = "0";
+                                document.getElementById("newMaterialModal").style.pointerEvents = "none";
+                                document.getElementById("thankNewMaterial").style.opacity = "1";
+                                document.getElementById("thankNewMaterial").style.pointerEvents = "auto";
+                                document.getElementById("thankNewMaterial").querySelector(".thank-wrapper").style.opacity = "1";
+                                document.getElementById("thankNewMaterial").querySelector(".thank-wrapper").style.transform = "scale(1)";
+                            }
+                        });
+                        document.querySelectorAll(".new-pill-flex").forEach(flex => {
+                            flex.querySelectorAll(".new-pill").forEach(pill => {
+                                pill.addEventListener("click", () => {
+                                    if(!pill.classList.contains("new-pill-active")){
+                                        flex.querySelectorAll(".new-pill").forEach(other => {
+                                            other.classList.remove("new-pill-active");
+                                        });
+                                        pill.classList.add("new-pill-active");
+                                        flex.querySelector("input").value = pill.id.split("-")[1];
+                                    }
+                                });
+                            });
                         });
 
                         document.getElementById("pricMaterialSelector").addEventListener("click", () => {
@@ -2487,12 +2600,42 @@ async function getUserData() {
                                 newInput.classList.add("new-section");
                                 newInput.id = "input-" + li.id.split("-")[1];
                                 newInput.innerHTML = `
-                                    <div class="new-label">${li.querySelector(".pric-label").textContent}</div>
+                                    <div class="new-label">${li.querySelector(".pric-label").textContent} <i class="fa-regular fa-trash-can new-delete-icon"></i></div>
                                     <div class="new-inp-flex">
                                         <input required type="text" placeholder="Charge £" class="new-input" value="${li.querySelector(".pric-txt").textContent}" />
                                     </div>
                                 `;
                                 document.getElementById("chargeModal").querySelector(".new-col").appendChild(newInput);
+
+                                newInput.querySelector("i.new-delete-icon").addEventListener("click", () => {
+                                    newInput.style.display = "none";
+                                        li.style.display = "none";
+
+                                    async function deleteCharge() {
+                                        const dataToSend = { id: li.id.split("-")[1] };
+                                        try {
+                                            const response = await fetch('/api/delete-price', {
+                                                method: 'POST',
+                                                credentials: 'include',
+                                                headers: {
+                                                    'Content-Type': 'application/json', 
+                                                },
+                                                body: JSON.stringify(dataToSend), 
+                                            });
+
+                                            if (!response.ok) {
+                                                const errorData = await response.json();
+                                                console.error('Error:', errorData.message);
+                                                return;
+                                            }
+
+                                            const data = await response.json();
+                                        } catch (error) {
+                                            console.error('Error posting data:', error);
+                                        }
+                                    }
+                                    deleteCharge();
+                                });
                             });
 
                             document.getElementById("chargeModal").querySelectorAll(".new-section")[document.getElementById("chargeModal").querySelectorAll(".new-section").length - 1].querySelector(".new-inp-flex").style.marginBottom = "0px";
@@ -2606,8 +2749,6 @@ async function getUserData() {
                                 }, 200);
                             }
                         });
-
-
                     
                         /* modal click outs */
                         document.addEventListener("click", (e) => {
@@ -2957,14 +3098,20 @@ async function getUserData() {
                         }
                         function makeJobReport(job){
                             let totalCharges = 2;
-                            job.job_charges.split("").forEach(letter => {
-                                if(letter == ","){
-                                    totalCharges++;
-                                }
-                            });
-                            if(job.job_charges.includes("£")) totalCharges = 0;
-                            totalCharges = totalCharges / 2;
-                            let chargePrice = "£" + Number(Number(job.job_realcharge.replace("£", "")) - Number(job.labour_charge.replace("£", "")) - Number(job.material_charge.replace("£", "")));
+                            let chargePrice;
+                            if(job.job_charges == "No charges"){
+                                totalCharges = 0;
+                                chargePrice = "£0";
+                            } else {
+                                job.job_charges.split("").forEach(letter => {
+                                    if(letter == ","){
+                                        totalCharges++;
+                                    }
+                                });
+                                if(job.job_charges.includes("£")) totalCharges = 0;
+                                totalCharges = totalCharges / 2;
+                                chargePrice = "£" + Number(Number(job.job_realcharge.replace("£", "")) - Number(job.labour_charge.replace("£", "")) - Number(job.material_charge.replace("£", "")));
+                            }
                             let labourDesc = job.job_progress;
                             if(!labourDesc.includes("hrs")) labourDesc = "call out fee";
                             let jobProfit = Number(job.job_realcharge.replace("£", "")) - Number(job.job_setback.replace("£", ""));
@@ -2994,10 +3141,10 @@ async function getUserData() {
                             }
                             if(jobProfit == 0){
                                 trendTxt = `No profit earned`;
-                                trendImg = "uptrend";
+                                trendImg = "downtrend";
                             } else if(jobProfit > 0 && avgProfit == 0){
                                 trendTxt = `Total profit earned`;
-                                trendImg = "downtrend";
+                                trendImg = "uptrend";
                             }
                             document.querySelector(".rep-job-wrapper").innerHTML = `
                                 <div class="rep-job-name">${job.job_name}</div>
@@ -3019,7 +3166,7 @@ async function getUserData() {
     
                                 <div class="rep-exp">
                                     <div class="rep-exp-top">
-                                        <div class="rep-exp-head">End Price: <span class="rep-exp-head">${job.job_realcharge}</span></div>
+                                        <div class="rep-exp-head">End Charge: <span class="rep-exp-head">${job.job_realcharge}</span></div>
                                         <img src="images/icons/chevron.png" class="rep-exp-chev" />
                                     </div>
     
@@ -3183,7 +3330,7 @@ async function getUserData() {
                             document.getElementById("repWorkerEmpty").style.display = "block";
                             document.getElementById("workerReportContent").style.display = "none";
                         } else {
-                            makeJobReport(reportWorker);
+                            makeWorkerReport(reportWorker);
                         }                        
 
                         document.getElementById("repWorkerSearch").addEventListener("input", () => {
@@ -3527,10 +3674,10 @@ async function getUserData() {
                             }
                             if(jobProfit == 0){
                                 trendTxt = `No profit earned`;
-                                trendImg = "uptrend";
+                                trendImg = "downtrend";
                             } else if(jobProfit > 0 && avgProfit == 0){
                                 trendTxt = `Total profit earned`;
-                                trendImg = "downtrend";
+                                trendImg = "uptrend";
                             }
                             document.querySelector(".rep-job-wrapper").innerHTML = `
                                 <i class="fa-solid fa-xmark new-xmark"></i>
@@ -3553,7 +3700,7 @@ async function getUserData() {
     
                                 <div class="rep-exp">
                                     <div class="rep-exp-top">
-                                        <div class="rep-exp-head">End Price: <span class="rep-exp-head">${job.job_realcharge}</span></div>
+                                        <div class="rep-exp-head">End Charge: <span class="rep-exp-head">${job.job_realcharge}</span></div>
                                         <img src="images/icons/chevron.png" class="rep-exp-chev" />
                                     </div>
     
@@ -3788,7 +3935,6 @@ async function getUserData() {
                                     document.getElementById("serverError").style.display = "none";
                                 }, 2000);
                             } else if(responseData.message == "success") {
-                                console.log("SUCCESS");
                             }
                         });
 
@@ -3817,6 +3963,9 @@ async function getUserData() {
                             newOption.innerHTML = worker.name + '<i class="fa-solid fa-check"></i>';
                             document.querySelector(".assign-wrapper").appendChild(newOption);
                         });
+                        if(workers.length == 0){
+                            document.getElementById("assignEmpty").style.display = "block";
+                        }
                         document.querySelectorAll(".edit-mat-option").forEach(option => {
                             option.addEventListener("click", () => {
                                 let disable = false;
@@ -4020,6 +4169,7 @@ async function getUserData() {
                             });
     
                             newWrapper.innerHTML = `
+                                <i class="fa-regular fa-trash-can work-delete"></i>
                                 <div class="work-top">
                                     <div class="work-pfp"><i class="fa-solid fa-user"></i></div>
                                     <div>
@@ -4080,6 +4230,51 @@ async function getUserData() {
                                     document.getElementById("workerReportModal").style.pointerEvents = "auto";
                                 });
                             }
+
+                            newWrapper.querySelector("i.work-delete").addEventListener("click", () => {
+                                document.getElementById("deleteWorkerModal").style.opacity = "1";
+                                document.getElementById("deleteWorkerModal").style.pointerEvents = "auto";
+                            });
+                            document.getElementById("deleteWorkerModal").querySelector(".btn-book-delete-booking").addEventListener("click", () => {
+                                async function deleteWorker() {
+                                    const dataToSend = { id: worker.id };
+                                    try {
+                                        const response = await fetch('/api/delete-worker', {
+                                            method: 'POST',
+                                            credentials: 'include',
+                                            headers: {
+                                                'Content-Type': 'application/json', 
+                                            },
+                                            body: JSON.stringify(dataToSend), 
+                                        });
+
+                                        if (!response.ok) {
+                                            const errorData = await response.json();
+                                            console.error('Error:', errorData.message);
+                                            return;
+                                        }
+
+                                        const data = await response.json();
+                                        if(data.message == "success"){
+                                            window.location.reload();
+                                        }
+                                    } catch (error) {
+                                        console.error('Error posting data:', error);
+                                    }
+                                }
+                                deleteWorker();
+                            });
+
+                            document.getElementById("deleteWorkerModal").addEventListener("click", (e) => {
+                                if(!document.querySelector(".book-delete-wrapper").contains(e.target)){
+                                    document.getElementById("deleteWorkerModal").style.opacity = "0";
+                                    document.getElementById("deleteWorkerModal").style.pointerEvents = "none";
+                                } 
+                            });
+                            document.getElementById("deleteWorkerModal").querySelector(".btn-book-nodelete").addEventListener("click", () => {
+                                document.getElementById("deleteWorkerModal").style.opacity = "0";
+                                document.getElementById("deleteWorkerModal").style.pointerEvents = "none";
+                            });
                         }
                         if(workers.length == 0){
                             document.getElementById("dashWorkerEmpty").style.display = "block";
@@ -4236,7 +4431,6 @@ async function getUserData() {
                                         let matRow;
                                         prices.forEach(row => {
                                             if(row.area == "materials"){
-                                                console.log(row.name + " vs " + mat.split("-")[0]);
                                                 if(mat.split("-")[0] == row.name){
                                                     matRow = row;
                                                 }
@@ -4299,6 +4493,11 @@ async function getUserData() {
                                         <i class="fa-solid fa-chart-line noti-icon"></i>
                                     </div>
                                     -->
+                                    <div class="emp-wrapper" id="notiEmpty">
+                                        <img src="images/nodata.svg" class="emp-icon" style="width: 200px;" />
+                                        <div class="emp-head">No Notifications</div>
+                                        <div class="emp-para">We couldn't find any notifications<br> for you. Try again later.</div>
+                                    </div>
                                 </div>
                             </div>
                         `;
@@ -4312,6 +4511,7 @@ async function getUserData() {
                                 if(data.message == "success"){
                                     let adminNotis = data.notis;
                                     let newNotis = 0;
+                                    let anyNotis = 0;
                                     adminNotis.forEach((noti, idx) => {
                                         let newNoti = document.createElement("div");
                                         newNoti.classList.add("noti-li");
@@ -4346,6 +4546,11 @@ async function getUserData() {
                                         //document.querySelector(".noti-red").style.display = "none";
                                     } else {
                                         //document.querySelector(".noti-red").textContent = newNotis;
+                                    }
+                                    if(anyNotis == 0){
+                                        document.getElementById("notiEmpty").style.display = "block";
+                                    } else {
+                                        document.getElementById("notiEmpty").style.display = "none";
                                     }
                                     document.querySelector(".noti-mark").addEventListener("click", () => {
                                         document.querySelectorAll(".noti-dot").forEach(dot => {
@@ -4498,6 +4703,7 @@ async function getUserData() {
             }
             getAdminData();
         } 
+
         else if(userData.perms == "admin") {
             if(isMobile){
                 window.location.href = "/admin.html?admin=true";

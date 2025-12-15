@@ -2376,11 +2376,26 @@ i.book-delete-icon {
     flex-direction: column;
 }
 .new-label {
+    width: 100%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
     line-height: 1;
     font-size: 15px;
     font-weight: 500;
     color: hsl(0, 0%, 20%);
     margin-bottom: 10px;
+}
+.new-label i {
+    width: 35px;
+    height: 35px;
+    border-radius: 5px;
+    background-color: hsl(0, 0%, 94%);
+    color: hsl(0, 0%, 30%);
+    font-size: 17px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 .new-input {
     width: 100%;
@@ -2478,6 +2493,25 @@ i.book-delete-icon {
     color: white;
     gap: 12px;
     transition: 0.2s ease;
+}
+.new-pill-flex {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+.new-pill {
+    border-radius: 200px;
+    font-size: 14px;
+    background-color: hsl(0, 0%, 94%);
+    color: hsl(0, 0%, 20%);
+    padding: 5px 16px;
+    transition: 0.3s ease;
+}
+.new-pill-active {
+    background-color: var(--primary);
+    color: white;
 }
 
 .date-modal {
@@ -2701,12 +2735,27 @@ i.assign-close {
     box-shadow: 0 0 8px hsla(0, 0%, 0%, 0.1) !important;
 }
 .work-wrapper {
+    position: relative;
     width: 100%;
     background-color: white;
     border: 1px solid hsl(0, 0%, 88%);
     box-shadow: 0 0 15px hsla(0, 0%, 0%, 0.15);
     border-radius: 10px;
     padding: 24px 15px;
+}
+i.work-delete {
+    position: absolute;
+    top: 24px;
+    right: 15px;
+    width: 35px;
+    height: 35px;
+    border-radius: 5px;
+    background-color: hsl(0, 0%, 94%);
+    color: hsl(0, 0%, 30%);
+    font-size: 17px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 .work-top {
     width: 100%;
@@ -3019,7 +3068,7 @@ i.assign-close {
     justify-content: center;
     background-color: var(--primary);
     color: white;
-    gap: 12px;
+    gap: 10px;
     transition: 0.2s ease;
 }
 .pric-new-btn i {
@@ -3029,6 +3078,11 @@ i.assign-close {
 #createCharge {
     align-items: center;
     padding-bottom: 0;
+}
+#pricManageBtn {
+    background-color: transparent;
+    border: 1px solid hsl(0, 0%, 88%);
+    color: hsl(0, 0%, 20%);
 }
 /*/////////////////////////////////////////////////////////////////////////////*/
 

@@ -325,7 +325,10 @@
                             </div>
                              -->
                         </div>
-                        <div class="pric-new-btn" id="pricManageBtn">Manage</div>
+                        <div style="display: flex; gap: 10px; margin-top: auto;">
+                            <div class="pric-new-btn" id="pricMatBtn"><i class="fa-solid fa-plus"></i> Add New</div>
+                            <div class="pric-new-btn" id="pricManageBtn">Manage</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -622,6 +625,11 @@
         <div class="assign-wrapper" style="width: 400px; max-width: calc(100% - 20px);">
             <i class="fa-solid fa-xmark assign-close"></i>
             <div class="assign-head">Choose a Worker</div>
+            <div class="emp-wrapper" id="assignEmpty" style="padding-bottom: 25px;">
+                <img src="images/nodata.svg" class="emp-icon" />
+                <div class="emp-head">No Workers Found</div>
+                <div class="emp-para">We couldn't find any workers<br> for you. Try again later.</div>
+            </div>
             <!-- 
                 <div class="edit-mat-option">John Smith <i class="fa-solid fa-check"></i></div>
              -->
@@ -799,6 +807,66 @@
             <i class="fa-solid fa-check thank-modal-check"></i>
             <div class="thank-modal-title">Thank You!</div>
             <div class="thank-modal-para">Your <span class="thank-modal-para" id="thankStr"></span> prices have been successfully<br> updated. Thank you!</div>
+            <div class="btn-thank-modal">Okay</div>
+        </div>
+    </div>
+
+    <div class="book-delete-modal padding" id="deleteWorkerModal">
+        <div class="book-delete-wrapper">
+            <i class="fa-solid fa-triangle-exclamation book-delete-icon"></i>
+            <div class="book-delete-title">Remove Worker</div>
+            <div class="book-delete-para">Are you sure you want to<br> remove this worker?</div>
+            <div class="book-delete-flex">
+                <div class="btn-book-nodelete">No, cancel.</div>
+                <div class="btn-book-delete-booking">Yes, remove!</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="new-modal dash-modal padding" id="newMaterialModal">
+        <form id="newMaterialForm" class="new-wrapper">
+            <i class="fa-solid fa-xmark new-xmark"></i>
+            <div class="new-title">New Material</div>
+            <div class="new-col">
+                <div class="new-label">Material name</div>
+                <input type="text" placeholder="Enter name" class="new-input" name="name" required />
+
+                <div class="new-label">Material cost</div>
+                <input type="number" placeholder="Enter Cost" class="new-input" name="cost" required />
+
+                <div class="new-label">Material charge</div>
+                <input type="number" placeholder="Enter charge" class="new-input" name="charge" required />
+
+                <div class="new-label">Material type</div>
+                <div class="new-pill-flex">
+                    <div class="new-pill new-pill-active" id="mat-parts">Parts</div>
+                    <div class="new-pill" id="mat-pipework">Pipework</div>
+                    <div class="new-pill" id="mat-fittings">Fittings</div>
+                    <div class="new-pill" id="mat-consumables">Consumables</div>
+                    <div class="new-pill" id="mat-other_items">Other items</div>
+                    <input type="hidden" name="type" value="parts" id="newMaterialType" />
+                </div>
+
+                <div class="new-label">Unit type</div>
+                <div class="new-pill-flex" style="margin-bottom: 0;">
+                    <div class="new-pill new-pill-active" id="mat-units">Units</div>
+                    <div class="new-pill" id="mat-m">Metres</div>
+                    <div class="new-pill" id="mat-mm">mm</div>
+                    <div class="new-pill" id="mat-g">g</div>
+                    <div class="new-pill" id="mat-kg">kg</div>
+                    <div class="new-pill" id="mat-ml">ml</div>
+                    <input type="hidden" name="unit" value="units" id="newMaterialUnit" />
+                </div>
+            </div>
+            <button type="submit" class="new-btn" id="newMaterialBtn">Save Changes</button>
+        </form>
+    </div>
+
+    <div class="thank-modal" id="thankNewMaterial">
+        <div class="thank-wrapper">
+            <i class="fa-solid fa-check thank-modal-check"></i>
+            <div class="thank-modal-title">Thank You!</div>
+            <div class="thank-modal-para">Your <span class="thank-modal-para" id="thankStr"></span> new material have been successfully<br> added. Thank you!</div>
             <div class="btn-thank-modal">Okay</div>
         </div>
     </div>

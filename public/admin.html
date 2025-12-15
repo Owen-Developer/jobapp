@@ -172,7 +172,7 @@
                 <input type="text" placeholder="E.g. 08:30am" class="new-input" id="jobTime" name="jobTime" required />
 
                 <div class="new-label">Job Cost</div>
-                <input type="text" placeholder="Enter Cost" class="new-input" id="jobCost" name="jobCost" required />
+                <input type="number" placeholder="Enter Cost" class="new-input" id="jobCost" name="jobCost" required />
 
                 <div class="new-label">Assign Worker</div>
                 <div class="new-selector new-worker-selector" id="workerSelector" style="margin-bottom: 0;"><div>Select Worker</div>
@@ -209,7 +209,7 @@
                 <input type="text" placeholder="E.g. 08:30am" class="new-input" id="editTime" name="editTime" required />
 
                 <div class="new-label">Job Cost</div>
-                <input type="text" placeholder="Enter Cost" class="new-input" id="editCost" name="editCost" required />
+                <input type="number" placeholder="Enter Cost" class="new-input" id="editCost" name="editCost" required />
 
                 <div class="new-label">Assign Worker</div>
                 <div class="new-selector new-worker-selector" id="editWorkerSelector" style="margin-bottom: 0;"><div>Select Worker</div>
@@ -302,6 +302,11 @@
         <div class="assign-wrapper">
             <i class="fa-solid fa-xmark assign-close"></i>
             <div class="assign-head">Choose a Worker</div>
+            <div class="emp-wrapper" id="assignEmpty" style="padding-bottom: 25px;">
+                <img src="images/nodata.svg" class="emp-icon" />
+                <div class="emp-head">No Workers Found</div>
+                <div class="emp-para">We couldn't find any workers<br> for you. Try again later.</div>
+            </div>
             <!-- 
                 <div class="edit-mat-option">John Smith <i class="fa-solid fa-check"></i></div>
              -->
