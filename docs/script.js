@@ -4704,7 +4704,7 @@ async function getUserData() {
             getAdminData();
         } 
 
-        else if(userData.perms == "admin") {
+        else if(userData && userData.perms == "admin") {
             if(isMobile){
                 window.location.href = "/jobapp/admin.html?admin=true";
             } else {
