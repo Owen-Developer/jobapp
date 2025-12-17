@@ -2343,17 +2343,6 @@ async function getUserData() {
                             });
                         });
 
-                        document.getElementById("createWorkerBtn").addEventListener("click", () => {
-                            document.getElementById("newWorkerModal").style.opacity = "0";
-                            document.getElementById("newWorkerModal").style.pointerEvents = "none";
-                            setTimeout(() => {
-                                document.getElementById("thankWorkerCreation").style.opacity = "1";
-                                document.getElementById("thankWorkerCreation").style.pointerEvents = "auto";
-                                document.getElementById("thankWorkerCreation").querySelector(".thank-wrapper").style.opacity = "1";
-                                document.getElementById("thankWorkerCreation").querySelector(".thank-wrapper").style.transform = "scale(1)";
-                            }, 300);
-                        });
-
                         document.getElementById("newWorkerForm").addEventListener("submit", async (e) => {
                             e.preventDefault(); 
                             const formData = new FormData(e.target);
@@ -2383,6 +2372,14 @@ async function getUserData() {
                                     document.getElementById("serverError").style.display = "none";
                                 }, 2000);
                             } else if(responseData.message == "success") {
+                                document.getElementById("newWorkerModal").style.opacity = "0";
+                                document.getElementById("newWorkerModal").style.pointerEvents = "none";
+                                setTimeout(() => {
+                                    document.getElementById("thankWorkerCreation").style.opacity = "1";
+                                    document.getElementById("thankWorkerCreation").style.pointerEvents = "auto";
+                                    document.getElementById("thankWorkerCreation").querySelector(".thank-wrapper").style.opacity = "1";
+                                    document.getElementById("thankWorkerCreation").querySelector(".thank-wrapper").style.transform = "scale(1)";
+                                }, 300);
                             }
                         });
 
@@ -3773,16 +3770,6 @@ async function getUserData() {
                             document.querySelector(".new-worker-label").style.display = "block";
                             document.querySelector(".new-worker-selector").style.display = "block";
                         });
-                        document.getElementById("createWorkerBtn").addEventListener("click", () => {
-                            document.getElementById("newWorkerModal").style.opacity = "0";
-                            document.getElementById("newWorkerModal").style.pointerEvents = "none";
-                            setTimeout(() => {
-                                document.getElementById("thankWorkerCreation").style.opacity = "1";
-                                document.getElementById("thankWorkerCreation").style.pointerEvents = "auto";
-                                document.getElementById("thankWorkerCreation").querySelector(".thank-wrapper").style.opacity = "1";
-                                document.getElementById("thankWorkerCreation").querySelector(".thank-wrapper").style.transform = "scale(1)";
-                            }, 300);
-                        });
                         document.getElementById("newWorkerBtn").addEventListener("click", () => {
                             document.getElementById("newWorkerModal").style.opacity = "1";
                             document.getElementById("newWorkerModal").style.pointerEvents = "auto";
@@ -3935,6 +3922,14 @@ async function getUserData() {
                                     document.getElementById("serverError").style.display = "none";
                                 }, 2000);
                             } else if(responseData.message == "success") {
+                                document.getElementById("newWorkerModal").style.opacity = "0";
+                                document.getElementById("newWorkerModal").style.pointerEvents = "none";
+                                setTimeout(() => {
+                                    document.getElementById("thankWorkerCreation").style.opacity = "1";
+                                    document.getElementById("thankWorkerCreation").style.pointerEvents = "auto";
+                                    document.getElementById("thankWorkerCreation").querySelector(".thank-wrapper").style.opacity = "1";
+                                    document.getElementById("thankWorkerCreation").querySelector(".thank-wrapper").style.transform = "scale(1)";
+                                }, 300);
                             }
                         });
 
