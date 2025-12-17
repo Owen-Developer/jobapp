@@ -170,9 +170,9 @@ async function getUserData() {
             userData = data.userData;
         } else if(data.message == "nouser") {
             userData = "nouser";
-            if(!document.querySelector(".login") && !document.querySelector(".setup")) window.location.href = "/login.html";
+            if(!document.querySelector(".login") && !document.querySelector(".setup")) window.location.href = "/jobapp/login.html";
         } else if(data.message == "setup"){
-            if(!document.querySelector(".login") && !document.querySelector(".setup")) window.location.href = "/setup.html";
+            if(!document.querySelector(".login") && !document.querySelector(".setup")) window.location.href = "/jobapp/setup.html";
         }
 
         document.querySelectorAll(".starter").forEach((el, idx) => {
@@ -184,7 +184,7 @@ async function getUserData() {
         document.querySelectorAll(".thank-modal").forEach(modal => {
             modal.querySelector(".btn-thank-modal").addEventListener("click", () => {
                 if(params.get("thank")){
-                    window.location.href = "/index.html";
+                    window.location.href = "/jobapp/index.html";
                 } else {
                     window.location.reload();
                 }
@@ -610,7 +610,7 @@ async function getUserData() {
 
                         const data = await response.json();
                         if(data.message == "success"){
-                            window.location.href = "/summary.html?job=" + jobId;
+                            window.location.href = "/jobapp/summary.html?job=" + jobId;
                         }
                     } catch (error) {
                         console.error('Error posting data:', error);
@@ -962,7 +962,7 @@ async function getUserData() {
                         }
 
                         const data = await response.json();
-                        if(data.message == "success") window.location.href = "/index.html?thank=true";
+                        if(data.message == "success") window.location.href = "/jobapp/index.html?thank=true";
                     } catch (error) {
                         console.error('Error posting data:', error);
                     }
@@ -998,7 +998,7 @@ async function getUserData() {
                 document.querySelector(".acc-title").style.marginTop = "30px";
             } else {
                 document.querySelector(".acc-back").addEventListener("click", () => {
-                    window.location.href = "/index.html";
+                    window.location.href = "/jobapp/index.html";
                 }); 
             }
 
@@ -1172,7 +1172,7 @@ async function getUserData() {
                             credentials: 'include'
                         });
                         const data = await response.json(); 
-                        if(data.message == "success") window.location.href = "/login.html";
+                        if(data.message == "success") window.location.href = "/jobapp/login.html";
                     } catch (error) {
                         console.error('Error fetching data:', error);
                     }
@@ -1204,7 +1204,7 @@ async function getUserData() {
                     });
                     const data = await response.json(); 
                     if(data.message == "adminfound"){
-                        window.location.href = "/login.html";
+                        window.location.href = "/jobapp/login.html";
                     }
                 } catch (error) {
                     console.error('Error fetching data:', error);
@@ -1227,9 +1227,9 @@ async function getUserData() {
                 const responseData = await res.json();
                 if(responseData.message == "success"){
                     if(isMobile){
-                        window.location.href = "/admin.html?admin=true";
+                        window.location.href = "/jobapp/admin.html?admin=true";
                     } else {
-                        window.location.href = "/dashboard.html?admin=true";
+                        window.location.href = "/jobapp/dashboard.html?admin=true";
                     }
                 }
             });
@@ -1244,7 +1244,7 @@ async function getUserData() {
                     });
                     const data = await response.json(); 
                     if(data.message == "noadmin"){
-                        window.location.href = "/setup.html";
+                        window.location.href = "/jobapp/setup.html";
                     }
                 } catch (error) {
                     console.error('Error fetching data:', error);
@@ -1281,19 +1281,19 @@ async function getUserData() {
                         document.getElementById("serverError").style.display = "none";
                     }, 2000);
                 } else if(responseData.message == "success") {
-                    window.location.href = "/";
+                    window.location.href = "/jobapp/";
                 } else if(responseData.message == "admin") {
                     if(isMobile){
-                        window.location.href = "/admin.html?admin=true";
+                        window.location.href = "/jobapp/admin.html?admin=true";
                     } else {
-                        window.location.href = "/dashboard.html?admin=true";
+                        window.location.href = "/jobapp/dashboard.html?admin=true";
                     }
                 }
             });
         }
 
         if(params.get("admin")){
-            if(userData.perms != "admin") window.location.href = "/";
+            if(userData.perms != "admin") window.location.href = "/jobapp/";
             if(document.querySelector(".home-name")) document.querySelector(".home-name").textContent = userData.name;
 
             async function getAdminData(){
@@ -1561,7 +1561,7 @@ async function getUserData() {
                         });
                         document.querySelectorAll("i.admin-report-icon").forEach((icon, idx) => {
                             icon.addEventListener("click", () => {
-                                window.location.href = "/reports.html?admin=true&jobId=" + jobs[idx].id;
+                                window.location.href = "/jobapp/reports.html?admin=true&jobId=" + jobs[idx].id;
                             });
                         });
 
@@ -2218,7 +2218,7 @@ async function getUserData() {
 
                             newWrapper.querySelectorAll(".work-up-btn").forEach(btn => {
                                 btn.addEventListener("click", () => {
-                                    window.location.href = "/admin.html?admin=true&jobId=" + newWrapper.id.split("-")[1];
+                                    window.location.href = "/jobapp/admin.html?admin=true&jobId=" + newWrapper.id.split("-")[1];
                                 });
                             });
 
@@ -4208,7 +4208,7 @@ async function getUserData() {
         
                             newWrapper.querySelectorAll(".work-up-btn").forEach(btn => {
                                 btn.addEventListener("click", () => {
-                                    window.location.href = "/admin.html?admin=true&jobId=" + newWrapper.id.split("-")[1];
+                                    window.location.href = "/jobapp/admin.html?admin=true&jobId=" + newWrapper.id.split("-")[1];
                                 });
                             });
                             newWrapper.querySelector(".work-assign-btn").addEventListener("click", () => {
@@ -4602,7 +4602,7 @@ async function getUserData() {
                                         credentials: 'include'
                                     });
                                     const data = await response.json(); 
-                                    if(data.message == "success") window.location.href = "/login.html";
+                                    if(data.message == "success") window.location.href = "/jobapp/login.html";
                                 } catch (error) {
                                     console.error('Error fetching data:', error);
                                 }
@@ -4706,9 +4706,9 @@ async function getUserData() {
 
         else if(userData.perms == "admin") {
             if(isMobile){
-                window.location.href = "/admin.html?admin=true";
+                window.location.href = "/jobapp/admin.html?admin=true";
             } else {
-                window.location.href = "/dashboard.html?admin=true";
+                window.location.href = "/jobapp/dashboard.html?admin=true";
             }
         }
         /*//////////////////////////////////////*/
