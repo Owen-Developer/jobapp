@@ -1293,8 +1293,8 @@ async function getUserData() {
         }
 
         if(params.get("admin")){
-            if(userData.perms != "admin") window.location.href = "/jobapp/";
-            if(document.querySelector(".home-name")) document.querySelector(".home-name").textContent = userData.name;
+            if(!userData || userData.perms != "admin") window.location.href = "/jobapp/";
+            if(document.querySelector(".home-name") && userData) document.querySelector(".home-name").textContent = userData.name;
 
             async function getAdminData(){
                 try {
