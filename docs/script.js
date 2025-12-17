@@ -394,7 +394,7 @@ async function getUserData() {
             async function updateProgress(time, jobId){
                 const dataToSend = { time: time, jobId: jobId };
                 try {
-                    const response = await fetch('/api/update-progress', {
+                    const response = await fetch(url + '/api/update-progress', {
                         method: 'POST',
                         credentials: 'include',
                         headers: {
@@ -593,7 +593,7 @@ async function getUserData() {
                     let jobId = params.get("job");
                     const dataToSend = { time: timeStr, jobId: jobId };
                     try {
-                        const response = await fetch('/api/end-job', {
+                        const response = await fetch(url + '/api/end-job', {
                             method: 'POST',
                             credentials: 'include',
                             headers: {
@@ -946,7 +946,7 @@ async function getUserData() {
                 async function sendSummary() {
                     const dataToSend = { jobId: params.get("job"), date: date, notes: document.querySelector(".edit-para-area").value, materials: materials, charges: charges };
                     try {
-                        const response = await fetch('/api/send-summary', {
+                        const response = await fetch(url + '/api/send-summary', {
                             method: 'POST',
                             credentials: 'include',
                             headers: {
@@ -1019,7 +1019,7 @@ async function getUserData() {
                 async function saveProfile() {
                     const dataToSend = { name: document.getElementById("profileName").value, email: document.getElementById("profileEmail").value, phone: document.getElementById("profilePhone").value };
                     try {
-                        const response = await fetch('/api/save-profile', {
+                        const response = await fetch(url + '/api/save-profile', {
                             method: 'POST',
                             credentials: 'include',
                             headers: {
@@ -1058,7 +1058,7 @@ async function getUserData() {
                 async function changePassword() {
                     const dataToSend = { currentPassword: document.getElementById("currentPassword").value, newPassword: document.getElementById("newPassword").value };
                     try {
-                        const response = await fetch('/api/change-password', {
+                        const response = await fetch(url + '/api/change-password', {
                             method: 'POST',
                             credentials: 'include',
                             headers: {
@@ -1569,7 +1569,7 @@ async function getUserData() {
                             async function deleteJob() {
                                 const dataToSend = { jobId: deleteId };
                                 try {
-                                    const response = await fetch('/api/delete-job', {
+                                    const response = await fetch(url + '/api/delete-job', {
                                         method: 'POST',
                                         credentials: 'include',
                                         headers: {
@@ -2230,7 +2230,7 @@ async function getUserData() {
                                 async function deleteWorker() {
                                     const dataToSend = { id: worker.id };
                                     try {
-                                        const response = await fetch('/api/delete-worker', {
+                                        const response = await fetch(url + '/api/delete-worker', {
                                             method: 'POST',
                                             credentials: 'include',
                                             headers: {
@@ -2468,7 +2468,7 @@ async function getUserData() {
                                         async function deleteCharge() {
                                             const dataToSend = { id: li.id.split("-")[1] };
                                             try {
-                                                const response = await fetch('/api/delete-price', {
+                                                const response = await fetch(url + '/api/delete-price', {
                                                     method: 'POST',
                                                     credentials: 'include',
                                                     headers: {
@@ -2614,7 +2614,7 @@ async function getUserData() {
                                     async function deleteCharge() {
                                         const dataToSend = { id: li.id.split("-")[1] };
                                         try {
-                                            const response = await fetch('/api/delete-price', {
+                                            const response = await fetch(url + '/api/delete-price', {
                                                 method: 'POST',
                                                 credentials: 'include',
                                                 headers: {
@@ -2684,7 +2684,7 @@ async function getUserData() {
                                 async function createCharge() {
                                     const dataToSend = { name: document.getElementById("newChargeName").value, charge: document.getElementById("newChargeCost").value.replace("£", "") };
                                     try {
-                                        const response = await fetch('/api/create-charge', {
+                                        const response = await fetch(url + '/api/create-charge', {
                                             method: 'POST',
                                             credentials: 'include',
                                             headers: {
@@ -4239,7 +4239,7 @@ async function getUserData() {
                                 async function deleteWorker() {
                                     const dataToSend = { id: worker.id };
                                     try {
-                                        const response = await fetch('/api/delete-worker', {
+                                        const response = await fetch(url + '/api/delete-worker', {
                                             method: 'POST',
                                             credentials: 'include',
                                             headers: {
@@ -4384,7 +4384,7 @@ async function getUserData() {
                             async function deleteJob() {
                                 const dataToSend = { jobId: deleteId };
                                 try {
-                                    const response = await fetch('/api/delete-job', {
+                                    const response = await fetch(url + '/api/delete-job', {
                                         method: 'POST',
                                         credentials: 'include',
                                         headers: {
@@ -4565,7 +4565,7 @@ async function getUserData() {
                                         async function markRead() {
                                             const dataToSend = { perms: userData.perms };
                                             try {
-                                                const response = await fetch('/api/mark-read', {
+                                                const response = await fetch(url + '/api/mark-read', {
                                                     method: 'POST',
                                                     credentials: 'include',
                                                     headers: {
@@ -4816,7 +4816,7 @@ async function getUserData() {
                 async function markRead() {
                     const dataToSend = { perms: userData.perms };
                     try {
-                        const response = await fetch('/api/mark-read', {
+                        const response = await fetch(url + '/api/mark-read', {
                             method: 'POST',
                             credentials: 'include',
                             headers: {
