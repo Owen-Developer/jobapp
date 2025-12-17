@@ -160,7 +160,7 @@ function sortChronologically(array){
 
 async function getUserData() {
     try {
-        const response = await fetch(`/api/get-user`, {
+        const response = await fetch(`${url}/api/get-user`, {
             method: 'GET',
             credentials: 'include'
         });
@@ -206,7 +206,7 @@ async function getUserData() {
             let jobs;
             async function getJobs() {
                 try {
-                    const response = await fetch(`/api/get-jobs`, {
+                    const response = await fetch(`${url}/api/get-jobs`, {
                         method: 'GET',
                         credentials: 'include'
                     });
@@ -624,7 +624,7 @@ async function getUserData() {
             let date;
             async function getJobs() {
                 try {
-                    const response = await fetch(`/api/get-jobs`, {
+                    const response = await fetch(`${url}/api/get-jobs`, {
                         method: 'GET',
                         credentials: 'include'
                     });
@@ -775,7 +775,7 @@ async function getUserData() {
             let charges = [];
             async function getMaterials() {
                 try {
-                    const response = await fetch(`/api/get-materials`, {
+                    const response = await fetch(`${url}/api/get-materials`, {
                         method: 'GET',
                         credentials: 'include'
                     });
@@ -1167,7 +1167,7 @@ async function getUserData() {
             document.getElementById("logoutModal").querySelector(".btn-book-delete-booking").addEventListener("click", () => {
                 async function logout() {
                     try {
-                        const response = await fetch(`/api/logout`, {
+                        const response = await fetch(`${url}/api/logout`, {
                             method: 'GET',
                             credentials: 'include'
                         });
@@ -1198,7 +1198,7 @@ async function getUserData() {
         if(document.querySelector(".setup")){
             async function findAdmin() {
                 try {
-                    const response = await fetch(`/api/find-admin`, {
+                    const response = await fetch(`${url}/api/find-admin`, {
                         method: 'GET',
                         credentials: 'include'
                     });
@@ -1238,7 +1238,7 @@ async function getUserData() {
         if(document.querySelector(".login")){
             async function findAdmin() {
                 try {
-                    const response = await fetch(`/api/find-admin`, {
+                    const response = await fetch(`${url}/api/find-admin`, {
                         method: 'GET',
                         credentials: 'include'
                     });
@@ -1298,7 +1298,7 @@ async function getUserData() {
 
             async function getAdminData(){
                 try {
-                    const response = await fetch(`/api/admin-data`, {
+                    const response = await fetch(`${url}/api/admin-data`, {
                         method: 'GET',
                         credentials: 'include'
                     });
@@ -4503,7 +4503,7 @@ async function getUserData() {
                         `;
                         async function getAdminNotis() {
                             try {
-                                const response = await fetch(`/api/admin-notis`, {
+                                const response = await fetch(`${url}/api/admin-notis`, {
                                     method: 'GET',
                                     credentials: 'include'
                                 });
@@ -4597,7 +4597,7 @@ async function getUserData() {
                         document.getElementById("sideLog").addEventListener("click", () => {
                             async function logout() {
                                 try {
-                                    const response = await fetch(`/api/logout`, {
+                                    const response = await fetch(`${url}/api/logout`, {
                                         method: 'GET',
                                         credentials: 'include'
                                     });
