@@ -4,7 +4,7 @@ if ("serviceWorker" in navigator) {
     .catch(err => console.error("Service Worker registration failed:", err));
 }
 
-const url = "";
+const url = "https://servers.nextdesignwebsite.com/job";
 let timer = 0;
 let timeInt;
 let timerPaused = false;
