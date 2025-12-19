@@ -587,7 +587,7 @@ button {
     align-items: center !important;
     justify-content: center !important;
 }
-.dash-modal .new-wrapper, .dash-modal .rep-job-wrapper {
+.dash-modal .new-wrapper, .dash-modal .rep-job-wrapper, .dash-modal .cal-wrapper {
     position: relative;
     width: 400px;
     max-width: calc(100% - 20px);
@@ -2330,6 +2330,128 @@ i.book-delete-icon {
     gap: 12px;
     transition: 0.2s ease;
 }
+
+.cal-container {
+    opacity: 0;
+    pointer-events: none;
+    z-index: 10;
+    background: linear-gradient(180deg, hsla(222, 100%, 82%), white 35%);
+    position: fixed;
+    top: 0;
+    left: 255px;
+    width: 100vw;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 30px 10px 15px;
+    overflow: auto;
+    transition: 0.4s ease;
+}
+.cal-dash-container {
+    opacity: 1;
+    pointer-events: auto;
+    z-index: 99;
+    background-color: hsla(0, 0%, 0%, 0.3);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: auto;
+    transition: 0.4s ease;
+}
+.cal-top {
+    margin: 0px 0 40px;
+}
+.cal-back {
+    height: 18px;
+    width: auto;
+    filter: invert(0.3);
+    transform: rotate(180deg);
+    transition: 0.3s ease;
+    cursor: pointer;
+}
+.cal-title {
+    font-size: 28px;
+    line-height: 1.25;
+    font-weight: 500;
+    color: hsl(0, 0%, 20%);
+}
+.cal-nav {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+.cal-chev {
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    border-radius: 5px;
+    background-color: hsl(0, 0%, 92%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.cal-chev img {
+    user-select: none;
+    filter: invert(0.4);
+    height: 16px;
+    width: auto;
+}
+.cal-flex {
+    overflow: auto;
+    flex-shrink: 0;
+    margin: 25px 0 15px;
+    width: calc(100%);
+    text-align: center;
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 8px;
+}
+.cal-noscrollbar {
+    scrollbar-width: none;
+}
+.cal-noscrollbar::-webkit-scrollbar {
+    display: none;
+}
+.cal-date {
+    border-radius: 15px;
+    flex-shrink: 0;
+    background-color: white;
+    border: 1px solid hsl(0, 0%, 88%);
+    padding: 14px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    transition: 0.2s ease;
+}
+.cal-date-active {
+    background-color: var(--primary);
+    border: 1px solid var(--primary);
+}
+.cal-date div {
+    line-height: 1;
+    font-size: 15px;
+    color: hsl(0, 0%, 40%);
+}
+.cal-date span {
+    line-height: 1;
+    font-size: 15px;
+    color: hsl(0, 0%, 20%);
+}
+.cal-date-active div, .cal-date-active span {
+    color: white;
+}
+.cal-work-col {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
 /*////////////////////////////////////////////////////////////////////////////*/
 
 /*////////////////////////////// CREATE JOB SECTION //////////////////////////////*/
@@ -3910,6 +4032,7 @@ body.log-body {
 .log-form {
     margin-top: 40px;
     max-width: calc(100% - 20px);
+    transition: 0.2s ease;
 }
 .log-label {
     line-height: 1;

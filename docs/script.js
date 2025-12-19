@@ -4,7 +4,12 @@ if ("serviceWorker" in navigator) {
     .catch(err => console.error("Service Worker registration failed:", err));
 }
 
-const url = "https://servers.nextdesignwebsite.com/job";
+let url = "";
+let gitName = "";
+if(!window.location.href.includes("localhost")){
+    url = "https://servers.nextdesignwebsite.com/job";
+    gitName = "/jobapp";
+}
 let timer = 0;
 let timeInt;
 let timerPaused = false;
@@ -25,6 +30,20 @@ const months = [
 "October",
 "November",
 "December"
+];
+const shortMonths = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec"
 ];
 
 let params = new URLSearchParams(window.location.search);
@@ -95,11 +114,10 @@ let todayDate = getCurrentDate();
 function getSpecificDate(daysAgo) {
     const today = new Date();
 
-    // Subtract 7 days
     today.setDate(today.getDate() - daysAgo);
 
     const dd = String(today.getDate()).padStart(2, '0');
-    const mm = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
     const yyyy = today.getFullYear();
 
     return `${dd}/${mm}/${yyyy}`;
@@ -170,9 +188,9 @@ async function getUserData() {
             userData = data.userData;
         } else if(data.message == "nouser") {
             userData = "nouser";
-            if(!document.querySelector(".login") && !document.querySelector(".setup")) window.location.href = "/jobapp/login.html";
+            if(!document.querySelector(".login") && !document.querySelector(".setup")) window.location.href = gitName + "/login.html";
         } else if(data.message == "setup"){
-            if(!document.querySelector(".login") && !document.querySelector(".setup")) window.location.href = "/jobapp/setup.html";
+            if(!document.querySelector(".login") && !document.querySelector(".setup")) window.location.href = gitName + "/setup.html";
         }
 
         document.querySelectorAll(".starter").forEach((el, idx) => {
@@ -184,7 +202,7 @@ async function getUserData() {
         document.querySelectorAll(".thank-modal").forEach(modal => {
             modal.querySelector(".btn-thank-modal").addEventListener("click", () => {
                 if(params.get("thank")){
-                    window.location.href = "/jobapp/index.html";
+                    window.location.href = gitName + "/index.html";
                 } else {
                     window.location.reload();
                 }
@@ -273,9 +291,9 @@ async function getUserData() {
             }
             getJobs();
 
-            document.querySelector(".home-search").addEventListener("input", () => {
+            document.querySelector("#homeSearch").addEventListener("input", () => {
                 document.querySelector(".search-drop").innerHTML = "";
-                let newValue = document.querySelector(".home-search input").value;
+                let newValue = document.querySelector("#homeSearch input").value;
                 if(newValue.length > 0 && jobs){
                     jobs.forEach(job => {
                         if(job.job_name.toLowerCase().includes(newValue.toLowerCase())){
@@ -305,23 +323,23 @@ async function getUserData() {
                                         block: "center"
                                     });
                                 }
-                                document.querySelector(".home-search").classList.remove("search-selector-dropped");
+                                document.querySelector("#homeSearch").classList.remove("search-selector-dropped");
                                 document.querySelector(".search-drop").style.opacity = "0";
                                 document.querySelector(".search-drop").style.pointerEvents = "none";
                             });
                         }
                     });
                     if(document.querySelector(".search-drop").innerHTML != ""){
-                        document.querySelector(".home-search").classList.add("search-selector-dropped");
+                        document.querySelector("#homeSearch").classList.add("search-selector-dropped");
                         document.querySelector(".search-drop").style.opacity = "1";
                         document.querySelector(".search-drop").style.pointerEvents = "auto";
                     } else {
-                        document.querySelector(".home-search").classList.remove("search-selector-dropped");
+                        document.querySelector("#homeSearch").classList.remove("search-selector-dropped");
                         document.querySelector(".search-drop").style.opacity = "0";
                         document.querySelector(".search-drop").style.pointerEvents = "none";
                     }
                 } else {
-                    document.querySelector(".home-search").classList.remove("search-selector-dropped");
+                    document.querySelector("#homeSearch").classList.remove("search-selector-dropped");
                     document.querySelector(".search-drop").style.opacity = "0";
                     document.querySelector(".search-drop").style.pointerEvents = "none";
                 }
@@ -334,15 +352,15 @@ async function getUserData() {
                     document.querySelector(".thank-modal").style.pointerEvents = "none";
                 }
 
-                if(!document.querySelector(".home-search").contains(e.target)){
-                    document.querySelector(".home-search").classList.remove("search-selector-dropped");
+                if(!document.querySelector("#homeSearch").contains(e.target)){
+                    document.querySelector("#homeSearch").classList.remove("search-selector-dropped");
                     document.querySelector(".search-drop").style.opacity = "0";
                     document.querySelector(".search-drop").style.pointerEvents = "none";
                 }
             });
-            document.querySelector(".home-search input").addEventListener("focus", () => {
+            document.querySelector("#homeSearch input").addEventListener("focus", () => {
                 document.querySelector(".search-drop").innerHTML = "";
-                let newValue = document.querySelector(".home-search input").value;
+                let newValue = document.querySelector("#homeSearch input").value;
                 if(newValue.length > 0 && jobs){
                     jobs.forEach(job => {
                         if(job.job_name.toLowerCase().includes(newValue.toLowerCase())){
@@ -367,23 +385,23 @@ async function getUserData() {
                                         block: "center"
                                     });
                                 }
-                                document.querySelector(".home-search").classList.remove("search-selector-dropped");
+                                document.querySelector("#homeSearch").classList.remove("search-selector-dropped");
                                 document.querySelector(".search-drop").style.opacity = "0";
                                 document.querySelector(".search-drop").style.pointerEvents = "none";
                             });
                         }
                     });
                     if(document.querySelector(".search-drop").innerHTML != ""){
-                        document.querySelector(".home-search").classList.add("search-selector-dropped");
+                        document.querySelector("#homeSearch").classList.add("search-selector-dropped");
                         document.querySelector(".search-drop").style.opacity = "1";
                         document.querySelector(".search-drop").style.pointerEvents = "auto";
                     } else {
-                        document.querySelector(".home-search").classList.remove("search-selector-dropped");
+                        document.querySelector("#homeSearch").classList.remove("search-selector-dropped");
                         document.querySelector(".search-drop").style.opacity = "0";
                         document.querySelector(".search-drop").style.pointerEvents = "none";
                     }
                 } else {
-                    document.querySelector(".home-search").classList.remove("search-selector-dropped");
+                    document.querySelector("#homeSearch").classList.remove("search-selector-dropped");
                     document.querySelector(".search-drop").style.opacity = "0";
                     document.querySelector(".search-drop").style.pointerEvents = "none";
                 }
@@ -610,7 +628,7 @@ async function getUserData() {
 
                         const data = await response.json();
                         if(data.message == "success"){
-                            window.location.href = "/jobapp/summary.html?job=" + jobId;
+                            window.location.href = gitName + "/summary.html?job=" + jobId;
                         }
                     } catch (error) {
                         console.error('Error posting data:', error);
@@ -962,7 +980,7 @@ async function getUserData() {
                         }
 
                         const data = await response.json();
-                        if(data.message == "success") window.location.href = "/jobapp/index.html?thank=true";
+                        if(data.message == "success") window.location.href = gitName + "/index.html?thank=true";
                     } catch (error) {
                         console.error('Error posting data:', error);
                     }
@@ -998,7 +1016,7 @@ async function getUserData() {
                 document.querySelector(".acc-title").style.marginTop = "30px";
             } else {
                 document.querySelector(".acc-back").addEventListener("click", () => {
-                    window.location.href = "/jobapp/index.html";
+                    window.location.href = gitName + "/index.html";
                 }); 
             }
 
@@ -1172,7 +1190,7 @@ async function getUserData() {
                             credentials: 'include'
                         });
                         const data = await response.json(); 
-                        if(data.message == "success") window.location.href = "/jobapp/login.html";
+                        if(data.message == "success") window.location.href = gitName + "/login.html";
                     } catch (error) {
                         console.error('Error fetching data:', error);
                     }
@@ -1204,7 +1222,7 @@ async function getUserData() {
                     });
                     const data = await response.json(); 
                     if(data.message == "adminfound"){
-                        window.location.href = "/jobapp/login.html";
+                        window.location.href = gitName + "/login.html";
                     }
                 } catch (error) {
                     console.error('Error fetching data:', error);
@@ -1226,10 +1244,10 @@ async function getUserData() {
 
                 const responseData = await res.json();
                 if(responseData.message == "success"){
-                    if(isMobile){
-                        window.location.href = "/jobapp/admin.html?admin=true";
+                    if(isMobile && window.innerWidth < 1260){
+                        window.location.href = gitName + "/admin.html?admin=true";
                     } else {
-                        window.location.href = "/jobapp/dashboard.html?admin=true";
+                        window.location.href = gitName + "/dashboard.html?admin=true";
                     }
                 }
             });
@@ -1244,7 +1262,7 @@ async function getUserData() {
                     });
                     const data = await response.json(); 
                     if(data.message == "noadmin"){
-                        window.location.href = "/jobapp/setup.html";
+                        window.location.href = gitName + "/setup.html";
                     }
                 } catch (error) {
                     console.error('Error fetching data:', error);
@@ -1281,19 +1299,82 @@ async function getUserData() {
                         document.getElementById("serverError").style.display = "none";
                     }, 2000);
                 } else if(responseData.message == "success") {
-                    window.location.href = "/jobapp/";
+                    window.location.href = gitName + "/";
                 } else if(responseData.message == "admin") {
-                    if(isMobile){
-                        window.location.href = "/jobapp/admin.html?admin=true";
+                    if(isMobile && window.innerWidth < 1260){
+                        window.location.href = gitName + "/admin.html?admin=true";
                     } else {
-                        window.location.href = "/jobapp/dashboard.html?admin=true";
+                        window.location.href = gitName + "/dashboard.html?admin=true";
                     }
+                }
+            });
+
+            document.getElementById("resetPassword").addEventListener("click", () => {
+                document.getElementById("logForm").style.opacity = "0";
+                setTimeout(() => {
+                    document.getElementById("logForm").style.display = "none";
+                    document.getElementById("sendForm").style.display = "block";
+                    setTimeout(() => {
+                        document.getElementById("sendForm").style.opacity = "1";
+                    }, 30);
+                }, 200);
+            });
+            document.getElementById("sendForm").addEventListener("submit", async (e) => {
+                e.preventDefault(); 
+                const formData = new FormData(e.target);
+                const data = Object.fromEntries(formData.entries());
+
+                const res = await fetch(url + "/api/send-code", {
+                    method: "POST",
+                    credentials: 'include',
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data)
+                });
+
+                const responseData = await res.json();
+                if(responseData.message == "success") {
+                    document.getElementById("sendForm").style.opacity = "0";
+                    setTimeout(() => {
+                        document.getElementById("sendForm").style.display = "none";
+                        document.getElementById("verForm").style.display = "block";
+                        setTimeout(() => {
+                            document.getElementById("verForm").style.opacity = "1";
+                        }, 30);
+                    }, 200);
+                } else if(responseData.message == "noemail") {
+                    document.getElementById("sendError").style.display = "block";
+                    setTimeout(() => {
+                        document.getElementById("sendError").style.display = "none";
+                    }, 2000);
+                }
+            });
+
+            document.getElementById("verForm").addEventListener("submit", async (e) => {
+                e.preventDefault(); 
+                const formData = new FormData(e.target);
+                const data = Object.fromEntries(formData.entries());
+
+                const res = await fetch(url + "/api/verify", {
+                    method: "POST",
+                    credentials: 'include',
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data)
+                });
+
+                const responseData = await res.json();
+                if(responseData.message == "success") {
+                    window.location.href = gitName + "/";
+                } else if(responseData.message == "codeerror") {
+                    document.getElementById("codeError").style.display = "block";
+                    setTimeout(() => {
+                        document.getElementById("codeError").style.display = "none";
+                    }, 2000);
                 }
             });
         }
 
         if(params.get("admin")){
-            if(!userData || userData.perms != "admin") window.location.href = "/jobapp/";
+            if(!userData || userData.perms != "admin") window.location.href = gitName + "/";
             if(document.querySelector(".home-name") && userData) document.querySelector(".home-name").textContent = userData.name;
 
             async function getAdminData(){
@@ -1378,12 +1459,12 @@ async function getUserData() {
                             });
                         }
 
-                        document.querySelector("#jobDateSelector div").textContent = todayDate.slice(0, 2) + " " + months[Number(todayDate.slice(3, 5)) - 1] + " " + todayDate.slice(6);
                         document.getElementById("jobDateInput").value = todayDate;
 
                         document.querySelector(".admin-table-btn").addEventListener("click", () => {
-                            document.getElementById("newJobModal").style.opacity = "1";
-                            document.getElementById("newJobModal").style.pointerEvents = "auto";
+                            document.getElementById("calModal").style.left = "0px";
+                            document.getElementById("calModal").style.opacity = "1";
+                            document.getElementById("calModal").style.pointerEvents = "auto";
 
                             document.querySelectorAll(".edit-mat-option").forEach(option => {
                                 option.classList.remove("edit-mat-active");
@@ -1498,23 +1579,6 @@ async function getUserData() {
                             document.querySelector(".exam-modal").style.pointerEvents = "none";
                         });
 
-                        workers.forEach(worker => {
-                            let newOption = document.createElement("div");
-                            newOption.classList.add("edit-mat-option"); 
-                            newOption.id = worker.id;
-                            newOption.innerHTML = worker.name + '<i class="fa-solid fa-check"></i>';
-                            document.querySelector(".assign-wrapper").appendChild(newOption);
-                        });
-                        if(workers.length == 0){
-                            document.getElementById("assignEmpty").style.display = "block";
-                        }
-
-                        document.querySelectorAll(".new-worker-selector").forEach(selector => {
-                            selector.addEventListener("click", () => {
-                                document.querySelector(".assign-modal").style.opacity = "1";
-                                document.querySelector(".assign-modal").style.pointerEvents = "auto";
-                            });
-                        });
                         document.querySelectorAll(".admin-table-notes span").forEach((span, idx) => {
                             span.addEventListener("click", () => {
                                 document.querySelector(".read-wrapper div").textContent = jobs[idx].job_notes;
@@ -1561,7 +1625,7 @@ async function getUserData() {
                         });
                         document.querySelectorAll("i.admin-report-icon").forEach((icon, idx) => {
                             icon.addEventListener("click", () => {
-                                window.location.href = "/jobapp/reports.html?admin=true&jobId=" + jobs[idx].id;
+                                window.location.href = gitName + "/reports.html?admin=true&jobId=" + jobs[idx].id;
                             });
                         });
 
@@ -2045,7 +2109,6 @@ async function getUserData() {
                     }
 
                     if(document.querySelector(".admin") || document.querySelector(".workers")){
-                        document.querySelector("#jobDateSelector div").textContent = todayDate.slice(0, 2) + " " + months[Number(todayDate.slice(3, 5)) - 1] + " " + todayDate.slice(6);
                         document.getElementById("jobDateInput").value = todayDate;
 
                         document.querySelectorAll(".new-date-selector").forEach(selector => {
@@ -2218,7 +2281,7 @@ async function getUserData() {
 
                             newWrapper.querySelectorAll(".work-up-btn").forEach(btn => {
                                 btn.addEventListener("click", () => {
-                                    window.location.href = "/jobapp/admin.html?admin=true&jobId=" + newWrapper.id.split("-")[1];
+                                    window.location.href = gitName + "/admin.html?admin=true&jobId=" + newWrapper.id.split("-")[1];
                                 });
                             });
 
@@ -2271,9 +2334,9 @@ async function getUserData() {
                             document.getElementById("workerEmpty").style.display = "block";
                         }
 
-                        document.querySelector(".home-search").addEventListener("input", () => {
+                        document.querySelector("#workSearch").addEventListener("input", () => {
                             document.querySelector(".search-drop").innerHTML = "";
-                            let newValue = document.querySelector(".home-search input").value;
+                            let newValue = document.querySelector("#workSearch input").value;
                             if(newValue.length > 0 && jobs){
                                 workers.forEach(worker => {
                                     if(worker.name.toLowerCase().includes(newValue.toLowerCase())){
@@ -2303,23 +2366,23 @@ async function getUserData() {
                                                     block: "center"
                                                 });
                                             }
-                                            document.querySelector(".home-search").classList.remove("search-selector-dropped");
+                                            document.querySelector("#workSearch").classList.remove("search-selector-dropped");
                                             document.querySelector(".search-drop").style.opacity = "0";
                                             document.querySelector(".search-drop").style.pointerEvents = "none";
                                         });
                                     }
                                 });
                                 if(document.querySelector(".search-drop").innerHTML != ""){
-                                    document.querySelector(".home-search").classList.add("search-selector-dropped");
+                                    document.querySelector("#workSearch").classList.add("search-selector-dropped");
                                     document.querySelector(".search-drop").style.opacity = "1";
                                     document.querySelector(".search-drop").style.pointerEvents = "auto";
                                 } else {
-                                    document.querySelector(".home-search").classList.remove("search-selector-dropped");
+                                    document.querySelector("#workSearch").classList.remove("search-selector-dropped");
                                     document.querySelector(".search-drop").style.opacity = "0";
                                     document.querySelector(".search-drop").style.pointerEvents = "none";
                                 }
                             } else {
-                                document.querySelector(".home-search").classList.remove("search-selector-dropped");
+                                document.querySelector("#workSearch").classList.remove("search-selector-dropped");
                                 document.querySelector(".search-drop").style.opacity = "0";
                                 document.querySelector(".search-drop").style.pointerEvents = "none";
                             }
@@ -2395,6 +2458,66 @@ async function getUserData() {
                                 modal.style.opacity = "0";
                                 modal.style.pointerEvents = "none";
                             });
+                        });
+                        document.addEventListener("click", (e) => {
+                            if(!document.querySelector("#workSearch").contains(e.target)){
+                                document.querySelector("#workSearch").classList.remove("search-selector-dropped");
+                                document.querySelector("#workSearch").querySelector(".search-drop").style.opacity = "0";
+                                document.querySelector("#workSearch").querySelector(".search-drop").style.pointerEvents = "none";
+                            }
+                        });
+                        document.querySelector("#workSearch input").addEventListener("focus", () => {
+                            document.querySelector(".search-drop").innerHTML = "";
+                            let newValue = document.querySelector("#workSearch input").value;
+                            if(newValue.length > 0 && jobs){
+                                workers.forEach(worker => {
+                                    if(worker.name.toLowerCase().includes(newValue.toLowerCase())){
+                                        let newOption = document.createElement("div");
+                                        newOption.classList.add("search-option");
+                                        let lowerValue = newValue.toLowerCase();
+                                        let lowerJob = worker.name.toLowerCase();
+                                        let firstIdx = lowerJob.indexOf(lowerValue);
+                                        let lastIdx = firstIdx + (lowerValue.length - 1);
+                                        let higherJob = lowerJob.split(" ").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
+                                        let finalOption = higherJob.slice(0, firstIdx) + "<span>" + higherJob.slice(firstIdx, lastIdx + 1) + "</span>" + higherJob.slice(lastIdx + 1);
+                                        newOption.innerHTML = finalOption;
+                                        document.querySelector(".search-drop").appendChild(newOption);
+
+                                        newOption.addEventListener("click", () => {
+                                            let jobWrapper;
+                                            document.querySelectorAll(".work-wrapper").forEach(wrapper => {
+                                                if(wrapper.id.split("-")[1] == worker.id){
+                                                    jobWrapper = wrapper;
+                                                }
+                                            });
+                                            if(jobWrapper){
+                                                document.getElementById("workerEmpty").style.display = "none";
+                                                jobWrapper.style.display = "block";
+                                                jobWrapper.scrollIntoView({
+                                                    behavior: "smooth",
+                                                    block: "center"
+                                                });
+                                            }
+                                            document.querySelector("#workSearch").classList.remove("search-selector-dropped");
+                                            document.querySelector(".search-drop").style.opacity = "0";
+                                            document.querySelector(".search-drop").style.pointerEvents = "none";
+                                        });
+                                    }
+                                });
+                                if(document.querySelector(".search-drop").innerHTML != ""){
+                                    document.querySelector("#workSearch").classList.add("search-selector-dropped");
+                                    document.querySelector(".search-drop").style.opacity = "1";
+                                    document.querySelector(".search-drop").style.pointerEvents = "auto";
+                                } else {
+                                    document.querySelector("#workSearch").classList.remove("search-selector-dropped");
+                                    document.querySelector(".search-drop").style.opacity = "0";
+                                    document.querySelector(".search-drop").style.pointerEvents = "none";
+                                }
+                            } else {
+                                document.querySelector("#workSearch").classList.remove("search-selector-dropped");
+                                document.querySelector(".search-drop").style.opacity = "0";
+                                document.querySelector(".search-drop").style.pointerEvents = "none";
+                            }
                         });
                     }
 
@@ -3759,25 +3882,20 @@ async function getUserData() {
                         }
 
                         document.getElementById("newJobBtn").addEventListener("click", () => {
-                            document.getElementById("newJobModal").style.opacity = "1";
-                            document.getElementById("newJobModal").style.pointerEvents = "auto";
-                            document.querySelector(".new-worker-label").style.display = "block";
-                            document.querySelector(".new-worker-selector").style.display = "block";
+                            document.getElementById("calModal").style.opacity = "1";
+                            document.getElementById("calModal").style.pointerEvents = "auto";
+                            document.getElementById("jobDateLabel").style.display = "none";
+                            document.getElementById("jobDateSelector").style.display = "none";
                         });
                         document.getElementById("sideNewJob").addEventListener("click", () => {
-                            document.getElementById("newJobModal").style.opacity = "1";
-                            document.getElementById("newJobModal").style.pointerEvents = "auto";
+                            document.getElementById("calModal").style.opacity = "1";
+                            document.getElementById("calModal").style.pointerEvents = "auto";
                             document.querySelector(".new-worker-label").style.display = "block";
                             document.querySelector(".new-worker-selector").style.display = "block";
                         });
                         document.getElementById("newWorkerBtn").addEventListener("click", () => {
                             document.getElementById("newWorkerModal").style.opacity = "1";
                             document.getElementById("newWorkerModal").style.pointerEvents = "auto";
-                        });
-
-                        document.getElementById("viewReportBtn").addEventListener("click", () => {
-                            document.getElementById("workerReportModal").style.opacity = "1";
-                            document.getElementById("workerReportModal").style.pointerEvents = "auto";
                         });
 
                         document.querySelector("#jobDateSelector div").textContent = todayDate.slice(0, 2) + " " + months[Number(todayDate.slice(3, 5)) - 1] + " " + todayDate.slice(6);
@@ -3834,7 +3952,6 @@ async function getUserData() {
                             document.querySelector(".date-modal").style.opacity = "0";
                             document.querySelector(".date-modal").style.pointerEvents = "none";
                         });
-
                         document.getElementById("newJobForm").addEventListener("submit", async (e) => {
                             e.preventDefault(); 
                             const formData = new FormData(e.target);
@@ -4203,7 +4320,7 @@ async function getUserData() {
         
                             newWrapper.querySelectorAll(".work-up-btn").forEach(btn => {
                                 btn.addEventListener("click", () => {
-                                    window.location.href = "/jobapp/admin.html?admin=true&jobId=" + newWrapper.id.split("-")[1];
+                                    window.location.href = gitName + "/admin.html?admin=true&jobId=" + newWrapper.id.split("-")[1];
                                 });
                             });
                             newWrapper.querySelector(".work-assign-btn").addEventListener("click", () => {
@@ -4211,8 +4328,8 @@ async function getUserData() {
                                 document.getElementById("newJobModal").style.pointerEvents = "auto";
                                 document.getElementById("workerInput").value = worker.name;
                                 document.getElementById("idInput").value = worker.id;
-                                document.querySelector(".new-worker-label").style.display = "none";
-                                document.querySelector(".new-worker-selector").style.display = "none";
+                                document.getElementById("jobDateLabel").style.display = "block";
+                                document.getElementById("jobDateSelector").style.display = "flex";
 
                                 document.querySelectorAll(".edit-mat-option").forEach(option => {
                                     option.classList.remove("edit-mat-active");
@@ -4536,6 +4653,7 @@ async function getUserData() {
                                             newNoti.style.borderBottom = "0px";
                                         }
                                         document.querySelector(".noti-ul").appendChild(newNoti);
+                                        anyNotis++;
                                     });
                                     if(newNotis == 0){
                                         //document.querySelector(".noti-red").style.display = "none";
@@ -4597,7 +4715,7 @@ async function getUserData() {
                                         credentials: 'include'
                                     });
                                     const data = await response.json(); 
-                                    if(data.message == "success") window.location.href = "/jobapp/login.html";
+                                    if(data.message == "success") window.location.href = gitName + "/login.html";
                                 } catch (error) {
                                     console.error('Error fetching data:', error);
                                 }
@@ -4631,6 +4749,12 @@ async function getUserData() {
                             if(!document.getElementById("sideNoti").contains(e.target)){
                                 document.querySelector(".dash-noti-drop").style.opacity = "0";
                                 document.querySelector(".dash-noti-drop").style.pointerEvents = "none";
+                            }
+
+                            if(!document.querySelector("#repWorkerSearch").contains(e.target)){
+                                document.querySelector("#repWorkerSearch").classList.remove("search-selector-dropped");
+                                document.querySelector("#repWorkerSearch").querySelector(".search-drop").style.opacity = "0";
+                                document.querySelector("#repWorkerSearch").querySelector(".search-drop").style.pointerEvents = "none";
                             }
                         });
                         document.querySelector(".date-modal").addEventListener("click", (e) => {
@@ -4692,6 +4816,227 @@ async function getUserData() {
                         });
                     }
 
+                    /*/////////////// ELEMENT ONLY ////////////////*/
+                    if(document.getElementById("calModal")){
+                        document.querySelector("#calSearch").addEventListener("input", () => {
+                            document.querySelector("#calSearch .search-drop").innerHTML = "";
+                            let newValue = document.querySelector("#calSearch input").value;
+                            if(newValue.length > 0 && jobs){
+                                workers.forEach(worker => {
+                                    if(worker.name.toLowerCase().includes(newValue.toLowerCase())){
+                                        let newOption = document.createElement("div");
+                                        newOption.classList.add("search-option");
+                                        let lowerValue = newValue.toLowerCase();
+                                        let lowerJob = worker.name.toLowerCase();
+                                        let firstIdx = lowerJob.indexOf(lowerValue);
+                                        let lastIdx = firstIdx + (lowerValue.length - 1);
+                                        let higherJob = lowerJob.split(" ").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
+                                        let finalOption = higherJob.slice(0, firstIdx) + "<span>" + higherJob.slice(firstIdx, lastIdx + 1) + "</span>" + higherJob.slice(lastIdx + 1);
+                                        newOption.innerHTML = finalOption;
+                                        document.querySelector("#calSearch .search-drop").appendChild(newOption);
+
+                                        newOption.addEventListener("click", () => {
+                                            let jobWrapper;
+                                            document.querySelectorAll(".work-wrapper").forEach(wrapper => {
+                                                if(wrapper.id.split("-")[1] == worker.id){
+                                                    jobWrapper = wrapper;
+                                                }
+                                            });
+                                            if(jobWrapper){
+                                                document.getElementById("workerEmpty").style.display = "none";
+                                                jobWrapper.style.display = "block";
+                                                jobWrapper.scrollIntoView({
+                                                    behavior: "smooth",
+                                                    block: "center"
+                                                });
+                                            }
+                                            document.querySelector("#calSearch").classList.remove("search-selector-dropped");
+                                            document.querySelector("#calSearch .search-drop").style.opacity = "0";
+                                            document.querySelector("#calSearch .search-drop").style.pointerEvents = "none";
+                                        });
+                                    }
+                                });
+                                if(document.querySelector("#calSearch .search-drop").innerHTML != ""){
+                                    document.querySelector("#calSearch").classList.add("search-selector-dropped");
+                                    document.querySelector("#calSearch .search-drop").style.opacity = "1";
+                                    document.querySelector("#calSearch .search-drop").style.pointerEvents = "auto";
+                                } else {
+                                    document.querySelector("#calSearch").classList.remove("search-selector-dropped");
+                                    document.querySelector("#calSearch .search-drop").style.opacity = "0";
+                                    document.querySelector("#calSearch .search-drop").style.pointerEvents = "none";
+                                }
+                            } else {
+                                document.querySelector("#calSearch").classList.remove("search-selector-dropped");
+                                document.querySelector("#calSearch .search-drop").style.opacity = "0";
+                                document.querySelector("#calSearch .search-drop").style.pointerEvents = "none";
+                            }
+                        });
+
+                        let workerCount = 0;
+                        workers.forEach(worker => {
+                            let newWrapper = document.createElement("div");
+                            newWrapper.classList.add("work-wrapper");
+                            newWrapper.id = "worker-" + worker.id;
+
+                            let nextJob = "None upcoming";
+                            let matchCount = 0;
+                            jobs.forEach(job => {
+                                if(job.user_id == worker.id && matchCount < 3 && isDateFuture(todayDate, job.job_date) && job.job_status != "Completed"){
+                                    matchCount++;
+                                    if(matchCount == 1) nextJob = job.job_date + " - " + job.job_time;
+                                }
+                            });
+
+                            newWrapper.innerHTML = `
+                                <div class="work-top">
+                                    <div class="work-pfp"><i class="fa-solid fa-user"></i></div>
+                                    <div>
+                                        <div class="work-name">${worker.name}</div>
+                                        <div class="work-role">${worker.role}</div>
+                                    </div>
+                                </div>
+
+                                <div class="work-ul">
+                                    <div class="work-li">
+                                        <div class="work-label">Phone</div>
+                                        <div class="work-txt">${worker.phone}</div>
+                                    </div>
+                                    <div class="work-li">
+                                        <div class="work-label">Email</div>
+                                        <div class="work-txt">${worker.email}</div>
+                                    </div>
+                                    <div class="work-li">
+                                        <div class="work-label">Next Job</div>
+                                        <div class="work-txt">${nextJob}</div>
+                                    </div>
+                                </div>
+
+                                <div class="work-btn-flex">
+                                    <div class="work-btn work-assign-btn">Assign Job</div>
+                                </div>
+                            `;
+                            document.querySelector(".cal-work-col").appendChild(newWrapper);
+                            workerCount++;
+                            if(workerCount == 6){
+                                newWrapper.style.display = "none";
+                            }
+
+                            newWrapper.querySelector(".work-assign-btn").addEventListener("click", () => {
+                                document.getElementById("jobDateInput").value = document.querySelector(".cal-date-active").id.split("-")[1];
+                                document.getElementById("workerInput").value = worker.name;
+                                document.getElementById("idInput").value = worker.id;
+                                document.getElementById("newJobModal").style.opacity = "1";
+                                document.getElementById("newJobModal").style.pointerEvents = "auto";
+                            });
+                        });
+                        if(document.querySelectorAll(".work-wrapper").length == 0){
+                            document.getElementById("workerEmpty").style.display = "block";
+                        }
+
+                        for(let i = 0; i > -365; i--){
+                            let newDate = getSpecificDate(i);
+                            let newEl = document.createElement("div");
+                            newEl.classList.add("cal-date");
+                            newEl.id = "date-" + newDate;
+                            if(i == 0) newEl.classList.add("cal-date-active");
+                            newEl.innerHTML = `
+                                <div>${shortMonths[(newDate.split("/")[1] - 1)]}</div>
+                                <span>${newDate.split("/")[0]}</span>
+                            `;
+                            document.querySelector(".cal-flex").appendChild(newEl);
+                        }
+                        document.querySelectorAll(".cal-date").forEach(date => {
+                            date.addEventListener("click", () => {
+                                document.querySelectorAll(".cal-date").forEach(other => {
+                                    other.classList.remove("cal-date-active"); 
+                                });
+                                date.classList.add("cal-date-active");
+                            });
+                        });
+                        document.querySelectorAll(".cal-chev").forEach((chev, idx) => {
+                            chev.addEventListener("click", () => {
+                                let scroll = 200;
+                                if(idx == 0){
+                                    scroll = -200;
+                                }
+                                document.querySelector(".cal-flex").scrollBy({
+                                    left: scroll,
+                                    behavior: "smooth"
+                                });
+                            });
+                        });
+
+                        if(document.querySelector(".cal-back")){
+                            document.querySelector(".cal-back").addEventListener("click", () => {
+                                document.getElementById("calModal").style.opacity = "0";
+                                document.getElementById("calModal").style.pointerEvents = "none";
+                                document.getElementById("calModal").style.left = "255px";
+                            });
+                        }
+
+                        /*///////// MODAL CLICKOUTS ////////*/
+                        document.addEventListener("click", (e) => {
+                            if(!document.querySelector("#calSearch").contains(e.target)){
+                                document.querySelector("#calSearch").classList.remove("search-selector-dropped");
+                                document.querySelector("#calSearch").querySelector(".search-drop").style.opacity = "0";
+                                document.querySelector("#calSearch").querySelector(".search-drop").style.pointerEvents = "none";
+                            }
+                        });
+                        document.querySelector("#calSearch input").addEventListener("focus", () => {
+                            document.querySelector("#calSearch .search-drop").innerHTML = "";
+                            let newValue = document.querySelector("#calSearch input").value;
+                            if(newValue.length > 0 && jobs){
+                                workers.forEach(worker => {
+                                    if(worker.name.toLowerCase().includes(newValue.toLowerCase())){
+                                        let newOption = document.createElement("div");
+                                        newOption.classList.add("search-option");
+                                        let lowerValue = newValue.toLowerCase();
+                                        let lowerJob = worker.name.toLowerCase();
+                                        let firstIdx = lowerJob.indexOf(lowerValue);
+                                        let lastIdx = firstIdx + (lowerValue.length - 1);
+                                        let higherJob = lowerJob.split(" ").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
+                                        let finalOption = higherJob.slice(0, firstIdx) + "<span>" + higherJob.slice(firstIdx, lastIdx + 1) + "</span>" + higherJob.slice(lastIdx + 1);
+                                        newOption.innerHTML = finalOption;
+                                        document.querySelector("#calSearch .search-drop").appendChild(newOption);
+
+                                        newOption.addEventListener("click", () => {
+                                            let jobWrapper;
+                                            document.querySelectorAll(".work-wrapper").forEach(wrapper => {
+                                                if(wrapper.id.split("-")[1] == worker.id){
+                                                    jobWrapper = wrapper;
+                                                }
+                                            });
+                                            if(jobWrapper){
+                                                document.getElementById("workerEmpty").style.display = "none";
+                                                jobWrapper.style.display = "block";
+                                                jobWrapper.scrollIntoView({
+                                                    behavior: "smooth",
+                                                    block: "center"
+                                                });
+                                            }
+                                            document.querySelector("#calSearch").classList.remove("search-selector-dropped");
+                                            document.querySelector("#calSearch .search-drop").style.opacity = "0";
+                                            document.querySelector("#calSearch .search-drop").style.pointerEvents = "none";
+                                        });
+                                    }
+                                });
+                                if(document.querySelector("#calSearch .search-drop").innerHTML != ""){
+                                    document.querySelector("#calSearch").classList.add("search-selector-dropped");
+                                    document.querySelector("#calSearch .search-drop").style.opacity = "1";
+                                    document.querySelector("#calSearch .search-drop").style.pointerEvents = "auto";
+                                } else {
+                                    document.querySelector("#calSearch").classList.remove("search-selector-dropped");
+                                    document.querySelector("#calSearch .search-drop").style.opacity = "0";
+                                    document.querySelector("#calSearch .search-drop").style.pointerEvents = "none";
+                                }
+                            } else {
+                                document.querySelector("#calSearch").classList.remove("search-selector-dropped");
+                                document.querySelector("#calSearch .search-drop").style.opacity = "0";
+                                document.querySelector("#calSearch .search-drop").style.pointerEvents = "none";
+                            }
+                        });
+                    }
+                    /*/////////////////////////////////////////////*/
                 } catch (error) {
                     console.error('Error fetching data:', error);
                 }
@@ -4700,10 +5045,10 @@ async function getUserData() {
         } 
 
         else if(userData && userData.perms == "admin") {
-            if(isMobile){
-                window.location.href = "/jobapp/admin.html?admin=true";
+            if(isMobile && window.innerWidth < 1260){
+                window.location.href = gitName + "/admin.html?admin=true";
             } else {
-                window.location.href = "/jobapp/dashboard.html?admin=true";
+                window.location.href = gitName + "/dashboard.html?admin=true";
             }
         }
         /*//////////////////////////////////////*/

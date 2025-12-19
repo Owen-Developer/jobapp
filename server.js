@@ -57,8 +57,8 @@ app.use(express.static(path.join(__dirname, "docs")));
 
 
 ////////////////////////// REUSABLE FUNCTIONS //////////////////////////
-async function sendEmail(userEmail, code) {
-    const dataToSend = { reciever: userEmail, text: `Your verification code is <strong>${code}</strong>`, service: 'examscope' };
+async function sendEmail(userEmail, text) {
+    const dataToSend = { reciever: userEmail, text: `${text}`, service: 'nextdesign' };
     try {
         const response = await fetch('https://email-sender-lkex.vercel.app/api/send-email', {
             method: 'POST',
@@ -130,6 +130,10 @@ function createNoti(userId, title, type, reciever){
             console.error(err);
         }
     });
+}
+
+function sendVerificationCode(userEmail, code){
+    sendEmail(userEmail, "Your verification code is " + code);
 }
 
 
@@ -718,6 +722,60 @@ app.post("/api/delete-price", (req, res) => {
         }
 
         return res.json({ message: 'success' });
+    });
+});
+
+
+
+app.post("/api/send-code", (req, res) => {
+    db.query("select * from users where email = ?", [req.body.email], (err, result) => {
+        if(err){
+            console.error(err);
+        }
+
+        if(result.length == 0){
+            return res.json({ message: 'noemail' });
+        }
+
+        const code = Math.floor(100000 + Math.random() * 900000);
+        sendVerificationCode(result[0].email, code);
+        db.query("update users set verification_code = ? where id = ?", [code, result[0].id], (err, result) => {
+            if(err){
+                console.error(err);
+            }
+            
+            return res.json({ message: 'success' });
+        });
+    });
+});
+
+app.post("/api/verify", (req, res) => {
+    const { code, password } = req.body;
+
+    db.query("select * from users where verification_code = ?", [code], (err, result) => {
+        if(err){
+            console.error(err);
+        }
+
+        if(result.length == 0){
+            return res.json({ message: 'codeerror' });
+        }
+
+        let userId = result[0].id;
+        bcrypt.hash(password, 10, (err, hashedPassword) => {
+            if(err){
+                console.error(err);
+            }
+
+            db.query("update users set password_hash = ?, verification_code = ? where id = ?", [hashedPassword, "n/a", userId], (err, result) => {
+                if(err){
+                    console.error(err);
+                }
+
+                req.session.userId = userId;
+                return res.json({ message: 'success' });
+            });
+        });
     });
 });
 
