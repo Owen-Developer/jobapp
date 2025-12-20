@@ -4929,7 +4929,7 @@ async function getUserData() {
                                 document.getElementById("newJobModal").style.pointerEvents = "auto";
                             });
                         });
-                        if(document.querySelectorAll(".work-wrapper").length == 0){
+                        if(document.getElementById("calModal").querySelectorAll(".work-wrapper").length == 0){
                             document.getElementById("workerEmpty").style.display = "block";
                         }
 
