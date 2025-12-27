@@ -656,6 +656,7 @@ button {
 }
 
 .lac-container {
+    display: none;
     transition: 0.3s ease;
     width: 1300px;
     max-width: calc(100% - 60px);
