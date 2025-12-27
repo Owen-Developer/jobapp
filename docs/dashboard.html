@@ -61,6 +61,12 @@
             <div class="dash-top">
                 <div class="dash-title">Dashboard</div>
 
+                <div class="dash-toggle">
+                    <div class="dash-toggle-option" style="color: white;">Daily</div>
+                    <div class="dash-toggle-option" style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);">Weekly</div>
+                    <div class="dash-toggle-option">Monthly</div>
+                    <span class="dash-toggle-left"></span>
+                </div>
                 <div class="dash-btn dash-worker-btn" id="newWorkerBtn">Add Worker</div>
                 <div class="dash-btn dash-new-btn" id="newJobBtn"><i class="fa-solid fa-plus"></i> New Job</div>
             </div>
@@ -335,7 +341,429 @@
                 </div>
             </div>
         </div>
+        <div class="lac-container">
+            <div class="lac-wrapper">
+                <div class="lac-right-col">
+                    <div class="lac-nav">
+                        <i class="fa-solid fa-chevron-left lac-nav-chevron"></i>
+                        <div class="lac-nav-title"></div>
+                        <i class="fa-solid fa-chevron-right lac-nav-chevron"></i>
+                    </div>
+                    
+                    <div class="lac-top">
+                        <div class="lac-top-mon"><i class="fa-solid fa-plus"></i></div>
+                        <div class="lac-top-mon lac-top-real">Mon<span class="lac-top-mon">1</span></div>
+                        <div class="lac-top-mon lac-top-real">Tue<span class="lac-top-mon">2</span></div>
+                        <div class="lac-top-mon lac-top-real">Wed<span class="lac-top-mon">3</span></div>
+                        <div class="lac-top-mon lac-top-real">Thu<span class="lac-top-mon">4</span></div>
+                        <div class="lac-top-mon lac-top-real">Fri<span class="lac-top-mon">5</span></div>
+                        <div class="lac-top-mon lac-top-real">Sat<span class="lac-top-mon">6</span></div>
+                    </div>
+    
+                    <!-- 
+                        <div class="lac-flex" id="time-09:30">
+                            <div class="lac-box lac-worker-box" style="border-left: 0;">
+                                <div class="lac-worker">James Healy</div>
+                            </div>
+                            <div class="lac-box">
+                                <div class="lac-job">
+                                    <div class="lac-job-name">Boiler Repair</div>
+                                    <div class="lac-job-time">3:00 PM</div>
+                                </div>
+                                <div class="lac-job">
+                                    <div class="lac-job-name">Boiler Repair</div>
+                                    <div class="lac-job-time">3:00 PM</div>
+                                </div>
+                            </div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box" style="border-right: 0;"></div>
+                        </div>
+                        <div class="lac-flex" id="time-09:45">
+                            <div class="lac-box lac-worker-box" style="border-left: 0;">
+                                <div class="lac-worker">James Healy</div>
+                            </div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box" style="border-right: 0;"></div>
+                        </div>
+                        <div class="lac-flex" id="time-10:00">
+                            <div class="lac-box lac-worker-box" style="border-left: 0;">
+                                <div class="lac-worker">James Healy</div>
+                            </div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box" style="border-right: 0;"></div>
+                        </div>
+                        <div class="lac-flex" id="time-10:15">
+                            <div class="lac-box lac-worker-box" style="border-left: 0;">
+                                <div class="lac-worker">James Healy</div>
+                            </div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box" style="border-right: 0;"></div>
+                        </div>
+                        <div class="lac-flex" id="time-10:30">
+                            <div class="lac-box lac-worker-box" style="border-left: 0;">
+                                <div class="lac-worker">James Healy</div>
+                            </div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box" style="border-right: 0;"></div>
+                        </div>
+                        <div class="lac-flex" id="time-10:45">
+                            <div class="lac-box lac-worker-box" style="border-left: 0;">
+                                <div class="lac-worker">James Healy</div>
+                            </div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box" style="border-right: 0;"></div>
+                        </div>
+                        <div class="lac-flex" id="time-11:00">
+                            <div class="lac-box lac-worker-box" style="border-left: 0;">
+                                <div class="lac-worker">James Healy</div>
+                            </div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box" style="border-right: 0;"></div>
+                        </div>
+                        <div class="lac-flex" id="time-11:15">
+                            <div class="lac-box lac-worker-box" style="border-left: 0;">
+                                <div class="lac-worker">James Healy</div>
+                            </div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box" style="border-right: 0;"></div>
+                        </div>
+                        <div class="lac-flex" id="time-11:30">
+                            <div class="lac-box lac-worker-box" style="border-left: 0;">
+                                <div class="lac-worker">James Healy</div>
+                            </div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box" style="border-right: 0;"></div>
+                        </div>
+                        <div class="lac-flex" id="time-11:45">
+                            <div class="lac-box lac-worker-box" style="border-left: 0;">
+                                <div class="lac-worker">James Healy</div>
+                            </div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box" style="border-right: 0;"></div>
+                        </div>
+                        <div class="lac-flex" id="time-12:00">
+                            <div class="lac-box lac-worker-box" style="border-left: 0;">
+                                <div class="lac-worker">James Healy</div>
+                            </div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box" style="border-right: 0;"></div>
+                        </div>
+                        <div class="lac-flex" id="time-12:15">
+                            <div class="lac-box lac-worker-box" style="border-left: 0;">
+                                <div class="lac-worker">James Healy</div>
+                            </div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box" style="border-right: 0;"></div>
+                        </div>
+                        <div class="lac-flex" id="time-12:30">
+                            <div class="lac-box lac-worker-box" style="border-left: 0;">
+                                <div class="lac-worker">James Healy</div>
+                            </div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box" style="border-right: 0;"></div>
+                        </div>
+                        <div class="lac-flex" id="time-12:45">
+                            <div class="lac-box lac-worker-box" style="border-left: 0;">
+                                <div class="lac-worker">James Healy</div>
+                            </div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box" style="border-right: 0;"></div>
+                        </div>
+                        <div class="lac-flex" id="time-13:00">
+                            <div class="lac-box lac-worker-box" style="border-left: 0;">
+                                <div class="lac-worker">James Healy</div>
+                            </div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box" style="border-right: 0;"></div>
+                        </div>
+                        <div class="lac-flex" id="time-13:15">
+                            <div class="lac-box lac-worker-box" style="border-left: 0;">
+                                <div class="lac-worker">James Healy</div>
+                            </div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box" style="border-right: 0;"></div>
+                        </div>
+                        <div class="lac-flex" id="time-13:30">
+                            <div class="lac-box lac-worker-box" style="border-left: 0;">
+                                <div class="lac-worker">James Healy</div>
+                            </div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box" style="border-right: 0;"></div>
+                        </div>
+                        <div class="lac-flex" id="time-13:45">
+                            <div class="lac-box lac-worker-box" style="border-left: 0;">
+                                <div class="lac-worker">James Healy</div>
+                            </div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box" style="border-right: 0;"></div>
+                        </div>
+                        <div class="lac-flex" id="time-14:00">
+                            <div class="lac-box lac-worker-box" style="border-left: 0;">
+                                <div class="lac-worker">James Healy</div>
+                            </div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box" style="border-right: 0;"></div>
+                        </div>
+                        <div class="lac-flex" id="time-14:15">
+                            <div class="lac-box lac-worker-box" style="border-left: 0;">
+                                <div class="lac-worker">James Healy</div>
+                            </div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box" style="border-right: 0;"></div>
+                        </div>
+                        <div class="lac-flex" id="time-14:30">
+                            <div class="lac-box lac-worker-box" style="border-left: 0;">
+                                <div class="lac-worker">James Healy</div>
+                            </div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box" style="border-right: 0;"></div>
+                        </div>
+                        <div class="lac-flex" id="time-14:45">
+                            <div class="lac-box lac-worker-box" style="border-left: 0;">
+                                <div class="lac-worker">James Healy</div>
+                            </div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box" style="border-right: 0;"></div>
+                        </div>
+                        <div class="lac-flex" id="time-15:00">
+                            <div class="lac-box lac-worker-box" style="border-left: 0;">
+                                <div class="lac-worker">James Healy</div>
+                            </div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box" style="border-right: 0;"></div>
+                        </div>
+                        <div class="lac-flex" id="time-15:15">
+                            <div class="lac-box lac-worker-box" style="border-left: 0;">
+                                <div class="lac-worker">James Healy</div>
+                            </div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box" style="border-right: 0;"></div>
+                        </div>
+                        <div class="lac-flex" id="time-15:30">
+                            <div class="lac-box lac-worker-box" style="border-left: 0;">
+                                <div class="lac-worker">James Healy</div>
+                            </div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box" style="border-right: 0;"></div>
+                        </div>
+                        <div class="lac-flex" id="time-15:45">
+                            <div class="lac-box lac-worker-box" style="border-left: 0;">
+                                <div class="lac-worker">James Healy</div>
+                            </div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box" style="border-right: 0;"></div>
+                        </div>
+                        <div class="lac-flex" id="time-16:00">
+                            <div class="lac-box lac-worker-box" style="border-left: 0;">
+                                <div class="lac-worker">James Healy</div>
+                            </div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box" style="border-right: 0;"></div>
+                        </div>
+                        <div class="lac-flex" id="time-16:15">
+                            <div class="lac-box lac-worker-box" style="border-left: 0;">
+                                <div class="lac-worker">James Healy</div>
+                            </div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box" style="border-right: 0;"></div>
+                        </div>
+                        <div class="lac-flex" id="time-16:30">
+                            <div class="lac-box lac-worker-box" style="border-left: 0;">
+                                <div class="lac-worker">James Healy</div>
+                            </div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box" style="border-right: 0;"></div>
+                        </div>
+                        <div class="lac-flex" id="time-16:45">
+                            <div class="lac-box lac-worker-box" style="border-left: 0;">
+                                <div class="lac-worker">James Healy</div>
+                            </div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box" style="border-right: 0;"></div>
+                        </div>
+                        <div class="lac-flex" id="time-17:00">
+                            <div class="lac-box lac-worker-box" style="border-left: 0;">
+                                <div class="lac-worker">James Healy</div>
+                            </div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box" style="border-right: 0;"></div>
+                        </div>
+                        <div class="lac-flex" id="time-17:15">
+                            <div class="lac-box lac-worker-box" style="border-left: 0;">
+                                <div class="lac-worker">James Healy</div>
+                            </div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box" style="border-right: 0;"></div>
+                        </div>
+                        <div class="lac-flex" id="time-17:30">
+                            <div class="lac-box lac-worker-box" style="border-left: 0;">
+                                <div class="lac-worker">James Healy</div>
+                            </div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box" style="border-right: 0;"></div>
+                        </div>
+                        <div class="lac-flex" id="time-17:45">
+                            <div class="lac-box lac-worker-box" style="border-left: 0;">
+                                <div class="lac-worker">James Healy</div>
+                            </div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box"></div>
+                            <div class="lac-box" style="border-right: 0;"></div>
+                        </div>
+                        <div class="lac-flex last-flex" id="time-18:00">
+                            <div class="lac-box" style="border-left: 0; border-bottom: 0;"></div>
+                            <div class="lac-box" style="border-bottom: 0;"></div>
+                            <div class="lac-box" style="border-bottom: 0;"></div>
+                            <div class="lac-box" style="border-bottom: 0;"></div>
+                            <div class="lac-box" style="border-bottom: 0;"></div>
+                            <div class="lac-box" style="border-bottom: 0;"></div>
+                            <div class="lac-box" style="border-right: 0; border-bottom: 0;"></div>
+                        </div>
+                        -->
+    
+                </div>
+    
+            </div>
+        </div>
     </div>
+
+
+
+
 
 
     <div class="read-modal padding">
@@ -867,12 +1295,6 @@
                 <div class="new-label">Material name</div>
                 <input type="text" placeholder="Enter name" class="new-input" name="name" required />
 
-                <div class="new-label">Material cost</div>
-                <input type="number" placeholder="Enter Cost" class="new-input" name="cost" required />
-
-                <div class="new-label">Material charge</div>
-                <input type="number" placeholder="Enter charge" class="new-input" name="charge" required />
-
                 <div class="new-label">Material type</div>
                 <div class="new-pill-flex">
                     <div class="new-pill new-pill-active" id="mat-parts">Parts</div>
@@ -893,6 +1315,12 @@
                     <div class="new-pill" id="mat-ml">ml</div>
                     <input type="hidden" name="unit" value="units" id="newMaterialUnit" />
                 </div>
+
+                <div class="new-label">Material cost (per unit)</div>
+                <input type="number" placeholder="Enter Cost" class="new-input" name="cost" required />
+
+                <div class="new-label">Material charge (per unit)</div>
+                <input type="number" placeholder="Enter charge" class="new-input" name="charge" required />
             </div>
             <button type="submit" class="new-btn" id="newMaterialBtn">Save Changes</button>
         </form>
@@ -906,6 +1334,8 @@
             <div class="btn-thank-modal">Okay</div>
         </div>
     </div>
+
+
 
 
     <div style="height: 120px;"></div>

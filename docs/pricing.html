@@ -191,12 +191,6 @@
                 <div class="new-label">Material name</div>
                 <input type="text" placeholder="Enter name" class="new-input" name="name" required />
 
-                <div class="new-label">Material cost</div>
-                <input type="number" placeholder="Enter Cost" class="new-input" name="cost" required />
-
-                <div class="new-label">Material charge</div>
-                <input type="number" placeholder="Enter charge" class="new-input" name="charge" required />
-
                 <div class="new-label">Material type</div>
                 <div class="new-pill-flex">
                     <div class="new-pill new-pill-active" id="mat-parts">Parts</div>
@@ -217,6 +211,12 @@
                     <div class="new-pill" id="mat-ml">ml</div>
                     <input type="hidden" name="unit" value="units" id="newMaterialUnit" />
                 </div>
+
+                <div class="new-label">Material cost <span class="new-material-per">(per unit)</span></div>
+                <input type="number" placeholder="Enter Cost" class="new-input" name="cost" required />
+
+                <div class="new-label">Material charge <span class="new-material-per">(per unit)</span></div>
+                <input type="number" placeholder="Enter charge" class="new-input" name="charge" required />
             </div>
             <button type="submit" class="new-btn" id="newMaterialBtn">Save Changes</button>
         </form>

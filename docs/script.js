@@ -13,6 +13,7 @@ if(!window.location.href.includes("localhost")){
 let timer = 0;
 let timeInt;
 let timerPaused = false;
+let calendarIdx = 0;
 const isMobile =
   window.matchMedia('(pointer: coarse)').matches &&
   window.matchMedia('(hover: none)').matches;
@@ -123,6 +124,13 @@ function getSpecificDate(daysAgo) {
     return `${dd}/${mm}/${yyyy}`;
 }
 
+function getDay(dateStr){
+    const realStr = dateStr.split("/")[2] + "-" + dateStr.split("/")[1] + "-" + dateStr.split("/")[0];
+    const date = new Date(realStr);
+    const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    return days[date.getDay()];
+}
+
 function getTime(){
     const now = new Date();
     const timeString = now.toLocaleTimeString("en-US", {
@@ -176,7 +184,7 @@ function sortChronologically(array){
     return newArray;
 }
 
-async function getUserData() {
+async function getUserData(){
     try {
         const response = await fetch(`${url}/api/get-user`, {
             method: 'GET',
@@ -862,7 +870,7 @@ async function getUserData() {
                                 if(wrapper.querySelector(".edit-mat-label").textContent.toLowerCase() == mat.type.toLowerCase() && mat.area == "materials"){
                                     let newOption = document.createElement("div");
                                     newOption.classList.add("edit-mat-option");
-                                    newOption.id = mat.default_value + "-" + mat.unit + "-" + mat.default_value;
+                                    newOption.id = mat.default_value + "-" + mat.unit + "-" + mat.default_value + "-" + mat.step; // value, unit, default, step
                                     newOption.innerHTML = mat.name + ' <i class="fa-solid fa-check"></i>';
                                     wrapper.querySelector(".edit-mat-drop").appendChild(newOption);
                                 }
@@ -882,6 +890,10 @@ async function getUserData() {
                                                 <i class="fa-solid fa-plus edit-mat-plus"></i>
                                             </div>
                                         `;
+                                        if((Number(option.id.split("-")[0]) - Number(option.id.split("-")[3])) <= 0){
+                                            newMaterial.querySelector("i.edit-mat-minus").style.display = "none";
+                                            newMaterial.querySelector("i.edit-mat-delete").style.display = "block";
+                                        }
                                         wrapper.querySelector(".edit-mat-col").appendChild(newMaterial);
                                         setTimeout(() => {
                                             wrapper.querySelector(".edit-mat-col").style.marginTop = "25px";
@@ -890,10 +902,10 @@ async function getUserData() {
                                         }, 30);
     
                                         newMaterial.querySelector("i.edit-mat-plus").addEventListener("click", () => {
-                                            newMaterial.querySelector(".edit-mat-quan span").innerHTML = String(Number(newMaterial.querySelector(".edit-mat-quan span").innerHTML.slice(0, newMaterial.querySelector(".edit-mat-quan span").innerHTML.indexOf("<") - 1)) + 1) + newMaterial.querySelector(".edit-mat-quan span").innerHTML.slice(newMaterial.querySelector(".edit-mat-quan span").innerHTML.indexOf("<") - 1)
+                                            newMaterial.querySelector(".edit-mat-quan span").innerHTML = String(Number(newMaterial.querySelector(".edit-mat-quan span").innerHTML.slice(0, newMaterial.querySelector(".edit-mat-quan span").innerHTML.indexOf("<") - 1)) + Number(option.id.split("-")[3])) + newMaterial.querySelector(".edit-mat-quan span").innerHTML.slice(newMaterial.querySelector(".edit-mat-quan span").innerHTML.indexOf("<") - 1)
                                             newMaterial.querySelector("i.edit-mat-delete").style.display = "none";
                                             newMaterial.querySelector("i.edit-mat-minus").style.display = "block";
-                                            option.id = String(Number(option.id.split("-")[0]) + 1) + "-" + option.id.split("-")[1] + "-" + option.id.split("-")[2];
+                                            option.id = String(Number(option.id.split("-")[0]) + Number(option.id.split("-")[3])) + "-" + option.id.split("-")[1] + "-" + option.id.split("-")[2] + "-" + option.id.split("-")[3];
                                             materials.forEach(material => {
                                                 if(material[0] == option.innerHTML.slice(0, option.innerHTML.indexOf("<") - 1)){
                                                     material[1] = option.id.split("-")[0];
@@ -901,17 +913,22 @@ async function getUserData() {
                                             });
                                         });
                                         newMaterial.querySelector("i.edit-mat-minus").addEventListener("click", () => {
-                                            newMaterial.querySelector(".edit-mat-quan span").innerHTML = String(Number(newMaterial.querySelector(".edit-mat-quan span").innerHTML.slice(0, newMaterial.querySelector(".edit-mat-quan span").innerHTML.indexOf("<") - 1)) - 1) + newMaterial.querySelector(".edit-mat-quan span").innerHTML.slice(newMaterial.querySelector(".edit-mat-quan span").innerHTML.indexOf("<") - 1)
+                                            newMaterial.querySelector(".edit-mat-quan span").innerHTML = String(Number(newMaterial.querySelector(".edit-mat-quan span").innerHTML.slice(0, newMaterial.querySelector(".edit-mat-quan span").innerHTML.indexOf("<") - 1)) - Number(option.id.split("-")[3])) + newMaterial.querySelector(".edit-mat-quan span").innerHTML.slice(newMaterial.querySelector(".edit-mat-quan span").innerHTML.indexOf("<") - 1)
                                             if(Number(newMaterial.querySelector(".edit-mat-quan span").innerHTML.slice(0, newMaterial.querySelector(".edit-mat-quan span").innerHTML.indexOf("<") - 1)) == 1){
                                                 newMaterial.querySelector("i.edit-mat-delete").style.display = "block";
                                                 newMaterial.querySelector("i.edit-mat-minus").style.display = "none";
                                             }
-                                            option.id = String(Number(option.id.split("-")[0]) - 1) + "-" + option.id.split("-")[1] + "-" + option.id.split("-")[2];
+                                            option.id = String(Number(option.id.split("-")[0]) - Number(option.id.split("-")[3])) + "-" + option.id.split("-")[1] + "-" + option.id.split("-")[2] + "-" + option.id.split("-")[3];
                                             materials.forEach(material => {
                                                 if(material[0] == option.innerHTML.slice(0, option.innerHTML.indexOf("<") - 1)){
                                                     material[1] = option.id.split("-")[0];
                                                 } 
                                             });
+                                            console.log((Number(option.id.split("-")[0]) - Number(option.id.split("-")[3])));
+                                            if((Number(option.id.split("-")[0]) - Number(option.id.split("-")[3])) <= 0){
+                                                newMaterial.querySelector("i.edit-mat-minus").style.display = "none";
+                                                newMaterial.querySelector("i.edit-mat-delete").style.display = "block";
+                                            }
                                         });
                                         newMaterial.querySelector("i.edit-mat-delete").addEventListener("click", () => {
                                             newMaterial.style.maxHeight = "0px";
@@ -926,7 +943,7 @@ async function getUserData() {
                                             materials.forEach((material, idx) => {
                                                 if(material[0] == option.innerHTML.slice(0, option.innerHTML.indexOf("<") - 1)){
                                                     materials.splice(idx, 1);
-                                                    option.id = option.id.split("-")[2] + "-" + option.id.split("-")[1] + "-" + option.id.split("-")[2];
+                                                    option.id = option.id.split("-")[2] + "-" + option.id.split("-")[1] + "-" + option.id.split("-")[2] + "-" + option.id.split("-")[3];
                                                 } 
                                             });
                                         });
@@ -1133,15 +1150,29 @@ async function getUserData() {
                 document.getElementById("contactModal").style.opacity = "1";
                 document.getElementById("contactModal").style.pointerEvents = "auto";
             });
-            document.getElementById("contactSendBtn").addEventListener("click", () => {
-                document.getElementById("contactModal").style.opacity = "0";
-                document.getElementById("contactModal").style.pointerEvents = "none";
-                setTimeout(() => {
-                    document.getElementById("thankContact").style.opacity = "1";
-                    document.getElementById("thankContact").style.pointerEvents = "auto";
-                    document.getElementById("thankContact").querySelector(".thank-wrapper").style.opacity = "1";
-                    document.getElementById("thankContact").querySelector(".thank-wrapper").style.transform = "scale(1)";
-                }, 300);
+            document.getElementById("contactForm").addEventListener("submit", async (e) => {
+                e.preventDefault(); 
+                const formData = new FormData(e.target);
+                const data = Object.fromEntries(formData.entries());
+
+                const res = await fetch(url + "/api/contact", {
+                    method: "POST",
+                    credentials: 'include',
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data)
+                });
+
+                const responseData = await res.json();
+                if(responseData.message == "success"){
+                    document.getElementById("contactModal").style.opacity = "0";
+                    document.getElementById("contactModal").style.pointerEvents = "none";
+                    setTimeout(() => {
+                        document.getElementById("thankContact").style.opacity = "1";
+                        document.getElementById("thankContact").style.pointerEvents = "auto";
+                        document.getElementById("thankContact").querySelector(".thank-wrapper").style.opacity = "1";
+                        document.getElementById("thankContact").querySelector(".thank-wrapper").style.transform = "scale(1)";
+                    }, 300);
+                }
             });
 
             document.getElementById("newPushBtn").addEventListener("click", () => {
@@ -1407,7 +1438,7 @@ async function getUserData() {
                                 statusClass = "active";
                             } else if(job.job_status == "Completed"){
                                 let allowedDates = [];
-                                for(let i = 0; i < 7; i++){
+                                for(let i = -7; i < 7; i++){
                                     allowedDates.push(getSpecificDate(i));
                                 }
                                 if(!allowedDates.includes(job.job_date)){
@@ -1444,6 +1475,7 @@ async function getUserData() {
                             `;
                             document.querySelector(".admin-table-col").appendChild(newRow);
                         });
+                        console.log(jobs);
                         if(validJobs == 0){
                             showNoJobs();
                         }
@@ -1800,70 +1832,70 @@ async function getUserData() {
                                 averageProfit = averageProfit / usedDates.length || 0;
 
                                 if(todayRevenue >= averageRevenue){
-                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     let percent = (((todayRevenue / averageRevenue) - 1) * 100).toFixed(0);
                                     document.getElementById("totalRevenueText").textContent = `+${percent}% from average day`;
                                 } else {
-                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     let percent = (((todayRevenue / averageRevenue) - 1) * 100).toFixed(0);
                                     document.getElementById("totalRevenueText").textContent = `${percent}% from average day`;
                                 }
                                 if(todayRevenue == 0){
-                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     document.getElementById("totalRevenueText").textContent = `No revenue earned today`;
                                 } else if(todayRevenue > 0 && averageRevenue == 0){
-                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     document.getElementById("totalRevenueText").textContent = `Total revenue earned today`;
                                 }
 
                                 if(todayLabour >= averageLabour){
-                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     let percent = (((todayLabour / averageLabour) - 1) * 100).toFixed(0);
                                     document.getElementById("totalLabourText").textContent = `+${percent}% from average day`;
                                 } else {
-                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     let percent = (((todayLabour / averageLabour) - 1) * 100).toFixed(0);
                                     document.getElementById("totalLabourText").textContent = `${percent}% from average day`;
                                 }
                                 if(todayLabour == 0){
-                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     document.getElementById("totalLabourText").textContent = `No labour recorded today`;
                                 } else if(todayLabour > 0 && averageLabour == 0){
-                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     document.getElementById("totalLabourText").textContent = `Total labour today`;
                                 }
 
                                 if(todayMaterial >= averageLabour){
-                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     let percent = (((todayMaterial / averageLabour) - 1) * 100).toFixed(0);
                                     document.getElementById("totalMaterialText").textContent = `+${percent}% from average day`;
                                 } else {
-                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     let percent = (((todayMaterial / averageLabour) - 1) * 100).toFixed(0);
                                     document.getElementById("totalMaterialText").textContent = `${percent}% from average day`;
                                 }
                                 if(todayMaterial == 0){
-                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     document.getElementById("totalMaterialText").textContent = `No materials used today`;
                                 } else if(todayMaterial > 0 && averageLabour == 0){
-                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     document.getElementById("totalMaterialText").textContent = `Total materials used today`;
                                 }
 
                                 if(todayProfit >= averageProfit){
-                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     let percent = (((todayProfit / averageProfit) - 1) * 100).toFixed(0);
                                     document.getElementById("totalProfitText").textContent = `+${percent}% from average day`;
                                 } else {
-                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     let percent = (((todayProfit / averageProfit) - 1) * 100).toFixed(0);
                                     document.getElementById("totalProfitText").textContent = `${percent}% from average day`;
                                 }
                                 if(todayProfit == 0){
-                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     document.getElementById("totalProfitText").textContent = `No profit today`;
                                 } else if(todayProfit > 0 && averageProfit == 0){
-                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     document.getElementById("totalProfitText").textContent = `Total profit today`;
                                 }
                             } else if(time == "weekly"){
@@ -1878,7 +1910,7 @@ async function getUserData() {
                                 }
                                 jobs.forEach(job => {if(job.job_status == "Completed"){
                                     if(currentDates.includes(job.job_date)){
-                                        todayRevenue += Number(job.job_realcharge.replace(/£/g, ""));
+                                        todayRevenue += Number(Number(job.job_realcharge.replace(/£/g, "")).toFixed(2));
                                         todayLabour += Number(job.labour_cost.replace(/£/g, ""));
                                         todayMaterial += Number(job.material_cost.replace(/£/g, ""));
                                         todayProfit += Number(job.job_realcharge.replace(/£/g, "")) - Number(job.job_setback.replace(/£/g, ""));
@@ -1891,70 +1923,70 @@ async function getUserData() {
                                 }});
 
                                 if(todayRevenue >= averageRevenue){
-                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     let percent = (((todayRevenue / averageRevenue) - 1) * 100).toFixed(0);
                                     document.getElementById("totalRevenueText").textContent = `+${percent}% from average week`;
                                 } else {
-                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     let percent = (((todayRevenue / averageRevenue) - 1) * 100).toFixed(0);
                                     document.getElementById("totalRevenueText").textContent = `${percent}% from average week`;
                                 }
                                 if(todayRevenue == 0){
-                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     document.getElementById("totalRevenueText").textContent = `No revenue this week`;
                                 } else if(todayRevenue > 0 && averageRevenue == 0){
-                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     document.getElementById("totalRevenueText").textContent = `Total revenue this week`;
                                 }
 
                                 if(todayLabour >= averageLabour){
-                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     let percent = (((todayLabour / averageLabour) - 1) * 100).toFixed(0);
                                     document.getElementById("totalLabourText").textContent = `+${percent}% from average week`;
                                 } else {
-                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     let percent = (((todayLabour / averageLabour) - 1) * 100).toFixed(0);
                                     document.getElementById("totalLabourText").textContent = `${percent}% from average week`;
                                 }
                                 if(todayLabour == 0){
-                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     document.getElementById("totalLabourText").textContent = `No labour this week`;
                                 } else if(todayLabour > 0 && averageLabour == 0){
-                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     document.getElementById("totalLabourText").textContent = `Total labour this week`;
                                 }
 
                                 if(todayMaterial >= averageLabour){
-                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     let percent = (((todayMaterial / averageLabour) - 1) * 100).toFixed(0);
                                     document.getElementById("totalMaterialText").textContent = `+${percent}% from average week`;
                                 } else {
-                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     let percent = (((todayMaterial / averageLabour) - 1) * 100).toFixed(0);
                                     document.getElementById("totalMaterialText").textContent = `${percent}% from average week`;
                                 }
                                 if(todayMaterial == 0){
-                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     document.getElementById("totalMaterialText").textContent = `No materials this week`;
                                 } else if(todayMaterial > 0 && averageLabour == 0){
-                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     document.getElementById("totalMaterialText").textContent = `Total materials this week`;
                                 }
 
                                 if(todayProfit >= averageProfit){
-                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     let percent = (((todayProfit / averageProfit) - 1) * 100).toFixed(0);
                                     document.getElementById("totalProfitText").textContent = `+${percent}% from average week`;
                                 } else {
-                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     let percent = (((todayProfit / averageProfit) - 1) * 100).toFixed(0);
                                     document.getElementById("totalProfitText").textContent = `${percent}% from average week`;
                                 }
                                 if(todayProfit == 0){
-                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     document.getElementById("totalProfitText").textContent = `No profit this week`;
                                 } else if(todayProfit > 0 && averageProfit == 0){
-                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     document.getElementById("totalProfitText").textContent = `Total profit this week`;
                                 }
                             } else if(time == "monthly"){
@@ -1978,7 +2010,7 @@ async function getUserData() {
                                 }
                                 jobs.forEach(job => {if(job.job_status == "Completed"){
                                     if(currentDates.includes(job.job_date)){
-                                        todayRevenue += Number(job.job_realcharge.replace(/£/g, ""));
+                                        todayRevenue += Number(Number(job.job_realcharge.replace(/£/g, "")).toFixed(2));
                                         todayLabour += Number(job.labour_cost.replace(/£/g, ""));
                                         todayMaterial += Number(job.material_cost.replace(/£/g, ""));
                                         todayProfit += Number(job.job_realcharge.replace(/£/g, "")) - Number(job.job_setback.replace(/£/g, ""));
@@ -1991,70 +2023,70 @@ async function getUserData() {
                                 }});
 
                                 if(todayRevenue >= averageRevenue){
-                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     let percent = (((todayRevenue / averageRevenue) - 1) * 100).toFixed(0);
                                     document.getElementById("totalRevenueText").textContent = `+${percent}% from average month`;
                                 } else {
-                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     let percent = (((todayRevenue / averageRevenue) - 1) * 100).toFixed(0);
                                     document.getElementById("totalRevenueText").textContent = `${percent}% from average month`;
                                 }
                                 if(todayRevenue == 0){
-                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     document.getElementById("totalRevenueText").textContent = `No revenue this month`;
                                 } else if(todayRevenue > 0 && averageRevenue == 0){
-                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     document.getElementById("totalRevenueText").textContent = `Total revenue this month`;
                                 }
 
                                 if(todayLabour >= averageLabour){
-                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     let percent = (((todayLabour / averageLabour) - 1) * 100).toFixed(0);
                                     document.getElementById("totalLabourText").textContent = `+${percent}% from average month`;
                                 } else {
-                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     let percent = (((todayLabour / averageLabour) - 1) * 100).toFixed(0);
                                     document.getElementById("totalLabourText").textContent = `${percent}% from average month`;
                                 }
                                 if(todayLabour == 0){
-                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     document.getElementById("totalLabourText").textContent = `No labour this month`;
                                 } else if(todayLabour > 0 && averageLabour == 0){
-                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     document.getElementById("totalLabourText").textContent = `Total labour this month`;
                                 }
 
                                 if(todayMaterial >= averageLabour){
-                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     let percent = (((todayMaterial / averageLabour) - 1) * 100).toFixed(0);
                                     document.getElementById("totalMaterialText").textContent = `+${percent}% from average month`;
                                 } else {
-                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     let percent = (((todayMaterial / averageLabour) - 1) * 100).toFixed(0);
                                     document.getElementById("totalMaterialText").textContent = `${percent}% from average month`;
                                 }
                                 if(todayMaterial == 0){
-                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     document.getElementById("totalMaterialText").textContent = `No materials this month`;
                                 } else if(todayMaterial > 0 && averageLabour == 0){
-                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     document.getElementById("totalMaterialText").textContent = `Total materials this month`;
                                 }
 
                                 if(todayProfit >= averageProfit){
-                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     let percent = (((todayProfit / averageProfit) - 1) * 100).toFixed(0);
                                     document.getElementById("totalProfitText").textContent = `+${percent}% from average month`;
                                 } else {
-                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     let percent = (((todayProfit / averageProfit) - 1) * 100).toFixed(0);
                                     document.getElementById("totalProfitText").textContent = `${percent}% from average month`;
                                 }
                                 if(todayProfit == 0){
-                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     document.getElementById("totalProfitText").textContent = `No profit this month`;
                                 } else if(todayProfit > 0 && averageProfit == 0){
-                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     document.getElementById("totalProfitText").textContent = `Total profit this month`;
                                 }
                             }
@@ -2529,7 +2561,7 @@ async function getUserData() {
                                 newMaterial.classList.add("pric-li");
                                 newMaterial.id = price.type + "-" + price.id;
                                 newMaterial.innerHTML = `
-                                    <div class="pric-label">${price.name}</div>
+                                    <div class="pric-label">${price.name} <span class="pric-label" style="font-size: 12px; margin-left: 5px;">(per ${price.default_value} ${price.unit})</span></div>
                                     <div class="pric-txt">£${price.cost} <div></div> £${price.charge}</div>
                                 `;
                                 if(price.type != "parts") newMaterial.style.display = "none";
@@ -2652,6 +2684,26 @@ async function getUserData() {
                                         });
                                         pill.classList.add("new-pill-active");
                                         flex.querySelector("input").value = pill.id.split("-")[1];
+
+                                        let defaultValue = 0;
+                                        if(pill.textContent.toLowerCase() == "units"){
+                                            defaultValue = 1;
+                                        } else if(pill.textContent.toLowerCase() == "metres"){
+                                            defaultValue = 1;
+                                        } else if(pill.textContent.toLowerCase() == "mm"){
+                                            defaultValue = 15;
+                                        } else if(pill.textContent.toLowerCase() == "g"){
+                                            defaultValue = 75;
+                                        } else if(pill.textContent.toLowerCase() == "kg"){
+                                            defaultValue = 1;
+                                        } else if(pill.textContent.toLowerCase() == "ml"){
+                                            defaultValue = 250;
+                                        }
+                                        if(defaultValue != 0){
+                                            document.querySelectorAll(".new-material-per").forEach(txt => {
+                                                txt.textContent = `(per ${defaultValue} ${pill.textContent.toLowerCase()})`;
+                                            });
+                                        }
                                     }
                                 });
                             });
@@ -2906,7 +2958,7 @@ async function getUserData() {
                                 let usedDates = [];
                                 jobs.forEach(job => {if(job.job_status == "Completed"){
                                     if(job.job_date == todayDate){
-                                        todayRevenue += Number(job.job_realcharge.replace(/£/g, ""));
+                                        todayRevenue += Number(Number(job.job_realcharge.replace(/£/g, "")).toFixed(2));
                                         todayLabour += Number(job.labour_cost.replace(/£/g, ""));
                                         todayMaterial += Number(job.material_cost.replace(/£/g, ""));
                                         todayProfit += Number(job.job_realcharge.replace(/£/g, "")) - Number(job.job_setback.replace(/£/g, ""));
@@ -2926,70 +2978,70 @@ async function getUserData() {
                                 averageProfit = averageProfit / usedDates.length || 0;
 
                                 if(todayRevenue >= averageRevenue){
-                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     let percent = (((todayRevenue / averageRevenue) - 1) * 100).toFixed(0);
                                     document.getElementById("totalRevenueText").textContent = `+${percent}% from average day`;
                                 } else {
-                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     let percent = (((todayRevenue / averageRevenue) - 1) * 100).toFixed(0);
                                     document.getElementById("totalRevenueText").textContent = `${percent}% from average day`;
                                 }
                                 if(todayRevenue == 0){
-                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     document.getElementById("totalRevenueText").textContent = `No revenue earned today`;
                                 } else if(todayRevenue > 0 && averageRevenue == 0){
-                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     document.getElementById("totalRevenueText").textContent = `Total revenue earned today`;
                                 }
 
                                 if(todayLabour >= averageLabour){
-                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     let percent = (((todayLabour / averageLabour) - 1) * 100).toFixed(0);
                                     document.getElementById("totalLabourText").textContent = `+${percent}% from average day`;
                                 } else {
-                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     let percent = (((todayLabour / averageLabour) - 1) * 100).toFixed(0);
                                     document.getElementById("totalLabourText").textContent = `${percent}% from average day`;
                                 }
                                 if(todayLabour == 0){
-                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     document.getElementById("totalLabourText").textContent = `No labour recorded today`;
                                 } else if(todayLabour > 0 && averageLabour == 0){
-                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     document.getElementById("totalLabourText").textContent = `Total labour today`;
                                 }
 
                                 if(todayMaterial >= averageLabour){
-                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     let percent = (((todayMaterial / averageLabour) - 1) * 100).toFixed(0);
                                     document.getElementById("totalMaterialText").textContent = `+${percent}% from average day`;
                                 } else {
-                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     let percent = (((todayMaterial / averageLabour) - 1) * 100).toFixed(0);
                                     document.getElementById("totalMaterialText").textContent = `${percent}% from average day`;
                                 }
                                 if(todayMaterial == 0){
-                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     document.getElementById("totalMaterialText").textContent = `No materials used today`;
                                 } else if(todayMaterial > 0 && averageLabour == 0){
-                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     document.getElementById("totalMaterialText").textContent = `Total materials used today`;
                                 }
 
                                 if(todayProfit >= averageProfit){
-                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     let percent = (((todayProfit / averageProfit) - 1) * 100).toFixed(0);
                                     document.getElementById("totalProfitText").textContent = `+${percent}% from average day`;
                                 } else {
-                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     let percent = (((todayProfit / averageProfit) - 1) * 100).toFixed(0);
                                     document.getElementById("totalProfitText").textContent = `${percent}% from average day`;
                                 }
                                 if(todayProfit == 0){
-                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     document.getElementById("totalProfitText").textContent = `No profit today`;
                                 } else if(todayProfit > 0 && averageProfit == 0){
-                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     document.getElementById("totalProfitText").textContent = `Total profit today`;
                                 }
                             } else if(time == "weekly"){
@@ -3004,7 +3056,7 @@ async function getUserData() {
                                 }
                                 jobs.forEach(job => {if(job.job_status == "Completed"){
                                     if(currentDates.includes(job.job_date)){
-                                        todayRevenue += Number(job.job_realcharge.replace(/£/g, ""));
+                                        todayRevenue += Number(Number(job.job_realcharge.replace(/£/g, "")).toFixed(2));
                                         todayLabour += Number(job.labour_cost.replace(/£/g, ""));
                                         todayMaterial += Number(job.material_cost.replace(/£/g, ""));
                                         todayProfit += Number(job.job_realcharge.replace(/£/g, "")) - Number(job.job_setback.replace(/£/g, ""));
@@ -3017,70 +3069,70 @@ async function getUserData() {
                                 }});
 
                                 if(todayRevenue >= averageRevenue){
-                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     let percent = (((todayRevenue / averageRevenue) - 1) * 100).toFixed(0);
                                     document.getElementById("totalRevenueText").textContent = `+${percent}% from average week`;
                                 } else {
-                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     let percent = (((todayRevenue / averageRevenue) - 1) * 100).toFixed(0);
                                     document.getElementById("totalRevenueText").textContent = `${percent}% from average week`;
                                 }
                                 if(todayRevenue == 0){
-                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     document.getElementById("totalRevenueText").textContent = `No revenue this week`;
                                 } else if(todayRevenue > 0 && averageRevenue == 0){
-                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     document.getElementById("totalRevenueText").textContent = `Total revenue this week`;
                                 }
 
                                 if(todayLabour >= averageLabour){
-                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     let percent = (((todayLabour / averageLabour) - 1) * 100).toFixed(0);
                                     document.getElementById("totalLabourText").textContent = `+${percent}% from average week`;
                                 } else {
-                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     let percent = (((todayLabour / averageLabour) - 1) * 100).toFixed(0);
                                     document.getElementById("totalLabourText").textContent = `${percent}% from average week`;
                                 }
                                 if(todayLabour == 0){
-                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     document.getElementById("totalLabourText").textContent = `No labour this week`;
                                 } else if(todayLabour > 0 && averageLabour == 0){
-                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     document.getElementById("totalLabourText").textContent = `Total labour this week`;
                                 }
 
                                 if(todayMaterial >= averageLabour){
-                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     let percent = (((todayMaterial / averageLabour) - 1) * 100).toFixed(0);
                                     document.getElementById("totalMaterialText").textContent = `+${percent}% from average week`;
                                 } else {
-                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     let percent = (((todayMaterial / averageLabour) - 1) * 100).toFixed(0);
                                     document.getElementById("totalMaterialText").textContent = `${percent}% from average week`;
                                 }
                                 if(todayMaterial == 0){
-                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     document.getElementById("totalMaterialText").textContent = `No materials this week`;
                                 } else if(todayMaterial > 0 && averageLabour == 0){
-                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     document.getElementById("totalMaterialText").textContent = `Total materials this week`;
                                 }
 
                                 if(todayProfit >= averageProfit){
-                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     let percent = (((todayProfit / averageProfit) - 1) * 100).toFixed(0);
                                     document.getElementById("totalProfitText").textContent = `+${percent}% from average week`;
                                 } else {
-                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     let percent = (((todayProfit / averageProfit) - 1) * 100).toFixed(0);
                                     document.getElementById("totalProfitText").textContent = `${percent}% from average week`;
                                 }
                                 if(todayProfit == 0){
-                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     document.getElementById("totalProfitText").textContent = `No profit this week`;
                                 } else if(todayProfit > 0 && averageProfit == 0){
-                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     document.getElementById("totalProfitText").textContent = `Total profit this week`;
                                 }
                             } else if(time == "monthly"){
@@ -3104,7 +3156,7 @@ async function getUserData() {
                                 }
                                 jobs.forEach(job => {if(job.job_status == "Completed"){
                                     if(currentDates.includes(job.job_date)){
-                                        todayRevenue += Number(job.job_realcharge.replace(/£/g, ""));
+                                        todayRevenue += Number(Number(job.job_realcharge.replace(/£/g, "")).toFixed(2));
                                         todayLabour += Number(job.labour_cost.replace(/£/g, ""));
                                         todayMaterial += Number(job.material_cost.replace(/£/g, ""));
                                         todayProfit += Number(job.job_realcharge.replace(/£/g, "")) - Number(job.job_setback.replace(/£/g, ""));
@@ -3117,70 +3169,70 @@ async function getUserData() {
                                 }});
 
                                 if(todayRevenue >= averageRevenue){
-                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     let percent = (((todayRevenue / averageRevenue) - 1) * 100).toFixed(0);
                                     document.getElementById("totalRevenueText").textContent = `+${percent}% from average month`;
                                 } else {
-                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     let percent = (((todayRevenue / averageRevenue) - 1) * 100).toFixed(0);
                                     document.getElementById("totalRevenueText").textContent = `${percent}% from average month`;
                                 }
                                 if(todayRevenue == 0){
-                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     document.getElementById("totalRevenueText").textContent = `No revenue this month`;
                                 } else if(todayRevenue > 0 && averageRevenue == 0){
-                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     document.getElementById("totalRevenueText").textContent = `Total revenue this month`;
                                 }
 
                                 if(todayLabour >= averageLabour){
-                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     let percent = (((todayLabour / averageLabour) - 1) * 100).toFixed(0);
                                     document.getElementById("totalLabourText").textContent = `+${percent}% from average month`;
                                 } else {
-                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     let percent = (((todayLabour / averageLabour) - 1) * 100).toFixed(0);
                                     document.getElementById("totalLabourText").textContent = `${percent}% from average month`;
                                 }
                                 if(todayLabour == 0){
-                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     document.getElementById("totalLabourText").textContent = `No labour this month`;
                                 } else if(todayLabour > 0 && averageLabour == 0){
-                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     document.getElementById("totalLabourText").textContent = `Total labour this month`;
                                 }
 
                                 if(todayMaterial >= averageLabour){
-                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     let percent = (((todayMaterial / averageLabour) - 1) * 100).toFixed(0);
                                     document.getElementById("totalMaterialText").textContent = `+${percent}% from average month`;
                                 } else {
-                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     let percent = (((todayMaterial / averageLabour) - 1) * 100).toFixed(0);
                                     document.getElementById("totalMaterialText").textContent = `${percent}% from average month`;
                                 }
                                 if(todayMaterial == 0){
-                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     document.getElementById("totalMaterialText").textContent = `No materials this month`;
                                 } else if(todayMaterial > 0 && averageLabour == 0){
-                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     document.getElementById("totalMaterialText").textContent = `Total materials this month`;
                                 }
 
                                 if(todayProfit >= averageProfit){
-                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     let percent = (((todayProfit / averageProfit) - 1) * 100).toFixed(0);
                                     document.getElementById("totalProfitText").textContent = `+${percent}% from average month`;
                                 } else {
-                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     let percent = (((todayProfit / averageProfit) - 1) * 100).toFixed(0);
                                     document.getElementById("totalProfitText").textContent = `${percent}% from average month`;
                                 }
                                 if(todayProfit == 0){
-                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     document.getElementById("totalProfitText").textContent = `No profit this month`;
                                 } else if(todayProfit > 0 && averageProfit == 0){
-                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     document.getElementById("totalProfitText").textContent = `Total profit this month`;
                                 }
                             }
@@ -3593,6 +3645,85 @@ async function getUserData() {
                     } 
 
                     if(document.querySelector(".dashboard")){
+                        function setCalendar(){
+                            let daysAhead = calendarIdx * 6;
+                            let firstDate = getSpecificDate(daysAhead * -1);
+                            let monthTxt = `${months[Number(firstDate.split("/")[1]) - 1]} ${firstDate.split("/")[2]}`;
+                            document.querySelector(".lac-nav-title").textContent = monthTxt;
+                            for(let i = 0; i < 6; i++){
+                                let newDate = getSpecificDate((daysAhead + i) * -1).split("/")[0];
+                                let dayTxt = getDay(getSpecificDate((daysAhead + i) * -1));
+                                document.querySelectorAll(".lac-top-real")[i].innerHTML = `${dayTxt}<span class="lac-top-mon">${newDate}</span>`;
+                            }
+
+                            document.querySelectorAll(".lac-flex").forEach(worker => {
+                                worker.querySelectorAll(".lac-box-real").forEach((box, idx) => {
+                                    box.innerHTML = "";
+                                    let boxDate = getSpecificDate((daysAhead + idx) * -1);
+                                    jobs.forEach(job => {
+                                        if(boxDate.includes("05/01/2026") && job.id == 1){
+                                            console.log(job.user_id + " vs " + worker.id.split("-")[1] + " <br> " + job.job_date + " vs " + boxDate);
+                                        }
+                                        if(job.user_id == worker.id.split("-")[1] && job.job_date == boxDate){
+                                            let newJob = document.createElement("div");
+                                            newJob.classList.add("lac-job");
+                                            newJob.innerHTML = `
+                                                <div class="lac-job-name">${job.job_name}</div>
+                                                <div class="lac-job-time">${job.job_time}</div>
+                                            `;
+                                            box.appendChild(newJob);
+                                        }
+                                    });
+
+                                    box.addEventListener("click", () => {
+                                        document.getElementById("newJobModal").style.opacity = "1";
+                                        document.getElementById("newJobModal").style.pointerEvents = "auto";
+                                        document.getElementById("jobDateLabel").style.display = "none";
+                                        document.getElementById("jobDateSelector").style.display = "none";
+                                        document.getElementById("jobDateInput").value = boxDate;
+                                        document.getElementById("workerInput").value = worker.id.split("-")[0];
+                                        document.getElementById("idInput").value = worker.id.split("-")[1];
+                                    });
+                                });
+                            });
+                        }
+                        document.querySelectorAll(".lac-nav-chevron").forEach((chev, idx) => {
+                            chev.addEventListener("click", () => {
+                                if(idx == 0 && calendarIdx > 0){
+                                    calendarIdx--;
+                                } else if(idx == 1){
+                                    calendarIdx++;
+                                }
+                                setCalendar();
+                            });
+                        });
+                        workers.forEach((worker, idx) => {
+                            let newFlex = document.createElement("div");
+                            newFlex.classList.add("lac-flex");
+                            newFlex.id = worker.name + "-" + worker.id;
+                            newFlex.innerHTML = `
+                                <div class="lac-box lac-worker-box" style="border-left: 0;">
+                                    <div class="lac-worker">${worker.name}</div>
+                                </div>
+                                <div class="lac-box lac-box-real"></div>
+                                <div class="lac-box lac-box-real"></div>
+                                <div class="lac-box lac-box-real"></div>
+                                <div class="lac-box lac-box-real"></div>
+                                <div class="lac-box lac-box-real"></div>
+                                <div class="lac-box lac-box-real" style="border-right: 0;"></div>
+                            `;
+                            document.querySelector(".lac-right-col").appendChild(newFlex);
+
+                            if(idx == workers.length - 1){
+                                newFlex.querySelectorAll(".lac-box").forEach(box => box.style.borderBottom = "0px solid hsl(0, 0%, 88%)");
+                            }
+                        });
+                        document.querySelector(".lac-top-mon i").addEventListener("click", () => {
+                            document.getElementById("newWorkerModal").style.opacity = "1";
+                            document.getElementById("newWorkerModal").style.pointerEvents = "auto";
+                        });
+                        setCalendar();
+
                         function calcProfits(time){
                             let todayRevenue = 0;
                             let averageRevenue = 0;
@@ -3602,7 +3733,98 @@ async function getUserData() {
                             let averageMaterial = 0;
                             let todayProfit = 0;
                             let averageProfit = 0;
-                            if(time == "weekly"){
+                            
+                            if(time == "daily"){
+                                let usedDates = [];
+                                jobs.forEach(job => {if(job.job_status == "Completed"){
+                                    if(job.job_date == todayDate){
+                                        todayRevenue += Number(Number(job.job_realcharge.replace(/£/g, "")).toFixed(2));
+                                        todayLabour += Number(job.labour_cost.replace(/£/g, ""));
+                                        todayMaterial += Number(job.material_cost.replace(/£/g, ""));
+                                        todayProfit += Number(job.job_realcharge.replace(/£/g, "")) - Number(job.job_setback.replace(/£/g, ""));
+                                    } else {
+                                        if(!usedDates.includes(job.job_date)){
+                                            usedDates.push(job.job_date);
+                                        }
+                                        averageRevenue += Number(job.job_realcharge.replace(/£/g, ""));
+                                        averageLabour += Number(job.labour_cost.replace(/£/g, ""));
+                                        averageMaterial += Number(job.material_cost.replace(/£/g, ""));
+                                        averageProfit += Number(job.job_realcharge.replace(/£/g, "")) - Number(job.job_setback.replace(/£/g, ""));
+                                    }
+                                }});
+                                averageRevenue = averageRevenue / usedDates.length || 0;
+                                averageLabour = averageLabour / usedDates.length || 0;
+                                averageMaterial = averageMaterial / usedDates.length || 0;
+                                averageProfit = averageProfit / usedDates.length || 0;
+
+                                if(todayRevenue >= averageRevenue){
+                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue.toFixed(2)} <img src="images/icons/uptrend.png" />`;
+                                    let percent = (((todayRevenue / averageRevenue) - 1) * 100).toFixed(0);
+                                    document.getElementById("totalRevenueText").textContent = `+${percent}% from average day`;
+                                } else {
+                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue.toFixed(2)} <img src="images/icons/downtrend.png" />`;
+                                    let percent = (((todayRevenue / averageRevenue) - 1) * 100).toFixed(0);
+                                    document.getElementById("totalRevenueText").textContent = `${percent}% from average day`;
+                                }
+                                if(todayRevenue == 0){
+                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue.toFixed(2)} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalRevenueText").textContent = `No revenue earned today`;
+                                } else if(todayRevenue > 0 && averageRevenue == 0){
+                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue.toFixed(2)} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalRevenueText").textContent = `Total revenue earned today`;
+                                }
+
+                                if(todayLabour >= averageLabour){
+                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour.toFixed(2)} <img src="images/icons/uptrend.png" />`;
+                                    let percent = (((todayLabour / averageLabour) - 1) * 100).toFixed(0);
+                                    document.getElementById("totalLabourText").textContent = `+${percent}% from average day`;
+                                } else {
+                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour.toFixed(2)} <img src="images/icons/downtrend.png" />`;
+                                    let percent = (((todayLabour / averageLabour) - 1) * 100).toFixed(0);
+                                    document.getElementById("totalLabourText").textContent = `${percent}% from average day`;
+                                }
+                                if(todayLabour == 0){
+                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour.toFixed(2)} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalLabourText").textContent = `No labour recorded today`;
+                                } else if(todayLabour > 0 && averageLabour == 0){
+                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour.toFixed(2)} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalLabourText").textContent = `Total labour today`;
+                                }
+
+                                if(todayMaterial >= averageLabour){
+                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial.toFixed(2)} <img src="images/icons/uptrend.png" />`;
+                                    let percent = (((todayMaterial / averageLabour) - 1) * 100).toFixed(0);
+                                    document.getElementById("totalMaterialText").textContent = `+${percent}% from average day`;
+                                } else {
+                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial.toFixed(2)} <img src="images/icons/downtrend.png" />`;
+                                    let percent = (((todayMaterial / averageLabour) - 1) * 100).toFixed(0);
+                                    document.getElementById("totalMaterialText").textContent = `${percent}% from average day`;
+                                }
+                                if(todayMaterial == 0){
+                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial.toFixed(2)} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalMaterialText").textContent = `No materials used today`;
+                                } else if(todayMaterial > 0 && averageLabour == 0){
+                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial.toFixed(2)} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalMaterialText").textContent = `Total materials used today`;
+                                }
+
+                                if(todayProfit >= averageProfit){
+                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit.toFixed(2)} <img src="images/icons/uptrend.png" />`;
+                                    let percent = (((todayProfit / averageProfit) - 1) * 100).toFixed(0);
+                                    document.getElementById("totalProfitText").textContent = `+${percent}% from average day`;
+                                } else {
+                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit.toFixed(2)} <img src="images/icons/downtrend.png" />`;
+                                    let percent = (((todayProfit / averageProfit) - 1) * 100).toFixed(0);
+                                    document.getElementById("totalProfitText").textContent = `${percent}% from average day`;
+                                }
+                                if(todayProfit == 0){
+                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit.toFixed(2)} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalProfitText").textContent = `No profit today`;
+                                } else if(todayProfit > 0 && averageProfit == 0){
+                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit.toFixed(2)} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalProfitText").textContent = `Total profit today`;
+                                }
+                            } else if(time == "weekly"){
                                 let currentDates = [];
                                 let pastDates = [];
                                 for(let i = 0; i < 14; i++){
@@ -3614,7 +3836,7 @@ async function getUserData() {
                                 }
                                 jobs.forEach(job => {if(job.job_status == "Completed"){
                                     if(currentDates.includes(job.job_date)){
-                                        todayRevenue += Number(job.job_realcharge.replace(/£/g, ""));
+                                        todayRevenue += Number(Number(job.job_realcharge.replace(/£/g, "")).toFixed(2));
                                         todayLabour += Number(job.labour_cost.replace(/£/g, ""));
                                         todayMaterial += Number(job.material_cost.replace(/£/g, ""));
                                         todayProfit += Number(job.job_realcharge.replace(/£/g, "")) - Number(job.job_setback.replace(/£/g, ""));
@@ -3627,75 +3849,175 @@ async function getUserData() {
                                 }});
 
                                 if(todayRevenue >= averageRevenue){
-                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     let percent = (((todayRevenue / averageRevenue) - 1) * 100).toFixed(0);
                                     document.getElementById("totalRevenueText").textContent = `+${percent}% from average week`;
                                 } else {
-                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     let percent = (((todayRevenue / averageRevenue) - 1) * 100).toFixed(0);
                                     document.getElementById("totalRevenueText").textContent = `${percent}% from average week`;
                                 }
                                 if(todayRevenue == 0){
-                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     document.getElementById("totalRevenueText").textContent = `No revenue this week`;
                                 } else if(todayRevenue > 0 && averageRevenue == 0){
-                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     document.getElementById("totalRevenueText").textContent = `Total revenue this week`;
                                 }
 
                                 if(todayLabour >= averageLabour){
-                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     let percent = (((todayLabour / averageLabour) - 1) * 100).toFixed(0);
                                     document.getElementById("totalLabourText").textContent = `+${percent}% from average week`;
                                 } else {
-                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     let percent = (((todayLabour / averageLabour) - 1) * 100).toFixed(0);
                                     document.getElementById("totalLabourText").textContent = `${percent}% from average week`;
                                 }
                                 if(todayLabour == 0){
-                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     document.getElementById("totalLabourText").textContent = `No labour this week`;
                                 } else if(todayLabour > 0 && averageLabour == 0){
-                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     document.getElementById("totalLabourText").textContent = `Total labour this week`;
                                 }
 
                                 if(todayMaterial >= averageLabour){
-                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     let percent = (((todayMaterial / averageLabour) - 1) * 100).toFixed(0);
                                     document.getElementById("totalMaterialText").textContent = `+${percent}% from average week`;
                                 } else {
-                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     let percent = (((todayMaterial / averageLabour) - 1) * 100).toFixed(0);
                                     document.getElementById("totalMaterialText").textContent = `${percent}% from average week`;
                                 }
                                 if(todayMaterial == 0){
-                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     document.getElementById("totalMaterialText").textContent = `No materials this week`;
                                 } else if(todayMaterial > 0 && averageLabour == 0){
-                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     document.getElementById("totalMaterialText").textContent = `Total materials this week`;
                                 }
 
                                 if(todayProfit >= averageProfit){
-                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     let percent = (((todayProfit / averageProfit) - 1) * 100).toFixed(0);
                                     document.getElementById("totalProfitText").textContent = `+${percent}% from average week`;
                                 } else {
-                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     let percent = (((todayProfit / averageProfit) - 1) * 100).toFixed(0);
                                     document.getElementById("totalProfitText").textContent = `${percent}% from average week`;
                                 }
                                 if(todayProfit == 0){
-                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     document.getElementById("totalProfitText").textContent = `No profit this week`;
                                 } else if(todayProfit > 0 && averageProfit == 0){
-                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     document.getElementById("totalProfitText").textContent = `Total profit this week`;
+                                }
+                            } else if(time == "monthly"){
+                                let currentDates = [];
+                                let pastDates = [];
+                                let gotFirstMonth = false;
+                                for(let i = 0; i < 70; i++){
+                                    let newDate = getSpecificDate(i);
+
+                                    if(!gotFirstMonth){
+                                        currentDates.push(newDate);
+                                    } else {
+                                        pastDates.push(newDate);
+                                    }
+
+                                    if(newDate.slice(0, 2) == "01"){
+                                        if(gotFirstMonth) break;
+
+                                        gotFirstMonth = true;
+                                    }
+                                }
+                                jobs.forEach(job => {if(job.job_status == "Completed"){
+                                    if(currentDates.includes(job.job_date)){
+                                        todayRevenue += Number(Number(job.job_realcharge.replace(/£/g, "")).toFixed(2));
+                                        todayLabour += Number(job.labour_cost.replace(/£/g, ""));
+                                        todayMaterial += Number(job.material_cost.replace(/£/g, ""));
+                                        todayProfit += Number(job.job_realcharge.replace(/£/g, "")) - Number(job.job_setback.replace(/£/g, ""));
+                                    } else if(pastDates.includes(job.job_date)){
+                                        averageRevenue += Number(job.job_realcharge.replace(/£/g, ""));
+                                        averageLabour += Number(job.labour_cost.replace(/£/g, ""));
+                                        averageMaterial += Number(job.material_cost.replace(/£/g, ""));
+                                        averageProfit += Number(job.job_realcharge.replace(/£/g, "")) - Number(job.job_setback.replace(/£/g, ""));
+                                    }
+                                }});
+
+                                if(todayRevenue >= averageRevenue){
+                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue.toFixed(2)} <img src="images/icons/uptrend.png" />`;
+                                    let percent = (((todayRevenue / averageRevenue) - 1) * 100).toFixed(0);
+                                    document.getElementById("totalRevenueText").textContent = `+${percent}% from average month`;
+                                } else {
+                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue.toFixed(2)} <img src="images/icons/downtrend.png" />`;
+                                    let percent = (((todayRevenue / averageRevenue) - 1) * 100).toFixed(0);
+                                    document.getElementById("totalRevenueText").textContent = `${percent}% from average month`;
+                                }
+                                if(todayRevenue == 0){
+                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue.toFixed(2)} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalRevenueText").textContent = `No revenue this month`;
+                                } else if(todayRevenue > 0 && averageRevenue == 0){
+                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue.toFixed(2)} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalRevenueText").textContent = `Total revenue this month`;
+                                }
+
+                                if(todayLabour >= averageLabour){
+                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour.toFixed(2)} <img src="images/icons/uptrend.png" />`;
+                                    let percent = (((todayLabour / averageLabour) - 1) * 100).toFixed(0);
+                                    document.getElementById("totalLabourText").textContent = `+${percent}% from average month`;
+                                } else {
+                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour.toFixed(2)} <img src="images/icons/downtrend.png" />`;
+                                    let percent = (((todayLabour / averageLabour) - 1) * 100).toFixed(0);
+                                    document.getElementById("totalLabourText").textContent = `${percent}% from average month`;
+                                }
+                                if(todayLabour == 0){
+                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour.toFixed(2)} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalLabourText").textContent = `No labour this month`;
+                                } else if(todayLabour > 0 && averageLabour == 0){
+                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour.toFixed(2)} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalLabourText").textContent = `Total labour this month`;
+                                }
+
+                                if(todayMaterial >= averageLabour){
+                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial.toFixed(2)} <img src="images/icons/uptrend.png" />`;
+                                    let percent = (((todayMaterial / averageLabour) - 1) * 100).toFixed(0);
+                                    document.getElementById("totalMaterialText").textContent = `+${percent}% from average month`;
+                                } else {
+                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial.toFixed(2)} <img src="images/icons/downtrend.png" />`;
+                                    let percent = (((todayMaterial / averageLabour) - 1) * 100).toFixed(0);
+                                    document.getElementById("totalMaterialText").textContent = `${percent}% from average month`;
+                                }
+                                if(todayMaterial == 0){
+                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial.toFixed(2)} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalMaterialText").textContent = `No materials this month`;
+                                } else if(todayMaterial > 0 && averageLabour == 0){
+                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial.toFixed(2)} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalMaterialText").textContent = `Total materials this month`;
+                                }
+
+                                if(todayProfit >= averageProfit){
+                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit.toFixed(2)} <img src="images/icons/uptrend.png" />`;
+                                    let percent = (((todayProfit / averageProfit) - 1) * 100).toFixed(0);
+                                    document.getElementById("totalProfitText").textContent = `+${percent}% from average month`;
+                                } else {
+                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit.toFixed(2)} <img src="images/icons/downtrend.png" />`;
+                                    let percent = (((todayProfit / averageProfit) - 1) * 100).toFixed(0);
+                                    document.getElementById("totalProfitText").textContent = `${percent}% from average month`;
+                                }
+                                if(todayProfit == 0){
+                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit.toFixed(2)} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalProfitText").textContent = `No profit this month`;
+                                } else if(todayProfit > 0 && averageProfit == 0){
+                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit.toFixed(2)} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalProfitText").textContent = `Total profit this month`;
                                 }
                             }
                         }
-                        calcProfits("weekly");
+                        calcProfits("daily");
 
                         function showNoJobs(){
                             document.querySelector(".dash-table-scroll").style.display = "none";
@@ -3882,16 +4204,24 @@ async function getUserData() {
                         }
 
                         document.getElementById("newJobBtn").addEventListener("click", () => {
-                            document.getElementById("calModal").style.opacity = "1";
-                            document.getElementById("calModal").style.pointerEvents = "auto";
-                            document.getElementById("jobDateLabel").style.display = "none";
-                            document.getElementById("jobDateSelector").style.display = "none";
+                            document.querySelector(".dash-container").style.opacity = "0";
+                            setTimeout(() => {
+                                document.querySelector(".lac-container").style.display = "block";
+                                document.querySelector(".dash-container").style.display = "none";
+                                setTimeout(() => {
+                                    document.querySelector(".lac-container").style.opacity = "1";
+                                }, 50);
+                            }, 300);
                         });
                         document.getElementById("sideNewJob").addEventListener("click", () => {
-                            document.getElementById("calModal").style.opacity = "1";
-                            document.getElementById("calModal").style.pointerEvents = "auto";
-                            document.querySelector(".new-worker-label").style.display = "block";
-                            document.querySelector(".new-worker-selector").style.display = "block";
+                            document.querySelector(".dash-container").style.opacity = "0";
+                            setTimeout(() => {
+                                document.querySelector(".lac-container").style.display = "block";
+                                document.querySelector(".dash-container").style.display = "none";
+                                setTimeout(() => {
+                                    document.querySelector(".lac-container").style.opacity = "1";
+                                }, 50);
+                            }, 300);
                         });
                         document.getElementById("newWorkerBtn").addEventListener("click", () => {
                             document.getElementById("newWorkerModal").style.opacity = "1";
@@ -4721,6 +5051,22 @@ async function getUserData() {
                                 }
                             }
                             logout();
+                        });
+
+                        document.querySelectorAll(".dash-toggle-option").forEach((option, idx) => {
+                            option.addEventListener("click", () => {
+                                let toggleOptions = ["left", "mid", "right"];
+                                let calcOptions = ["daily", "weekly", "monthly"];
+                                document.querySelector(".dash-toggle span").classList.remove("dash-toggle-left");
+                                document.querySelector(".dash-toggle span").classList.remove("dash-toggle-mid");
+                                document.querySelector(".dash-toggle span").classList.remove("dash-toggle-right");
+                                document.querySelector(".dash-toggle span").classList.add("dash-toggle-" + toggleOptions[idx]);
+                                calcProfits(calcOptions[idx]);
+                                document.querySelectorAll(".dash-toggle-option").forEach((opt, optIdx) => {
+                                    opt.style.color = "hsl(0, 0%, 20%)";
+                                    if(optIdx == idx) opt.style.color = "white";
+                                });
+                            });
                         });
 
                         /* modal click outs */

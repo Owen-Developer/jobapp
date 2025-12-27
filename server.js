@@ -311,8 +311,6 @@ app.get("/api/get-materials", (req, res) => {
 app.post("/api/send-summary", (req, res) => {
     let { jobId, date, notes, materials, charges } = req.body;
 
-    // materials, extra charges, labour time, call out, 
-
     let chargeStr;
     if(charges.length == 0){
         chargeStr = "No charges";
@@ -349,8 +347,10 @@ app.post("/api/send-summary", (req, res) => {
             });
             materials.forEach(arr => {
                 if(price.area == "materials" && arr[0].toLowerCase() == price.name.toLowerCase()){
-                    materialCost += price.cost;
-                    materialCharge += price.charge;
+                    let newCost = Number((price.cost * (Number(arr[1]) / price.default_value)).toFixed(2));
+                    let newCharge = Number((price.charge * (Number(arr[1]) / price.default_value)).toFixed(2));
+                    materialCost += newCost;
+                    materialCharge += newCharge;
                 }
             });
             if(price.name == "Hourly labour cost"){
@@ -692,21 +692,28 @@ app.post("/api/delete-worker", (req, res) => {
 app.post("/api/create-material", (req, res) => {
     const { name, cost, charge, type, unit } = req.body;
     let defaultValue;
+    let defaultStep;
     if(unit == "units"){
-        defaultValue = 5;
+        defaultValue = 1;
+        defaultStep = 1;
     } else if(unit == "m"){
-        defaultValue = 3;
+        defaultValue = 1;
+        defaultStep = 0.5;
     } else if(unit == "mm"){
-        defaultValue = 25;
+        defaultValue = 15;
+        defaultStep = 1;
     } else if(unit == "g"){
-        defaultValue = 100;
+        defaultValue = 75;
+        defaultStep = 25;
     } else if(unit == "kg"){
-        defaultValue = 3;
+        defaultValue = 1;
+        defaultStep = 0.25;
     } else if(unit == "ml"){
         defaultValue = 250;
+        defaultStep = 50;
     }
     
-    db.query("insert into prices (type, name, unit, default_value, cost, charge, area) values (?, ?, ?, ?, ?, ?, ?)", [type, name, unit, defaultValue, Number(cost.replace("£", "")), Number(charge.replace("£", "")), "materials"], (err, result) => {
+    db.query("insert into prices (type, name, unit, default_value, cost, charge, area, step) values (?, ?, ?, ?, ?, ?, ?, ?)", [type, name, unit, defaultValue, Number(cost.replace("£", "")), Number(charge.replace("£", "")), "materials", defaultStep], (err, result) => {
         if(err){
             console.error(err);
         }
@@ -723,6 +730,15 @@ app.post("/api/delete-price", (req, res) => {
 
         return res.json({ message: 'success' });
     });
+});
+
+// /create-material, /send-summary, /contact
+
+app.post("/api/contact", async (req, res) => {
+    const { name, email, message } = req.body;
+
+    await sendEmail("jackbaileywoods@gmail.com", `Hi, you got a message from the Job App.<br><br>Name: ${name}<br><br>Email: ${email}<br><br>Message: ${message}`);
+    return res.json({ message: 'success' });
 });
 
 

@@ -134,21 +134,21 @@
     </div>
 
     <div class="new-modal padding" id="contactModal">
-        <div class="new-wrapper">
+        <form id="contactForm" class="new-wrapper">
             <i class="fa-solid fa-xmark new-xmark"></i>
             <div class="new-title">Contact Support</div>
             <div class="new-col">
                 <div class="new-label">Name</div>
-                <input type="password" placeholder="Enter name" class="new-input" id="contactName" />
+                <input name="name" type="text" placeholder="Enter name" class="new-input" id="contactName" />
 
                 <div class="new-label">Email</div>
-                <input type="password" placeholder="Enter email" class="new-input" id="contactEmail" />
+                <input name="email" type="text" placeholder="Enter email" class="new-input" id="contactEmail" />
 
                 <div class="new-label">Message</div>
-                <textarea id="contactMessage" placeholder="Enter message" class="new-area" style="margin-bottom: 0;"></textarea>
+                <textarea name="message" id="contactMessage" placeholder="Enter message" class="new-area" style="margin-bottom: 0;"></textarea>
             </div>
-            <div class="new-btn" id="contactSendBtn">Send Message</div>
-        </div>
+            <button type="submit" class="new-btn" id="contactSendBtn">Send Message</button>
+        </form>
     </div>
 
     <div class="thank-modal" id="thankContact">
