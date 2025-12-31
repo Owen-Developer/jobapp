@@ -741,8 +741,6 @@ app.post("/api/contact", async (req, res) => {
     return res.json({ message: 'success' });
 });
 
-
-
 app.post("/api/send-code", (req, res) => {
     db.query("select * from users where email = ?", [req.body.email], (err, result) => {
         if(err){

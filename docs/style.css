@@ -41,7 +41,8 @@ button {
     transition: 0.6s ease !important;
 }
 :root {
-    --primary: #2A6BFF;
+    --oldprimary: hsl(222, 100%, 58%);
+    --primary: hsl(211, 22%, 32%);
 }
 .width {
     width: 430px;
@@ -113,10 +114,9 @@ button {
     background-color: hsl(0, 0%, 40%);
 }
 .header-logo {
-    filter: invert(1);
     height: 40px;
     width: auto;
-    margin-right: 12px;
+    margin-left: 15px;
 }
 .header-name {
     margin-left: 15px;
@@ -949,7 +949,7 @@ span.lac-top-mon {
 }
 .home-bav-active {
     opacity: 1;
-    color: var(--primary);
+    color: var(--oldprimary);
     filter: invert(0);
     font-weight: 500;
 }
@@ -1296,7 +1296,7 @@ i.thank-modal-check {
     transition: 0.2s ease;
 }
 .btn-thank-modal:hover {
-    background-color: hsl(222, 100%, 48%);
+    background-color: hsl(211, 22%, 48%);
 }
 /*/////////////////////////////////////////////////////////////////////////*/
 
@@ -3743,7 +3743,7 @@ i.work-delete {
     z-index: 3;
     background: conic-gradient(
         from 0deg,
-        hsl(222, 100%, 34%) 0deg 198deg, /* <- as % of 180deg. 180 = 100%, 90deg = 50%*/
+        hsl(211, 22%, 34%) 0deg 198deg, /* <- as % of 180deg. 180 = 100%, 90deg = 50%*/
         transparent 198.5deg /* <- change both to same value*/ 360deg 
     );
     transform: rotate(0deg);
@@ -3752,7 +3752,7 @@ i.work-delete {
     z-index: 2;
     background: conic-gradient(
         from 0deg,
-        hsl(222, 100%, 54%) 0deg 360deg, /* <- as % of 180deg. 180 = 100%, 90deg = 50%*/
+        hsl(211, 22%, 54%) 0deg 360deg, /* <- as % of 180deg. 180 = 100%, 90deg = 50%*/
         transparent 360.5deg /* <- change both to same value*/ 360deg 
     );
     transform: rotate(0deg);
@@ -3762,7 +3762,7 @@ i.work-delete {
     z-index: 1;
     background: conic-gradient(
         from 0deg,
-        hsl(222, 100%, 74%) 0deg 360deg, /* <- as % of 180deg. 180 = 100%, 90deg = 50%*/
+        hsl(211, 22%, 74%) 0deg 360deg, /* <- as % of 180deg. 180 = 100%, 90deg = 50%*/
         transparent 360.5deg /* <- change both to same value*/ 360deg 
     );
     transform: rotate(0deg);

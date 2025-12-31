@@ -2253,7 +2253,7 @@ async function getUserData(){
                                     jobStyle = "";
                                     let newHtml = `
                                         <div class="work-up-li">
-                                            <span style="background-color: hsl(222, 100%, ${colours[matchCount - 1]}%);"></span>
+                                            <span style="background-color: hsl(211, 22%, ${colours[matchCount - 1]}%);"></span>
                                             <div class="work-up-flex">
                                                 <div class="work-up-left">
                                                     <div class="work-up-name">${job.job_name}</div>
@@ -3332,8 +3332,8 @@ async function getUserData(){
                                     </div>
                                 </div>
                                 <div class="rep-job-legend">
-                                    <div><span style="background-color: hsl(222, 100%, 34%);"></span> Labour ${job.labour_cost}</div>
-                                    <div><span style="background-color: hsl(222, 100%, 54%);"></span> Materials ${job.material_cost}</div>
+                                    <div><span style="background-color: hsl(211, 22%, 34%);"></span> Labour ${job.labour_cost}</div>
+                                    <div><span style="background-color: hsl(211, 22%, 54%);"></span> Materials ${job.material_cost}</div>
                                 </div>
     
                                 <div class="rep-exp">
@@ -3376,7 +3376,7 @@ async function getUserData(){
                             document.getElementById("circLabour").style.background = `
                                 conic-gradient(
                                     from 0deg,
-                                    hsl(222, 100%, 34%) 0deg ${labourPercent}deg,
+                                    hsl(211, 22%, 34%) 0deg ${labourPercent}deg,
                                     transparent ${labourPercent + 0.5}deg  360deg 
                                 )
                             `;
@@ -4136,8 +4136,8 @@ async function getUserData(){
                                     </div>
                                 </div>
                                 <div class="rep-job-legend">
-                                    <div><span style="background-color: hsl(222, 100%, 34%);"></span> Labour ${job.labour_cost}</div>
-                                    <div><span style="background-color: hsl(222, 100%, 54%);"></span> Materials ${job.material_cost}</div>
+                                    <div><span style="background-color: hsl(211, 22%, 34%);"></span> Labour ${job.labour_cost}</div>
+                                    <div><span style="background-color: hsl(211, 22%, 54%);"></span> Materials ${job.material_cost}</div>
                                 </div>
     
                                 <div class="rep-exp">
@@ -4184,7 +4184,7 @@ async function getUserData(){
                             document.getElementById("circLabour").style.background = `
                                 conic-gradient(
                                     from 0deg,
-                                    hsl(222, 100%, 34%) 0deg ${labourPercent}deg,
+                                    hsl(211, 22%, 34%) 0deg ${labourPercent}deg,
                                     transparent ${labourPercent + 0.5}deg  360deg 
                                 )
                             `;
@@ -4592,7 +4592,7 @@ async function getUserData(){
                                     jobStyle = "";
                                     let newHtml = `
                                         <div class="work-up-li">
-                                            <span style="background-color: hsl(222, 100%, ${colours[matchCount - 1]}%);"></span>
+                                            <span style="background-color: hsl(211, 22%, ${colours[matchCount - 1]}%);"></span>
                                             <div class="work-up-flex">
                                                 <div class="work-up-left">
                                                     <div class="work-up-name">${job.job_name}</div>
