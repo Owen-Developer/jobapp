@@ -732,8 +732,6 @@ app.post("/api/delete-price", (req, res) => {
     });
 });
 
-// /create-material, /send-summary, /contact
-
 app.post("/api/contact", async (req, res) => {
     const { name, email, message } = req.body;
 

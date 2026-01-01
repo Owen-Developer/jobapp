@@ -2,10 +2,10 @@ self.addEventListener("install", event => {
   event.waitUntil(
     caches.open("examscope-cache").then(cache => {
       return cache.addAll([
-        "/",
-        "/index.html",
-        "/styles.css",
-        "/script.js",
+        "/jobapp/",
+        "/jobapp/index.html",
+        "/jobapp/styles.css",
+        "/jobapp/script.js",
         "/icons/favicon.png",
         "/icons/favicon.png"
       ]);

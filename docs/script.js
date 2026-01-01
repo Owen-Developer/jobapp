@@ -1,5 +1,5 @@
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("/service-worker.js")
+  navigator.serviceWorker.register("/jobapp/service-worker.js")
     .then(() => console.log("Service Worker registered!"))
     .catch(err => console.error("Service Worker registration failed:", err));
 }
@@ -658,7 +658,9 @@ async function getUserData(){
                     if(data.messageFound){
                         data.jobs.forEach(job => {
                             if(job.id == params.get("job")){
-                                document.querySelector(".edit-date-txt").textContent = job.job_date.split("/")[0] + " " + months[Number(job.job_date.split("/")[1]) - 1] + " " + job.job_date.split("/")[2];
+                                let dd = job.job_date.split("/")[0];
+                                if(dd.slice(0, 1) == "0") dd = dd.slice(1);
+                                document.querySelector(".edit-date-txt").textContent = dd + " " + months[Number(job.job_date.split("/")[1]) - 1] + " " + job.job_date.split("/")[2];
                                 date = job.job_date;
                                 document.querySelectorAll(".edit-change-num").forEach((num, idx) => {
                                     num.textContent = job.job_date.split("/")[idx];
@@ -739,6 +741,8 @@ async function getUserData(){
                 document.querySelector(".edit-change").style.pointerEvents = "none";
                 document.querySelector(".edit-date-chev").style.transform = "rotate(90deg)";
 
+                let dd = document.querySelectorAll(".edit-change-num")[0].textContent;
+                if(dd.slice(0, 1) == "0") dd = dd.slice(1);
                 document.querySelector(".edit-date-txt").textContent = document.querySelectorAll(".edit-change-num")[0].textContent + " " + months[Number(document.querySelectorAll(".edit-change-num")[1].textContent - 1)] + " 20" + document.querySelectorAll(".edit-change-num")[2].textContent;
             });
             document.querySelector(".btn-change-cancel").addEventListener("click", () => {
@@ -1630,6 +1634,7 @@ async function getUserData(){
                                 document.getElementById("editCustomerName").value = editJob.job_customer;
                                 document.getElementById("editCustomerAddress").value = editJob.job_address;
                                 document.querySelector("#editDateSelector div").textContent = editJob.job_date.slice(0, 2) + " " + months[Number(editJob.job_date.slice(3, 5)) - 1] + " " + editJob.job_date.slice(-4);
+                                if(document.querySelector("#editDateSelector div").textContent.slice(0, 1) == "") document.querySelector("#editDateSelector div").textContent = document.querySelector("#editDateSelector div").textContent.slice(1);
                                 document.getElementById("editDateInput").value = editJob.job_date;
                                 document.getElementById("editCost").value = editJob.job_cost;
                                 document.getElementById("editTime").value = editJob.job_time;
@@ -4213,6 +4218,16 @@ async function getUserData(){
                                 }, 50);
                             }, 300);
                         });
+                        document.querySelector(".lac-back").addEventListener("click", () => {
+                            document.querySelector(".lac-container").style.opacity = "0";
+                            setTimeout(() => {
+                                document.querySelector(".dash-container").style.display = "block";
+                                document.querySelector(".lac-container").style.display = "none";
+                                setTimeout(() => {
+                                    document.querySelector(".dash-container").style.opacity = "1";
+                                }, 50);
+                            }, 300);
+                        });
                         document.getElementById("sideNewJob").addEventListener("click", () => {
                             document.querySelector(".dash-container").style.opacity = "0";
                             setTimeout(() => {
@@ -4229,6 +4244,7 @@ async function getUserData(){
                         });
 
                         document.querySelector("#jobDateSelector div").textContent = todayDate.slice(0, 2) + " " + months[Number(todayDate.slice(3, 5)) - 1] + " " + todayDate.slice(6);
+                        if(document.querySelector("#jobDateSelector div").textContent.slice(0, 1) == "0") document.querySelector("#jobDateSelector div").textContent = document.querySelector("#jobDateSelector div").textContent.slice(1);
                         document.getElementById("jobDateInput").value = todayDate;
 
                         document.querySelectorAll(".new-date-selector").forEach(selector => {
@@ -4260,6 +4276,7 @@ async function getUserData(){
                             });
 
                             col.querySelector(".edit-change-num").textContent = todayDate.split("/")[colIdx];
+                            if(col.querySelector(".edit-change-num").textContent.slice(0, 1) == "0") col.querySelector(".edit-change-num").textContent = col.querySelector(".edit-change-num").textContent.slice(1);
                             if(col.querySelector(".edit-change-num").textContent.length == 4) col.querySelector(".edit-change-num").textContent = col.querySelector(".edit-change-num").textContent.slice(2);
                         });
                         document.querySelector(".btn-change-save").addEventListener("click", () => {
@@ -4272,9 +4289,11 @@ async function getUserData(){
                             if(month.length == 1) month = "0" + month;
                             if(document.getElementById("newJobModal").style.opacity == "1"){
                                 document.querySelector("#jobDateSelector div").textContent = document.querySelectorAll(".edit-change-num")[0].textContent + " " + months[Number(document.querySelectorAll(".edit-change-num")[1].textContent - 1)] + " 20" + document.querySelectorAll(".edit-change-num")[2].textContent;
+                                if(document.querySelector("#jobDateSelector div").textContent.slice(0, 1) == "0") document.querySelector("#jobDateSelector div").textContent = document.querySelector("#jobDateSelector div").textContent.slice(1);
                                 document.getElementById("jobDateInput").value = day + "/" + month + "/20" + document.querySelectorAll(".edit-change-num")[2].textContent;
                             } else {
                                 document.querySelector("#editDateSelector div").textContent = document.querySelectorAll(".edit-change-num")[0].textContent + " " + months[Number(document.querySelectorAll(".edit-change-num")[1].textContent - 1)] + " 20" + document.querySelectorAll(".edit-change-num")[2].textContent;
+                                if(document.querySelector("#editDateSelector div").textContent.slice(0, 1) == "0") document.querySelector("#editDateSelector div").textContent = document.querySelector("#editDateSelector div").textContent.slice(1);
                                 document.getElementById("editDateInput").value = day + "/" + month + "/20" + document.querySelectorAll(".edit-change-num")[2].textContent;
                             }
                         });
@@ -4789,6 +4808,7 @@ async function getUserData(){
                                 document.getElementById("editCustomerName").value = editJob.job_customer;
                                 document.getElementById("editCustomerAddress").value = editJob.job_address;
                                 document.querySelector("#editDateSelector div").textContent = editJob.job_date.slice(0, 2) + " " + months[Number(editJob.job_date.slice(3, 5)) - 1] + " " + editJob.job_date.slice(-4);
+                                if(document.querySelector("#editDateSelector div").textContent.slice(0, 1) == "0") document.querySelector("#editDateSelector div").textContent = document.querySelector("#editDateSelector div").textContent.slice(1);
                                 document.getElementById("editDateInput").value = editJob.job_date;
                                 document.getElementById("editCost").value = editJob.job_cost;
                                 document.getElementById("editTime").value = editJob.job_time;
