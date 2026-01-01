@@ -6,8 +6,7 @@ self.addEventListener("install", event => {
         "/jobapp/index.html",
         "/jobapp/styles.css",
         "/jobapp/script.js",
-        "/icons/favicon.png",
-        "/icons/favicon.png"
+        "/jobapp/images/main-logo.png"
       ]);
     })
   );

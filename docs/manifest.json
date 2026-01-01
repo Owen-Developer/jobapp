@@ -8,12 +8,12 @@
   "description": "Demo job tracker mobile app",
   "icons": [
     {
-      "src": "/icons/favicon.png",
+      "src": "/jobapp/images/main-logo.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/icons/favicon.png",
+      "src": "/jobapp/images/main-logo.png",
       "sizes": "512x512",
       "type": "image/png"
     }
