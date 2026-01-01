@@ -131,16 +131,38 @@ function createNoti(userId, title, type, reciever){
         }
     });
 }
-
 function sendVerificationCode(userEmail, code){
     sendEmail(userEmail, "Your verification code is " + code);
+}
+function requireAuth(req, res, next) {
+    const header = req.headers.authorization;
+
+    if (!header){
+        console.log("unauth");
+        req.user = null;
+        return next();
+    } 
+        
+
+    const token = header.split(" ")[1];
+
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        req.user = decoded;
+    } catch (error) {
+        console.log("unauth 2")
+        console.log(error);
+        req.user = null;
+    }
+    next();
 }
 
 
 
 
 ////////////////////////// APIS ROUTES //////////////////////////
-app.post("/api/setup", (req, res) => {
+app.post("/api/setup", requireAuth, (req, res) => {
     const { name, email, password } = req.body;
 
     bcrypt.hash(password, 10, (err, hashedPassword) => {
@@ -155,14 +177,23 @@ app.post("/api/setup", (req, res) => {
                 console.error('Error inserting data:', err);
                 return res.json({ message: 'failure' });
             }
+
+            const payload = {
+                userId: result[0].id
+            };
+            const token = jwt.sign(
+                payload,
+                process.env.JWT_SECRET,
+                { expiresIn: "60m" }
+            );
              
-            req.session.userId = result.insertId;
-            return res.json({ message: 'success' });
+            req.user.userId = result.insertId;
+            return res.json({ message: 'success', token: token });
         });
     });
 });
 
-app.post("/api/login", (req, res) => {
+app.post("/api/login", requireAuth, (req, res) => {
     const { email, password } = req.body;
 
     db.query("select * from users where email = ?", [email], (err, result) => {
@@ -183,18 +214,26 @@ app.post("/api/login", (req, res) => {
                 return res.json({ message: 'invalid password' });
             }
 
-            req.session.userId = result[0].id;
+            req.user.userId = result[0].id;
+            const payload = {
+                userId: result[0].id
+            };
+            const token = jwt.sign(
+                payload,
+                process.env.JWT_SECRET,
+                { expiresIn: "60m" }
+            );
             if(result[0].perms == "admin"){
-                return res.json({ message: 'admin' });
+                return res.json({ message: 'admin', token: token });
             } else {
-                return res.json({ message: 'success' });
+                return res.json({ message: 'success', token: token });
             }
         });
     });
 });
 
 app.get("/api/get-jobs", (req, res) => {
-    db.query("select * from jobs where user_id = ?", [req.session.userId], (err, result) => {
+    db.query("select * from jobs where user_id = ?", [req.user.userId], (err, result) => {
         if(err){
             console.error(err);
         }
@@ -207,8 +246,8 @@ app.get("/api/get-jobs", (req, res) => {
     });
 });
 
-app.get("/api/get-user", (req, res) => {
-    if(!req.session.userId){
+app.get("/api/get-user", requireAuth, (req, res) => {
+    if(!req.user.userId){
         db.query("select * from users", (err, result) => {
             if(err){
                 console.error(err);
@@ -221,14 +260,14 @@ app.get("/api/get-user", (req, res) => {
             }
         });
     } else {
-        db.query("select * from users where id = ?", [req.session.userId], (err, result) => {
+        db.query("select * from users where id = ?", [req.user.userId], (err, result) => {
             if(err){
                 console.error(err);
             }
     
             let userData = result[0];
             userData.password_hash = "";
-            db.query("select * from notifications where user_id = ? or reciever = ? order by id desc", [req.session.userId, "admin"], (err, result) => {
+            db.query("select * from notifications where user_id = ? or reciever = ? order by id desc", [req.user.userId, "admin"], (err, result) => {
                 if(err){
                     console.error(err);
                 }
@@ -250,9 +289,9 @@ app.get("/api/get-user", (req, res) => {
 
 });
 
-app.post("/api/mark-read", (req, res) => {
+app.post("/api/mark-read", requireAuth, (req, res) => {
     if(req.body.perms == "admin"){
-        db.query("update notifications set status = ? where reciever = ? or user_id = ?", ["read", "admin", req.session.userId], (err, result) => {
+        db.query("update notifications set status = ? where reciever = ? or user_id = ?", ["read", "admin", req.user.userId], (err, result) => {
             if(err){
                 console.error(err);
             }
@@ -260,7 +299,7 @@ app.post("/api/mark-read", (req, res) => {
             return res.json({ message: 'success' });
         });
     } else {
-        db.query("update notifications set status = ? where user_id = ?", ["read", req.session.userId], (err, result) => {
+        db.query("update notifications set status = ? where user_id = ?", ["read", req.user.userId], (err, result) => {
             if(err){
                 console.error(err);
             }
@@ -398,8 +437,8 @@ app.post("/api/send-summary", (req, res) => {
     });
 });
 
-app.get("/api/get-profile", (req, res) => {
-    db.query("select * from users where id = ?", [req.session.userId], (err, result) => {
+app.get("/api/get-profile", requireAuth, (req, res) => {
+    db.query("select * from users where id = ?", [req.user.userId], (err, result) => {
         if(err){
             console.error(err);
         }
@@ -414,15 +453,15 @@ app.get("/api/get-profile", (req, res) => {
     });
 });
 
-app.post("/api/save-profile", (req, res) => {
+app.post("/api/save-profile", requireAuth, (req, res) => {
     const { name, email, phone } = req.body;
 
-    db.query("update users set name = ?, email = ?, phone = ? where id = ?", [name, email, phone, req.session.userId], (err, result) => {
+    db.query("update users set name = ?, email = ?, phone = ? where id = ?", [name, email, phone, req.user.userId], (err, result) => {
         if(err){
             console.error(err);
         }
 
-        db.query("select * from users where id = ?", [req.session.userId], (err, result) => {
+        db.query("select * from users where id = ?", [req.user.userId], (err, result) => {
             if(err){
                 console.error(err);
             }
@@ -433,7 +472,7 @@ app.post("/api/save-profile", (req, res) => {
 
             let userData = result[0];
             userData.password_hash = "";
-            db.query("select * from notifications where user_id = ?", [req.session.userId], (err, result) => {
+            db.query("select * from notifications where user_id = ?", [req.user.userId], (err, result) => {
                 if(err){
                     console.error(err);
                 }
@@ -450,10 +489,10 @@ app.post("/api/save-profile", (req, res) => {
     });
 });
 
-app.post("/api/change-password", (req, res) => {
+app.post("/api/change-password", requireAuth, (req, res) => {
     const { currentPassword, newPassword } = req.body;
 
-    db.query("select * from users where id = ?", [req.session.userId], (err, result) => {
+    db.query("select * from users where id = ?", [req.user.userId], (err, result) => {
         if(err){
             console.error(err);
         }
@@ -472,12 +511,12 @@ app.post("/api/change-password", (req, res) => {
                     console.error(err);
                 }
 
-                db.query("update users set password_hash = ? where id = ?", [hashedPassword, req.session.userId], async (err, result) => {
+                db.query("update users set password_hash = ? where id = ?", [hashedPassword, req.user.userId], async (err, result) => {
                     if(err){
                         console.error(err);
                     }
 
-                    await createNoti(req.session.userId, "You password has recently been changed.", "password", "worker");
+                    await createNoti(req.user.userId, "You password has recently been changed.", "password", "worker");
                     return res.json({ message: 'success' });
                 });
             });    
@@ -646,13 +685,9 @@ app.post("/api/update-labour", (req, res) => {
 });
 
 app.get("/api/logout", (req, res) => {
-    req.session.destroy(err => {
-        if (err) {
-        console.error("Logout error:", err);
-        return res.status(500).json({ message: 'failed' });
-        }
-        return res.json({ message: 'success' });
-    });
+    req.user = null;
+
+    return res.json({ message: 'success' });
 });
 
 app.get("/api/admin-notis", (req, res) => {
@@ -761,7 +796,7 @@ app.post("/api/send-code", (req, res) => {
     });
 });
 
-app.post("/api/verify", (req, res) => {
+app.post("/api/verify", requireAuth, (req, res) => {
     const { code, password } = req.body;
 
     db.query("select * from users where verification_code = ?", [code], (err, result) => {
@@ -784,7 +819,7 @@ app.post("/api/verify", (req, res) => {
                     console.error(err);
                 }
 
-                req.session.userId = userId;
+                req.user.userId = userId;
                 return res.json({ message: 'success' });
             });
         });

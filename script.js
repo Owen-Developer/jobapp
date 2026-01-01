@@ -188,6 +188,7 @@ async function getUserData(){
     try {
         const response = await fetch(`${url}/api/get-user`, {
             method: 'GET',
+            headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, },
             credentials: 'include'
         });
         const data = await response.json(); 
@@ -234,6 +235,7 @@ async function getUserData(){
                 try {
                     const response = await fetch(`${url}/api/get-jobs`, {
                         method: 'GET',
+                        headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, },
                         credentials: 'include'
                     });
                     const data = await response.json(); 
@@ -423,7 +425,7 @@ async function getUserData(){
                     const response = await fetch(url + '/api/update-progress', {
                         method: 'POST',
                         credentials: 'include',
-                        headers: {
+                        headers: { Authorization: `Bearer ${localStorage.getItem("token")}`,
                             'Content-Type': 'application/json', 
                         },
                         body: JSON.stringify(dataToSend), 
@@ -622,7 +624,7 @@ async function getUserData(){
                         const response = await fetch(url + '/api/end-job', {
                             method: 'POST',
                             credentials: 'include',
-                            headers: {
+                            headers: { Authorization: `Bearer ${localStorage.getItem("token")}`,
                                 'Content-Type': 'application/json', 
                             },
                             body: JSON.stringify(dataToSend), 
@@ -652,6 +654,7 @@ async function getUserData(){
                 try {
                     const response = await fetch(`${url}/api/get-jobs`, {
                         method: 'GET',
+                        headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, },
                         credentials: 'include'
                     });
                     const data = await response.json(); 
@@ -807,6 +810,7 @@ async function getUserData(){
                 try {
                     const response = await fetch(`${url}/api/get-materials`, {
                         method: 'GET',
+                        headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, },
                         credentials: 'include'
                     });
                     const data = await response.json();
@@ -988,7 +992,7 @@ async function getUserData(){
                         const response = await fetch(url + '/api/send-summary', {
                             method: 'POST',
                             credentials: 'include',
-                            headers: {
+                            headers: { Authorization: `Bearer ${localStorage.getItem("token")}`,
                                 'Content-Type': 'application/json', 
                             },
                             body: JSON.stringify(dataToSend), 
@@ -1061,7 +1065,7 @@ async function getUserData(){
                         const response = await fetch(url + '/api/save-profile', {
                             method: 'POST',
                             credentials: 'include',
-                            headers: {
+                            headers: { Authorization: `Bearer ${localStorage.getItem("token")}`,
                                 'Content-Type': 'application/json', 
                             },
                             body: JSON.stringify(dataToSend), 
@@ -1100,7 +1104,7 @@ async function getUserData(){
                         const response = await fetch(url + '/api/change-password', {
                             method: 'POST',
                             credentials: 'include',
-                            headers: {
+                            headers: { Authorization: `Bearer ${localStorage.getItem("token")}`,
                                 'Content-Type': 'application/json', 
                             },
                             body: JSON.stringify(dataToSend), 
@@ -1162,7 +1166,7 @@ async function getUserData(){
                 const res = await fetch(url + "/api/contact", {
                     method: "POST",
                     credentials: 'include',
-                    headers: { "Content-Type": "application/json" },
+                    headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, "Content-Type": "application/json" },
                     body: JSON.stringify(data)
                 });
 
@@ -1222,6 +1226,7 @@ async function getUserData(){
                     try {
                         const response = await fetch(`${url}/api/logout`, {
                             method: 'GET',
+                            headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, },
                             credentials: 'include'
                         });
                         const data = await response.json(); 
@@ -1253,6 +1258,7 @@ async function getUserData(){
                 try {
                     const response = await fetch(`${url}/api/find-admin`, {
                         method: 'GET',
+                        headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, },
                         credentials: 'include'
                     });
                     const data = await response.json(); 
@@ -1273,12 +1279,13 @@ async function getUserData(){
                 const res = await fetch(url + "/api/setup", {
                     method: "POST",
                     credentials: 'include',
-                    headers: { "Content-Type": "application/json" },
+                    headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, "Content-Type": "application/json" },
                     body: JSON.stringify(data)
                 });
 
                 const responseData = await res.json();
                 if(responseData.message == "success"){
+                    localStorage.setItem("token", responseData.token);
                     if(isMobile && window.innerWidth < 1260){
                         window.location.href = gitName + "/admin.html?admin=true";
                     } else {
@@ -1293,6 +1300,7 @@ async function getUserData(){
                 try {
                     const response = await fetch(`${url}/api/find-admin`, {
                         method: 'GET',
+                        headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, },
                         credentials: 'include'
                     });
                     const data = await response.json(); 
@@ -1313,7 +1321,7 @@ async function getUserData(){
                 const res = await fetch(url + "/api/login", {
                     method: "POST",
                     credentials: 'include',
-                    headers: { "Content-Type": "application/json" },
+                    headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, "Content-Type": "application/json" },
                     body: JSON.stringify(data)
                 });
 
@@ -1334,8 +1342,10 @@ async function getUserData(){
                         document.getElementById("serverError").style.display = "none";
                     }, 2000);
                 } else if(responseData.message == "success") {
+                    localStorage.setItem("token", responseData.token);
                     window.location.href = gitName + "/";
                 } else if(responseData.message == "admin") {
+                    localStorage.setItem("token", responseData.token);
                     if(isMobile && window.innerWidth < 1260){
                         window.location.href = gitName + "/admin.html?admin=true";
                     } else {
@@ -1362,7 +1372,7 @@ async function getUserData(){
                 const res = await fetch(url + "/api/send-code", {
                     method: "POST",
                     credentials: 'include',
-                    headers: { "Content-Type": "application/json" },
+                    headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, "Content-Type": "application/json" },
                     body: JSON.stringify(data)
                 });
 
@@ -1392,7 +1402,7 @@ async function getUserData(){
                 const res = await fetch(url + "/api/verify", {
                     method: "POST",
                     credentials: 'include',
-                    headers: { "Content-Type": "application/json" },
+                    headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, "Content-Type": "application/json" },
                     body: JSON.stringify(data)
                 });
 
@@ -1416,6 +1426,7 @@ async function getUserData(){
                 try {
                     const response = await fetch(`${url}/api/admin-data`, {
                         method: 'GET',
+                        headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, },
                         credentials: 'include'
                     });
                     const data = await response.json(); 
@@ -1673,7 +1684,7 @@ async function getUserData(){
                                     const response = await fetch(url + '/api/delete-job', {
                                         method: 'POST',
                                         credentials: 'include',
-                                        headers: {
+                                        headers: { Authorization: `Bearer ${localStorage.getItem("token")}`,
                                             'Content-Type': 'application/json', 
                                         },
                                         body: JSON.stringify(dataToSend), 
@@ -1782,7 +1793,7 @@ async function getUserData(){
                             const res = await fetch(url + "/api/edit-job", {
                                 method: "POST",
                                 credentials: 'include',
-                                headers: { "Content-Type": "application/json" },
+                                headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, "Content-Type": "application/json" },
                                 body: JSON.stringify(data)
                             });
 
@@ -2208,7 +2219,7 @@ async function getUserData(){
                             const res = await fetch(url + "/api/create-job", {
                                 method: "POST",
                                 credentials: 'include',
-                                headers: { "Content-Type": "application/json" },
+                                headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, "Content-Type": "application/json" },
                                 body: JSON.stringify(data)
                             });
 
@@ -2333,7 +2344,7 @@ async function getUserData(){
                                         const response = await fetch(url + '/api/delete-worker', {
                                             method: 'POST',
                                             credentials: 'include',
-                                            headers: {
+                                            headers: { Authorization: `Bearer ${localStorage.getItem("token")}`,
                                                 'Content-Type': 'application/json', 
                                             },
                                             body: JSON.stringify(dataToSend), 
@@ -2451,7 +2462,7 @@ async function getUserData(){
                             const res = await fetch(url + "/api/create-worker", {
                                 method: "POST",
                                 credentials: 'include',
-                                headers: { "Content-Type": "application/json" },
+                                headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, "Content-Type": "application/json" },
                                 body: JSON.stringify(data)
                             });
 
@@ -2628,7 +2639,7 @@ async function getUserData(){
                                                 const response = await fetch(url + '/api/delete-price', {
                                                     method: 'POST',
                                                     credentials: 'include',
-                                                    headers: {
+                                                    headers: { Authorization: `Bearer ${localStorage.getItem("token")}`,
                                                         'Content-Type': 'application/json', 
                                                     },
                                                     body: JSON.stringify(dataToSend), 
@@ -2666,7 +2677,7 @@ async function getUserData(){
                             const res = await fetch(url + "/api/create-material", {
                                 method: "POST",
                                 credentials: 'include',
-                                headers: { "Content-Type": "application/json" },
+                                headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, "Content-Type": "application/json" },
                                 body: JSON.stringify(data)
                             });
 
@@ -2754,7 +2765,7 @@ async function getUserData(){
                             const res = await fetch(url + "/api/update-materials", {
                                 method: "POST",
                                 credentials: 'include',
-                                headers: { "Content-Type": "application/json" },
+                                headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, "Content-Type": "application/json" },
                                 body: JSON.stringify(data)
                             });
 
@@ -2794,7 +2805,7 @@ async function getUserData(){
                                             const response = await fetch(url + '/api/delete-price', {
                                                 method: 'POST',
                                                 credentials: 'include',
-                                                headers: {
+                                                headers: { Authorization: `Bearer ${localStorage.getItem("token")}`,
                                                     'Content-Type': 'application/json', 
                                                 },
                                                 body: JSON.stringify(dataToSend), 
@@ -2830,7 +2841,7 @@ async function getUserData(){
                             const res = await fetch(url + "/api/update-charges", {
                                 method: "POST",
                                 credentials: 'include',
-                                headers: { "Content-Type": "application/json" },
+                                headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, "Content-Type": "application/json" },
                                 body: JSON.stringify(data)
                             });
 
@@ -2864,7 +2875,7 @@ async function getUserData(){
                                         const response = await fetch(url + '/api/create-charge', {
                                             method: 'POST',
                                             credentials: 'include',
-                                            headers: {
+                                            headers: { Authorization: `Bearer ${localStorage.getItem("token")}`,
                                                 'Content-Type': 'application/json', 
                                             },
                                             body: JSON.stringify(dataToSend), 
@@ -2910,7 +2921,7 @@ async function getUserData(){
                             const res = await fetch(url + "/api/update-labour", {
                                 method: "POST",
                                 credentials: 'include',
-                                headers: { "Content-Type": "application/json" },
+                                headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, "Content-Type": "application/json" },
                                 body: JSON.stringify(data)
                             });
 
@@ -4309,7 +4320,7 @@ async function getUserData(){
                             const res = await fetch(url + "/api/create-job", {
                                 method: "POST",
                                 credentials: 'include',
-                                headers: { "Content-Type": "application/json" },
+                                headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, "Content-Type": "application/json" },
                                 body: JSON.stringify(data)
                             });
 
@@ -4338,7 +4349,7 @@ async function getUserData(){
                             const res = await fetch(url + "/api/edit-job", {
                                 method: "POST",
                                 credentials: 'include',
-                                headers: { "Content-Type": "application/json" },
+                                headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, "Content-Type": "application/json" },
                                 body: JSON.stringify(data)
                             });
 
@@ -4367,7 +4378,7 @@ async function getUserData(){
                             const res = await fetch(url + "/api/create-worker", {
                                 method: "POST",
                                 credentials: 'include',
-                                headers: { "Content-Type": "application/json" },
+                                headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, "Content-Type": "application/json" },
                                 body: JSON.stringify(data)
                             });
 
@@ -4703,7 +4714,7 @@ async function getUserData(){
                                         const response = await fetch(url + '/api/delete-worker', {
                                             method: 'POST',
                                             credentials: 'include',
-                                            headers: {
+                                            headers: { Authorization: `Bearer ${localStorage.getItem("token")}`,
                                                 'Content-Type': 'application/json', 
                                             },
                                             body: JSON.stringify(dataToSend), 
@@ -4849,7 +4860,7 @@ async function getUserData(){
                                     const response = await fetch(url + '/api/delete-job', {
                                         method: 'POST',
                                         credentials: 'include',
-                                        headers: {
+                                        headers: { Authorization: `Bearer ${localStorage.getItem("token")}`,
                                             'Content-Type': 'application/json', 
                                         },
                                         body: JSON.stringify(dataToSend), 
@@ -4967,6 +4978,7 @@ async function getUserData(){
                             try {
                                 const response = await fetch(`${url}/api/admin-notis`, {
                                     method: 'GET',
+                                    headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, },
                                     credentials: 'include'
                                 });
                                 const data = await response.json(); 
@@ -5031,7 +5043,7 @@ async function getUserData(){
                                                 const response = await fetch(url + '/api/mark-read', {
                                                     method: 'POST',
                                                     credentials: 'include',
-                                                    headers: {
+                                                    headers: { Authorization: `Bearer ${localStorage.getItem("token")}`,
                                                         'Content-Type': 'application/json', 
                                                     },
                                                     body: JSON.stringify(dataToSend), 
@@ -5062,6 +5074,7 @@ async function getUserData(){
                                 try {
                                     const response = await fetch(`${url}/api/logout`, {
                                         method: 'GET',
+                                        headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, },
                                         credentials: 'include'
                                     });
                                     const data = await response.json(); 
@@ -5525,7 +5538,7 @@ async function getUserData(){
                         const response = await fetch(url + '/api/mark-read', {
                             method: 'POST',
                             credentials: 'include',
-                            headers: {
+                            headers: { Authorization: `Bearer ${localStorage.getItem("token")}`,
                                 'Content-Type': 'application/json', 
                             },
                             body: JSON.stringify(dataToSend), 
