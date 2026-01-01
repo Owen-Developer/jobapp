@@ -1,5 +1,5 @@
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("/jobapp/service-worker.js")
+  navigator.serviceWorker.register("/service-worker.js")
     .then(() => console.log("Service Worker registered!"))
     .catch(err => console.error("Service Worker registration failed:", err));
 }
@@ -8,7 +8,7 @@ let url = "";
 let gitName = "";
 if(!window.location.href.includes("localhost")){
     url = "https://servers.nextdesignwebsite.com/job";
-    gitName = "/jobapp";
+    gitName = "";
 }
 let timer = 0;
 let timeInt;
