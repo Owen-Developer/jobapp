@@ -5239,8 +5239,8 @@ async function getUserData(){
                                         }
                                     });
 
-                                    document.getElementById("materialsModal").style.opacity = "1";
-                                    document.getElementById("materialsModal").style.pointerEvents = "auto";
+                                    document.getElementById("materialModal").style.opacity = "1";
+                                    document.getElementById("materialModal").style.pointerEvents = "auto";
                                 });
                             }
                         });
