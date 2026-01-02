@@ -4,6 +4,8 @@ if ("serviceWorker" in navigator) {
     .catch(err => console.error("Service Worker registration failed:", err));
 }
 
+console.log(localStorage.getItem("token"));
+
 let url = "";
 let gitName = "";
 if(!window.location.href.includes("localhost")){
