@@ -10,6 +10,7 @@ require('dotenv').config();
 const cors = require('cors');
 const crypto = require('crypto');
 const e = require('express');
+const jwt = require("jsonwebtoken");
 
 const db = mysql.createPool({
     host: process.env.DB_HOST,
@@ -152,7 +153,6 @@ function requireAuth(req, res, next) {
         req.user = decoded;
     } catch (error) {
         console.log("unauth 2")
-        console.log(error);
         req.user = null;
     }
     next();
@@ -179,7 +179,7 @@ app.post("/api/setup", requireAuth, (req, res) => {
             }
 
             const payload = {
-                userId: result[0].id
+                userId: result.insertId
             };
             const token = jwt.sign(
                 payload,
@@ -187,7 +187,6 @@ app.post("/api/setup", requireAuth, (req, res) => {
                 { expiresIn: "60m" }
             );
              
-            req.user.userId = result.insertId;
             return res.json({ message: 'success', token: token });
         });
     });
@@ -214,7 +213,6 @@ app.post("/api/login", requireAuth, (req, res) => {
                 return res.json({ message: 'invalid password' });
             }
 
-            req.user.userId = result[0].id;
             const payload = {
                 userId: result[0].id
             };
@@ -232,7 +230,7 @@ app.post("/api/login", requireAuth, (req, res) => {
     });
 });
 
-app.get("/api/get-jobs", (req, res) => {
+app.get("/api/get-jobs", requireAuth, (req, res) => {
     db.query("select * from jobs where user_id = ?", [req.user.userId], (err, result) => {
         if(err){
             console.error(err);
@@ -247,7 +245,7 @@ app.get("/api/get-jobs", (req, res) => {
 });
 
 app.get("/api/get-user", requireAuth, (req, res) => {
-    if(!req.user.userId){
+    if(!req.user?.userId){
         db.query("select * from users", (err, result) => {
             if(err){
                 console.error(err);
@@ -685,9 +683,16 @@ app.post("/api/update-labour", (req, res) => {
 });
 
 app.get("/api/logout", (req, res) => {
-    req.user = null;
+    const payload = {
+        userId: null
+    };
+    const token = jwt.sign(
+        payload,
+        process.env.JWT_SECRET,
+        { expiresIn: "60m" }
+    );
 
-    return res.json({ message: 'success' });
+    return res.json({ message: 'success', token: token });
 });
 
 app.get("/api/admin-notis", (req, res) => {

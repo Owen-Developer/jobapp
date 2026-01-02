@@ -1230,7 +1230,10 @@ async function getUserData(){
                             credentials: 'include'
                         });
                         const data = await response.json(); 
-                        if(data.message == "success") window.location.href = gitName + "/login.html";
+                        if(data.message == "success"){
+                            localStorage.setItem("token", data.token);
+                            window.location.href = gitName + "/login.html";
+                        }
                     } catch (error) {
                         console.error('Error fetching data:', error);
                     }
@@ -1408,6 +1411,7 @@ async function getUserData(){
 
                 const responseData = await res.json();
                 if(responseData.message == "success") {
+                    localStorage.setItem("token", responseData.token);
                     window.location.href = gitName + "/";
                 } else if(responseData.message == "codeerror") {
                     document.getElementById("codeError").style.display = "block";
