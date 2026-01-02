@@ -233,6 +233,9 @@ async function getUserData(){
             modal.querySelector(".btn-thank-modal").addEventListener("click", () => {
                 if(modal.id == "summaryThankModal"){
                     changePage(0);
+                } else if(document.querySelector(".dashboard")){
+                    modal.style.opacity = "0";
+                    modal.style.pointerEvents = "none";
                 } else {
                     window.location.reload();
                 }
@@ -5209,7 +5212,7 @@ async function getUserData(){
                         document.querySelectorAll(".admin-material-element").forEach((el, idx) => {
                             if(el.querySelector(".admin-material-btn")){
                                 el.querySelector(".admin-material-btn").addEventListener("click", () => {
-                                    document.querySelector(".mat-col").innerHTML = "";
+                                    document.querySelector("#materialModal .new-col").innerHTML = "";
                                     let matJob = jobs[idx];
                                     let jobMaterials = matJob.job_materials.split(",,");
                                     jobMaterials.forEach(mat => {
@@ -5232,7 +5235,7 @@ async function getUserData(){
                                                     <div class="mat-cost">Charged: <span>£${matRow.charge}</span></div>
                                                 </div>
                                             `;
-                                            document.querySelector(".mat-col").appendChild(newWrapper);
+                                            document.querySelector("#materialModal .new-col").appendChild(newWrapper);
                                         }
                                     });
 
