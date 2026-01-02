@@ -4,8 +4,6 @@ if ("serviceWorker" in navigator) {
     .catch(err => console.error("Service Worker registration failed:", err));
 }
 
-console.log(localStorage.getItem("token"));
-
 let url = "";
 let gitName = "";
 if(!window.location.href.includes("localhost")){
@@ -16,6 +14,8 @@ let timer = 0;
 let timeInt;
 let timerPaused = false;
 let calendarIdx = 0;
+let jobId;
+let currentPage = document.querySelector(".page-holder");
 const isMobile =
   window.matchMedia('(pointer: coarse)').matches &&
   window.matchMedia('(hover: none)').matches;
@@ -56,49 +56,46 @@ function createHtml(){
     homeBav.classList.add("home-bav");
     homeBav.innerHTML = `
         <div class="home-bav">
-            <a href="admin.html?admin=true" class="home-bav-col">
-                <img src="images/icons/home.png" class="home-bav-icon" />
-                <div class="home-bav-txt">Home</div>
-            </a>
-            <a href="workers.html?admin=true" class="home-bav-col">
-                <img src="images/icons/worker.png" class="home-bav-icon" />
+            <div onclick="changePage(0)" class="home-bav-col">
+                <div class="home-bav-icon">
+                <img src="images/icons/home.png" class="home-bav-icon invisible" />
+                <img src="images/icons/homeblue.png" class="home-bav-icon home-bav-active" />
+                </div>
+                <div class="home-bav-txt home-bav-active">Home</div>
+            </div>
+            <div onclick="changePage(1)" class="home-bav-col">
+            <div class="home-bav-icon">
+            <img src="images/icons/worker.png" class="home-bav-icon" />
+            <img src="images/icons/workerblue.png" class="home-bav-icon home-bav-active invisible" />
+            </div>
                 <div class="home-bav-txt">Workers</div>
-            </a>
-            <a href="pricing.html?admin=true" class="home-bav-col">
-                <img src="images/icons/pricing.png" class="home-bav-icon" />
+            </div>
+            <div onclick="changePage(2)" class="home-bav-col">
+            <div class="home-bav-icon">
+            <img src="images/icons/pricing.png" class="home-bav-icon" />
+            <img src="images/icons/pricingblue.png" class="home-bav-icon home-bav-active invisible" />
+            </div>
                 <div class="home-bav-txt">Pricing</div>
-            </a>
-            <a href="reports.html?admin=true" class="home-bav-col">
-                <img src="images/icons/chart.png" class="home-bav-icon" />
+            </div>
+            <div onclick="changePage(3)" class="home-bav-col">
+            <div class="home-bav-icon">
+            <img src="images/icons/chart.png" class="home-bav-icon" />
+            <img src="images/icons/chartblue.png" class="home-bav-icon home-bav-active invisible" />
+            </div>
                 <div class="home-bav-txt">Reports</div>
-            </a>
-            <a href="account.html?admin=true" class="home-bav-col">
-                <img src="images/icons/user.png" class="home-bav-icon" />
+            </div>
+            <div onclick="changePage(4)" class="home-bav-col">
+            <div class="home-bav-icon">
+            <img src="images/icons/user.png" class="home-bav-icon" />
+            <img src="images/icons/userblue.png" class="home-bav-icon home-bav-active invisible" />
+            </div>
                 <div class="home-bav-txt">Account</div>
-            </a>
+            </div>
         </div>
     `;
 
     if(params.get("admin") && !document.querySelector(".dashboard")){
-        document.body.appendChild(homeBav);
-    
-        let activeIdx = 0;
-        if(document.querySelector(".workers")){
-            activeIdx = 1;
-        }
-        if(document.querySelector(".pricing")){
-            activeIdx = 2;
-        }
-        if(document.querySelector(".reports")){
-            activeIdx = 3;
-        }
-        if(document.querySelector(".account")){
-            activeIdx = 4;
-        }
-    
-        document.querySelectorAll(".home-bav-icon")[activeIdx].classList.add("home-bav-active");
-        document.querySelectorAll(".home-bav-txt")[activeIdx].classList.add("home-bav-active");
-        document.querySelectorAll(".home-bav-icon")[activeIdx].src = document.querySelectorAll(".home-bav-icon")[activeIdx].src.slice(0, -4) + "blue" + document.querySelectorAll(".home-bav-icon")[activeIdx].src.slice(-4);
+        document.body.appendChild(homeBav);    
     }
 }
 createHtml();
@@ -186,6 +183,28 @@ function sortChronologically(array){
     return newArray;
 }
 
+function changePage(pageIdx){
+    if(document.querySelector(".home-bav")){
+        document.querySelectorAll("div.home-bav-col").forEach((other) => {
+            other.querySelectorAll("img")[0].classList.remove("invisible");
+            other.querySelectorAll("img")[1].classList.add("invisible");
+            other.querySelector(".home-bav-txt").classList.remove("home-bav-active");
+        });
+        document.querySelectorAll("div.home-bav-icon")[pageIdx].querySelector("img").classList.add("invisible");
+        document.querySelectorAll("div.home-bav-icon")[pageIdx].querySelectorAll("img")[1].classList.remove("invisible");
+        document.querySelectorAll(".home-bav-txt")[pageIdx].classList.add("home-bav-active");
+    }
+
+    document.querySelectorAll(".page-holder").forEach(other => {
+        other.style.display = "none";
+    });
+    document.querySelectorAll(".page-holder")[pageIdx].style.display = "block";
+    currentPage = document.querySelectorAll(".page-holder")[pageIdx];
+    window.scrollTo({
+        top: 0,
+    });
+}
+
 async function getUserData(){
     try {
         const response = await fetch(`${url}/api/get-user`, {
@@ -212,8 +231,8 @@ async function getUserData(){
         });
         document.querySelectorAll(".thank-modal").forEach(modal => {
             modal.querySelector(".btn-thank-modal").addEventListener("click", () => {
-                if(params.get("thank")){
-                    window.location.href = gitName + "/index.html";
+                if(modal.id == "summaryThankModal"){
+                    changePage(0);
                 } else {
                     window.location.reload();
                 }
@@ -223,17 +242,9 @@ async function getUserData(){
         /*/////////////// PAGES ////////////////*/
         if(document.querySelector(".home")){
             document.querySelector(".home-name").textContent = userData.name;
-            if(params.get("thank")){
-                document.querySelector(".thank-modal").style.opacity = "1";
-                document.querySelector(".thank-modal").style.pointerEvents = "auto";
-                setTimeout(() => {
-                    document.querySelector(".thank-wrapper").style.opacity = "1";
-                    document.querySelector(".thank-wrapper").style.transform = "scale(1)";
-                }, 500);
-            }
 
             let jobs;
-            async function getJobs() {
+            async function getHomeJobs() {
                 try {
                     const response = await fetch(`${url}/api/get-jobs`, {
                         method: 'GET',
@@ -264,8 +275,13 @@ async function getUserData(){
                                         <div class="job-txt">${job.job_date} - ${job.job_time}</div>
                                     </div>
                                 </div>
-                                <a href="timer.html?job=${job.id}" class="btn-job">Start Job</a>
+                                <div class="btn-job">Start Job</div>
                             `;
+                            newJob.querySelector(".btn-job").addEventListener("click", () => {
+                                jobId = job.id;
+                                timerLogic();
+                                changePage(1);
+                            });
                             if(job.job_status == "Completed"){
                                 newJob.style.display = "none";
                                 newJob.innerHTML = `
@@ -284,7 +300,7 @@ async function getUserData(){
                                             <div class="job-txt">Completed - ${job.job_date}</div>
                                         </div>
                                     </div>
-                                    <a href="timer.html?job=${job.id}" style="opacity: 0.5; pointer-events: none;" class="btn-job">Start Job</a>
+                                    <div style="opacity: 0.5; pointer-events: none;" class="btn-job">Start Job</div>
                                 `;
                             } else {
                                 validJobs++;
@@ -301,7 +317,7 @@ async function getUserData(){
                     console.error('Error fetching data:', error);
                 }
             }
-            getJobs();
+            getHomeJobs();
 
             document.querySelector("#homeSearch").addEventListener("input", () => {
                 document.querySelector(".search-drop").innerHTML = "";
@@ -421,617 +437,628 @@ async function getUserData(){
         }
 
         if(document.querySelector(".timer")){
-            async function updateProgress(time, jobId){
-                const dataToSend = { time: time, jobId: jobId };
-                try {
-                    const response = await fetch(url + '/api/update-progress', {
-                        method: 'POST',
-                        credentials: 'include',
-                        headers: { Authorization: `Bearer ${localStorage.getItem("token")}`,
-                            'Content-Type': 'application/json', 
-                        },
-                        body: JSON.stringify(dataToSend), 
-                    });
-
-                    if (!response.ok) {
-                        const errorData = await response.json();
-                        console.error('Error:', errorData.message);
-                        return;
+            function timerLogic(){
+                async function updateProgress(time, jobId){
+                    const dataToSend = { time: time, jobId: jobId };
+                    try {
+                        const response = await fetch(url + '/api/update-progress', {
+                            method: 'POST',
+                            credentials: 'include',
+                            headers: { Authorization: `Bearer ${localStorage.getItem("token")}`,
+                                'Content-Type': 'application/json', 
+                            },
+                            body: JSON.stringify(dataToSend), 
+                        });
+    
+                        if (!response.ok) {
+                            const errorData = await response.json();
+                            console.error('Error:', errorData.message);
+                            return;
+                        }
+                    } catch (error) {
+                        console.error('Error posting data:', error);
                     }
-                } catch (error) {
-                    console.error('Error posting data:', error);
                 }
-            }
-
-            function getElapsed(laterTime, earlierTime){
-                let elpasedHours;
-                let elpasedMinutes;
-                let elpasedSeconds;
-                elpasedHours = Number(laterTime.slice(-8, -6)) - Number(earlierTime.slice(-8, -6));
-                elpasedMinutes = Number(laterTime.slice(-5, -3)) - Number(earlierTime.slice(-5, -3));
-                if(elpasedMinutes < 0){
-                    elpasedMinutes += 60;
-                    elpasedHours--;
-                }
-                elpasedSeconds = Number(laterTime.slice(-2)) - Number(earlierTime.slice(-2));
-                if(elpasedSeconds < 0){
-                    elpasedSeconds += 60;
-                    elpasedMinutes--;
+    
+                function getElapsed(laterTime, earlierTime){
+                    let elpasedHours;
+                    let elpasedMinutes;
+                    let elpasedSeconds;
+                    elpasedHours = Number(laterTime.slice(-8, -6)) - Number(earlierTime.slice(-8, -6));
+                    elpasedMinutes = Number(laterTime.slice(-5, -3)) - Number(earlierTime.slice(-5, -3));
                     if(elpasedMinutes < 0){
                         elpasedMinutes += 60;
                         elpasedHours--;
                     }
+                    elpasedSeconds = Number(laterTime.slice(-2)) - Number(earlierTime.slice(-2));
+                    if(elpasedSeconds < 0){
+                        elpasedSeconds += 60;
+                        elpasedMinutes--;
+                        if(elpasedMinutes < 0){
+                            elpasedMinutes += 60;
+                            elpasedHours--;
+                        }
+                    }
+                    let newTimer;
+                    if(elpasedSeconds < 10) elpasedSeconds = "0" + elpasedSeconds;
+                    if(elpasedHours == 0){
+                        newTimer = elpasedMinutes + ":" + elpasedSeconds;
+                    } else {
+                        if(elpasedMinutes < 10) elpasedMinutes = "0" + elpasedMinutes;
+                        newTimer = elpasedHours + ":" + elpasedMinutes + ":" + elpasedSeconds;
+                    }
+    
+                    return newTimer;
                 }
-                let newTimer;
-                if(elpasedSeconds < 10) elpasedSeconds = "0" + elpasedSeconds;
-                if(elpasedHours == 0){
-                    newTimer = elpasedMinutes + ":" + elpasedSeconds;
-                } else {
-                    if(elpasedMinutes < 10) elpasedMinutes = "0" + elpasedMinutes;
-                    newTimer = elpasedHours + ":" + elpasedMinutes + ":" + elpasedSeconds;
-                }
-
-                return newTimer;
-            }
-
-            function minusTime(time, sum){
-                let newHours;
-                let newMinutes;
-                let newSeconds;
-
-                if(sum.length > 4){
-                    newHours = Number(time.slice(-8, -6)) - Number(sum.slice(-8, -6));
-                } else if(time.length > 5){
-                    newHours = Number(time.slice(-8, -6));
-                } else {
-                    newHours = 0;
-                }
-
-                newMinutes = Number(time.slice(-5, -3)) - Number(sum.slice(-5, -3));
-                if(newMinutes < 0){
-                    newMinutes += 60;
-                    newHours--;
-                }
-
-                newSeconds = Number(time.slice(-2)) - Number(sum.slice(-2));
-                if(newSeconds < 0){
-                    newSeconds += 60;
-                    newMinutes--;
+    
+                function minusTime(time, sum){
+                    let newHours;
+                    let newMinutes;
+                    let newSeconds;
+    
+                    if(sum.length > 4){
+                        newHours = Number(time.slice(-8, -6)) - Number(sum.slice(-8, -6));
+                    } else if(time.length > 5){
+                        newHours = Number(time.slice(-8, -6));
+                    } else {
+                        newHours = 0;
+                    }
+    
+                    newMinutes = Number(time.slice(-5, -3)) - Number(sum.slice(-5, -3));
                     if(newMinutes < 0){
                         newMinutes += 60;
                         newHours--;
                     }
+    
+                    newSeconds = Number(time.slice(-2)) - Number(sum.slice(-2));
+                    if(newSeconds < 0){
+                        newSeconds += 60;
+                        newMinutes--;
+                        if(newMinutes < 0){
+                            newMinutes += 60;
+                            newHours--;
+                        }
+                    }
+    
+                    let newTimer;
+                    if(newSeconds < 10) newSeconds = "0" + newSeconds;
+                    if(newHours == 0){
+                        newTimer = newMinutes + ":" + newSeconds;
+                    } else {
+                        if(newMinutes < 10) newMinutes = "0" + newMinutes;
+                        newTimer = newHours + ":" + newMinutes + ":" + newSeconds;
+                    }
+    
+                    return newTimer;
                 }
-
-                let newTimer;
-                if(newSeconds < 10) newSeconds = "0" + newSeconds;
-                if(newHours == 0){
-                    newTimer = newMinutes + ":" + newSeconds;
-                } else {
-                    if(newMinutes < 10) newMinutes = "0" + newMinutes;
-                    newTimer = newHours + ":" + newMinutes + ":" + newSeconds;
-                }
-
-                return newTimer;
-            }
-            function plusTime(time, sum){
-                let newHours;
-                let newMinutes;
-                let newSeconds;
-
-                if(sum.length > 4){
-                    newHours = Number(time.slice(-8, -6)) + Number(sum.slice(-8, -6));
-                } else if(time.length > 5){
-                    newHours = Number(time.slice(-8, -6));
-                } else {
-                    newHours = 0;
-                }
-
-                newMinutes = Number(time.slice(-5, -3)) + Number(sum.slice(-5, -3));
-                if(newMinutes > 59){
-                    newMinutes = 0;
-                    newHours++;
-                }
-
-                newSeconds = Number(time.slice(-2)) + Number(sum.slice(-2));
-                if(newSeconds > 59){
-                    newSeconds = 0;
-                    newMinutes++;
-                    if(newMinutes < 59){
+                function plusTime(time, sum){
+                    let newHours;
+                    let newMinutes;
+                    let newSeconds;
+    
+                    if(sum.length > 4){
+                        newHours = Number(time.slice(-8, -6)) + Number(sum.slice(-8, -6));
+                    } else if(time.length > 5){
+                        newHours = Number(time.slice(-8, -6));
+                    } else {
+                        newHours = 0;
+                    }
+    
+                    newMinutes = Number(time.slice(-5, -3)) + Number(sum.slice(-5, -3));
+                    if(newMinutes > 59){
                         newMinutes = 0;
                         newHours++;
                     }
-                }
-
-                let newTimer;
-                if(newSeconds < 10) newSeconds = "0" + newSeconds;
-                if(newHours == 0){
-                    newTimer = newMinutes + ":" + newSeconds;
-                } else {
-                    if(newMinutes < 10) newMinutes = "0" + newMinutes;
-                    newTimer = newHours + ":" + newMinutes + ":" + newSeconds;
-                }
-
-                return newTimer;
-            }
-
-            function startTimer(){
-                timeInt = setInterval(() => {
-                    /*
-                    timer++;
-                    let seconds = timer % 60;
-                    if(seconds < 10) seconds = "0" + seconds;
-                    let minutes = Math.floor(timer / 60);
-                    minutes = minutes - (60 * Math.floor(minutes / 60));
-                    let hours = Math.floor(timer / 3600);
-                    if(hours > 0){
-                        timeStr = hours + " hrs, " + minutes + " minutes";
-                        if(minutes < 10) minutes = "0" + minutes;
-                        document.querySelector(".tim-num").textContent = hours + ":" + minutes + ":" + seconds;
-                    } else {
-                        timeStr = minutes + " minutes";
-                        document.querySelector(".tim-num").textContent = minutes + ":" + seconds;
-                    }
-                    */
-
-                    let nowTime = getTime();
-                    let startTime = localStorage.getItem("timeStart");
-                    let totalTimer = getElapsed(nowTime, startTime);
-                    if(localStorage.getItem("pauseElapsed").includes(":")){
-                        document.querySelector(".tim-num").textContent = minusTime(totalTimer, localStorage.getItem("pauseElapsed"));
-                    } else {
-                        document.querySelector(".tim-num").textContent = totalTimer;
-                    }
-                    let officialTimer = document.querySelector(".tim-num").textContent;
-                    if(officialTimer.length > 4){
-                        timeStr = officialTimer.slice(0, officialTimer.indexOf(":")) + " hrs, " + officialTimer.slice(-5, -3) + " minutes";
-                    } else {
-                        timeStr = officialTimer.slice(0, officialTimer.indexOf(":")) + " minutes";
-                    }
-
-                    if(timer % 300 == 0){
-                        let jobId = params.get("job");
-                        updateProgress(timeStr, jobId);
-                    }
-                }, 1000);
-            }
-            let timeStr;
-            localStorage.setItem("timeStart", getTime());
-            localStorage.setItem("pauseStart", "");
-            localStorage.setItem("pauseElapsed", "");
-            startTimer();
-
-            document.querySelector(".tim-btn-pause").addEventListener("click", () => {
-                if(timerPaused){
-                    startTimer();
-                    document.querySelector(".tim-btn-pause").textContent = "Pause";
-                    timerPaused = false;
-
-                    let nowTime = getTime();
-                    let previousElapsed = localStorage.getItem("pauseElapsed");
-                    localStorage.setItem("pauseElapsed", plusTime(getElapsed(nowTime, localStorage.getItem("pauseStart")), previousElapsed));
-                } else {
-                    clearInterval(timeInt);
-                    document.querySelector(".tim-btn-pause").textContent = "Continue";
-                    timerPaused = true;
-
-                    localStorage.setItem("pauseStart", getTime());
-                }
-            });
-            document.querySelector(".tim-btn-end").addEventListener("click", () => {
-                async function endJob(){
-                    let jobId = params.get("job");
-                    const dataToSend = { time: timeStr, jobId: jobId };
-                    try {
-                        const response = await fetch(url + '/api/end-job', {
-                            method: 'POST',
-                            credentials: 'include',
-                            headers: { Authorization: `Bearer ${localStorage.getItem("token")}`,
-                                'Content-Type': 'application/json', 
-                            },
-                            body: JSON.stringify(dataToSend), 
-                        });
-
-                        if (!response.ok) {
-                            const errorData = await response.json();
-                            console.error('Error:', errorData.message);
-                            return;
+    
+                    newSeconds = Number(time.slice(-2)) + Number(sum.slice(-2));
+                    if(newSeconds > 59){
+                        newSeconds = 0;
+                        newMinutes++;
+                        if(newMinutes < 59){
+                            newMinutes = 0;
+                            newHours++;
                         }
-
-                        const data = await response.json();
-                        if(data.message == "success"){
-                            window.location.href = gitName + "/summary.html?job=" + jobId;
-                        }
-                    } catch (error) {
-                        console.error('Error posting data:', error);
                     }
+    
+                    let newTimer;
+                    if(newSeconds < 10) newSeconds = "0" + newSeconds;
+                    if(newHours == 0){
+                        newTimer = newMinutes + ":" + newSeconds;
+                    } else {
+                        if(newMinutes < 10) newMinutes = "0" + newMinutes;
+                        newTimer = newHours + ":" + newMinutes + ":" + newSeconds;
+                    }
+    
+                    return newTimer;
                 }
-                endJob();
-            });
+    
+                function startTimer(){
+                    timeInt = setInterval(() => {
+                        /*
+                        timer++;
+                        let seconds = timer % 60;
+                        if(seconds < 10) seconds = "0" + seconds;
+                        let minutes = Math.floor(timer / 60);
+                        minutes = minutes - (60 * Math.floor(minutes / 60));
+                        let hours = Math.floor(timer / 3600);
+                        if(hours > 0){
+                            timeStr = hours + " hrs, " + minutes + " minutes";
+                            if(minutes < 10) minutes = "0" + minutes;
+                            document.querySelector(".tim-num").textContent = hours + ":" + minutes + ":" + seconds;
+                        } else {
+                            timeStr = minutes + " minutes";
+                            document.querySelector(".tim-num").textContent = minutes + ":" + seconds;
+                        }
+                        */
+    
+                        let nowTime = getTime();
+                        let startTime = localStorage.getItem("timeStart");
+                        let totalTimer = getElapsed(nowTime, startTime);
+                        if(localStorage.getItem("pauseElapsed").includes(":")){
+                            document.querySelector(".tim-num").textContent = minusTime(totalTimer, localStorage.getItem("pauseElapsed"));
+                        } else {
+                            document.querySelector(".tim-num").textContent = totalTimer;
+                        }
+                        let officialTimer = document.querySelector(".tim-num").textContent;
+                        if(officialTimer.length > 4){
+                            timeStr = officialTimer.slice(0, officialTimer.indexOf(":")) + " hrs, " + officialTimer.slice(-5, -3) + " minutes";
+                        } else {
+                            timeStr = officialTimer.slice(0, officialTimer.indexOf(":")) + " minutes";
+                        }
+    
+                        if(timer % 300 == 0){
+                            updateProgress(timeStr, jobId);
+                        }
+                    }, 1000);
+                }
+                let timeStr;
+                localStorage.setItem("timeStart", getTime());
+                localStorage.setItem("pauseStart", "");
+                localStorage.setItem("pauseElapsed", "");
+                startTimer();
+    
+                document.querySelector(".tim-btn-pause").addEventListener("click", () => {
+                    if(timerPaused){
+                        startTimer();
+                        document.querySelector(".tim-btn-pause").textContent = "Pause";
+                        timerPaused = false;
+    
+                        let nowTime = getTime();
+                        let previousElapsed = localStorage.getItem("pauseElapsed");
+                        localStorage.setItem("pauseElapsed", plusTime(getElapsed(nowTime, localStorage.getItem("pauseStart")), previousElapsed));
+                    } else {
+                        clearInterval(timeInt);
+                        document.querySelector(".tim-btn-pause").textContent = "Continue";
+                        timerPaused = true;
+    
+                        localStorage.setItem("pauseStart", getTime());
+                    }
+                });
+                document.querySelector(".tim-btn-end").addEventListener("click", () => {
+                    async function endJob(){
+                        const dataToSend = { time: timeStr, jobId: jobId };
+                        try {
+                            const response = await fetch(url + '/api/end-job', {
+                                method: 'POST',
+                                credentials: 'include',
+                                headers: { Authorization: `Bearer ${localStorage.getItem("token")}`,
+                                    'Content-Type': 'application/json', 
+                                },
+                                body: JSON.stringify(dataToSend), 
+                            });
+    
+                            if (!response.ok) {
+                                const errorData = await response.json();
+                                console.error('Error:', errorData.message);
+                                return;
+                            }
+    
+                            const data = await response.json();
+                            if(data.message == "success"){
+                                changePage(2);
+                                summaryLogic();
+                            }
+                        } catch (error) {
+                            console.error('Error posting data:', error);
+                        }
+                    }
+                    endJob();
+                });
+            }
         }
 
         if(document.querySelector(".summary")){
-            let date;
-            async function getJobs() {
-                try {
-                    const response = await fetch(`${url}/api/get-jobs`, {
-                        method: 'GET',
-                        headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, },
-                        credentials: 'include'
-                    });
-                    const data = await response.json(); 
-                    if(data.messageFound){
-                        data.jobs.forEach(job => {
-                            if(job.id == params.get("job")){
-                                let dd = job.job_date.split("/")[0];
-                                if(dd.slice(0, 1) == "0") dd = dd.slice(1);
-                                document.querySelector(".edit-date-txt").textContent = dd + " " + months[Number(job.job_date.split("/")[1]) - 1] + " " + job.job_date.split("/")[2];
-                                date = job.job_date;
-                                document.querySelectorAll(".edit-change-num").forEach((num, idx) => {
-                                    num.textContent = job.job_date.split("/")[idx];
-                                    if(num.textContent.length == 4) num.textContent = num.textContent.slice(2);
-                                });
-                                document.querySelector(".edit-title-input").value = job.job_name;
-                            }
+            function summaryLogic(){
+                let date;
+                async function getJobs() {
+                    try {
+                        const response = await fetch(`${url}/api/get-jobs`, {
+                            method: 'GET',
+                            headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, },
+                            credentials: 'include'
                         });
-                    } else {
-                    }
-                } catch (error) {
-                    console.error('Error fetching data:', error);
-                }
-            }
-            getJobs();
-
-            document.querySelectorAll(".edit-toggle-option").forEach((option, idx) => {
-                option.addEventListener("click", () => {
-                    let toggleOptions = ["left", "right"];
-                    document.querySelector(".edit-toggle span").classList.remove("edit-toggle-left");
-                    document.querySelector(".edit-toggle span").classList.remove("edit-toggle-right");
-                    document.querySelector(".edit-toggle span").classList.add("edit-toggle-" + toggleOptions[idx]);
-                    document.querySelectorAll(".edit-toggle-option").forEach((opt, optIdx) => {
-                        opt.style.color = "hsl(0, 0%, 20%)";
-                        if(optIdx == idx) opt.style.color = "white";
-                    });
-                    document.querySelectorAll(".edit-content").forEach(cont => {
-                        cont.style.opacity = "0";
-                        setTimeout(() => {
-                            cont.style.display = "none";
-                            document.querySelectorAll(".edit-content")[idx].style.display = "flex";
-                            setTimeout(() => {
-                                document.querySelectorAll(".edit-content")[idx].style.opacity = "1";
-                            }, 50);
-                        }, 300);
-                    });
-                });
-            });
-
-            document.querySelector(".edit-date-wrapper").addEventListener("click", (e) => {
-                if(!document.querySelector(".edit-change").contains(e.target)){
-                    if(document.querySelector(".edit-date-chev").style.transform == "rotate(-90deg)"){
-                        document.querySelector(".edit-change").style.opacity = "0";
-                        document.querySelector(".edit-change").style.pointerEvents = "none";
-                        document.querySelector(".edit-date-chev").style.transform = "rotate(90deg)";
-                    } else {
-                        document.querySelector(".edit-change").style.opacity = "1";
-                        document.querySelector(".edit-change").style.pointerEvents = "auto";
-                        document.querySelector(".edit-date-chev").style.transform = "rotate(-90deg)";
-                    }
-                }
-            });
-            document.querySelectorAll(".edit-change-col").forEach((col, colIdx) => {
-                col.querySelectorAll(".edit-change-chev").forEach((chev, idx) => {
-                    chev.addEventListener("click", () => {
-                        if(idx == 0){
-                            col.querySelector(".edit-change-num").textContent = Number(col.querySelector(".edit-change-num").textContent) + 1;
-                            if(Number(col.querySelector(".edit-change-num").textContent) > 31 && colIdx == 0) col.querySelector(".edit-change-num").textContent = "1";
-                            if(Number(col.querySelector(".edit-change-num").textContent) > 12 && colIdx == 1) col.querySelector(".edit-change-num").textContent = "1";
-                            if(Number(col.querySelector(".edit-change-num").textContent) > 25 && colIdx == 2) col.querySelector(".edit-change-num").textContent = "25";
-                        } else {
-                            col.querySelector(".edit-change-num").textContent = Number(col.querySelector(".edit-change-num").textContent) - 1;
-                            if(Number(col.querySelector(".edit-change-num").textContent) < 1 && colIdx == 0) col.querySelector(".edit-change-num").textContent = "31";
-                            if(Number(col.querySelector(".edit-change-num").textContent) < 1 && colIdx == 1) col.querySelector(".edit-change-num").textContent = "12";
-                            if(Number(col.querySelector(".edit-change-num").textContent) < 10 && colIdx == 2) col.querySelector(".edit-change-num").textContent = "10";
-                        }
-                        let day = document.querySelectorAll(".edit-change-num")[0].textContent;
-                        if(day.length == 0) day = "0" + day;
-                        let month = document.querySelectorAll(".edit-change-num")[1].textContent;
-                        if(month.length == 0) month = "0" + month;
-                        let year = "20" + document.querySelectorAll(".edit-change-num")[2].textContent;
-                        date = day + "/" + month + "/" + year;
-                    });
-                });
-            });
-            document.querySelector(".btn-change-save").addEventListener("click", () => {
-                document.querySelector(".edit-change").style.opacity = "0";
-                document.querySelector(".edit-change").style.pointerEvents = "none";
-                document.querySelector(".edit-date-chev").style.transform = "rotate(90deg)";
-
-                let dd = document.querySelectorAll(".edit-change-num")[0].textContent;
-                if(dd.slice(0, 1) == "0") dd = dd.slice(1);
-                document.querySelector(".edit-date-txt").textContent = document.querySelectorAll(".edit-change-num")[0].textContent + " " + months[Number(document.querySelectorAll(".edit-change-num")[1].textContent - 1)] + " 20" + document.querySelectorAll(".edit-change-num")[2].textContent;
-            });
-            document.querySelector(".btn-change-cancel").addEventListener("click", () => {
-                document.querySelector(".edit-change").style.opacity = "0";
-                document.querySelector(".edit-change").style.pointerEvents = "none";
-                document.querySelector(".edit-date-chev").style.transform = "rotate(90deg)";
-            });
-
-            document.getElementById("photoInput").addEventListener("change", (e) => {
-                document.querySelector(".edit-upload-img img").src = URL.createObjectURL(e.target.files[0]);
-                document.querySelector(".edit-upload-content").style.opacity = "0";
-                setTimeout(() => {
-                    document.querySelector(".edit-upload-content").style.display = "none";
-                    document.querySelector(".edit-upload-img").style.display = "flex";
-                    setTimeout(() => {
-                        document.querySelector("i.edit-close").style.opacity = "1";
-                        document.querySelector(".edit-upload-img").style.maxHeight = "600px";
-                        document.querySelector(".edit-upload-img").style.marginTop = "25px";
-                    }, 50);
-                }, 300);
-            });
-            document.querySelector("i.edit-close").addEventListener("click", () => {
-                document.querySelector(".edit-upload-img").style.opacity = "0";
-                document.querySelector(".edit-upload-img").style.maxHeight = "0px";
-                document.querySelector(".edit-upload-img").style.marginTop = "0px";
-                setTimeout(() => {
-                    document.querySelector(".edit-upload-content").style.display = "flex";
-                    document.querySelector(".edit-upload-img").style.display = "none";
-                    setTimeout(() => {
-                        document.querySelector("i.edit-close").style.opacity = "0";
-                        document.querySelector(".edit-upload-content").style.opacity = "1";
-                    }, 50);
-                }, 400);
-            });
-
-            document.querySelectorAll(".edit-mat-selector").forEach((sel, idx) => {
-                sel.addEventListener("click", (e) => {
-                    if(!sel.querySelector(".edit-mat-drop").contains(e.target)){
-                        if(sel.querySelector(".edit-mat-chev").style.transform == "rotate(-90deg)"){
-                            sel.style.marginBottom = "0px";
-                            sel.querySelector(".edit-mat-drop").style.opacity = "0";
-                            sel.querySelector(".edit-mat-drop").style.pointerEvents = "none";
-                            sel.querySelector(".edit-mat-chev").style.transform = "rotate(90deg)";
-                        } else {
-                            let marginBottom = sel.querySelector(".edit-mat-drop").offsetHeight + 27 + "px";
-                            sel.style.marginBottom = marginBottom;
-                            sel.querySelector(".edit-mat-drop").style.opacity = "1";
-                            sel.querySelector(".edit-mat-drop").style.pointerEvents = "auto";
-                            sel.querySelector(".edit-mat-chev").style.transform = "rotate(-90deg)";
-                        }
-                    }
-                });
-            });
-
-            document.querySelector(".edit-upload-btn").addEventListener("click", () => {
-                document.getElementById("photoInput").click();
-            });
-
-            let materials = []; // [name, value, unit]
-            let charges = [];
-            async function getMaterials() {
-                try {
-                    const response = await fetch(`${url}/api/get-materials`, {
-                        method: 'GET',
-                        headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, },
-                        credentials: 'include'
-                    });
-                    const data = await response.json();
-                    document.querySelectorAll(".edit-mat-wrapper").forEach(wrapper => {
-                        if(wrapper.id == "chargeWrapper"){
-                            data.materials.forEach(mat => {
-                                if(mat.area == "charges"){
-                                    let newOption = document.createElement("div");
-                                    newOption.classList.add("edit-mat-option");
-                                    newOption.id = "charge-" + mat.id;
-                                    newOption.innerHTML = mat.name + ' <i class="fa-solid fa-check"></i>';
-                                    wrapper.querySelector(".edit-mat-drop").appendChild(newOption);
+                        const data = await response.json(); 
+                        if(data.messageFound){
+                            data.jobs.forEach(job => {
+                                if(job.id == jobId){
+                                    let dd = job.job_date.split("/")[0];
+                                    if(dd.slice(0, 1) == "0") dd = dd.slice(1);
+                                    document.querySelector(".edit-date-txt").textContent = dd + " " + months[Number(job.job_date.split("/")[1]) - 1] + " " + job.job_date.split("/")[2];
+                                    date = job.job_date;
+                                    document.querySelectorAll(".edit-change-num").forEach((num, idx) => {
+                                        num.textContent = job.job_date.split("/")[idx];
+                                        if(num.textContent.length == 4) num.textContent = num.textContent.slice(2);
+                                    });
+                                    document.querySelector(".edit-title-input").value = job.job_name;
                                 }
                             });
-                            wrapper.querySelectorAll(".edit-mat-option").forEach(option => {
-                                option.addEventListener("click", () => {
-                                    if(!option.classList.contains("edit-mat-active")){
-                                        charges.push(option.id.split("-")[1]);
-                                        option.classList.add("edit-mat-active");
-                                        let newMaterial = document.createElement("div");
-                                        newMaterial.classList.add("edit-mat-section");
-                                        newMaterial.innerHTML = `
-                                            <div class="edit-mat-name">${option.innerHTML.slice(0, option.innerHTML.indexOf("<") - 1)}</div>
-                                            <i class="fa-solid fa-trash-can edit-charge-delete" style="display: block;"></i>
-                                        `;
-                                        wrapper.querySelector(".edit-mat-col").appendChild(newMaterial);
-                                        setTimeout(() => {
-                                            wrapper.querySelector(".edit-mat-col").style.marginTop = "25px";
-                                            newMaterial.style.maxHeight = "40px";
-                                            newMaterial.style.opacity = "1";
-                                        }, 30);
+                        } else {
+                        }
+                    } catch (error) {
+                        console.error('Error fetching data:', error);
+                    }
+                }
+                getJobs();
     
-                                        newMaterial.querySelector("i.edit-charge-delete").addEventListener("click", () => {
-                                            option.classList.remove("edit-mat-active");
-                                            newMaterial.style.maxHeight = "0px";
-                                            newMaterial.style.opacity = "0";
+                document.querySelectorAll(".edit-toggle-option").forEach((option, idx) => {
+                    option.addEventListener("click", () => {
+                        let toggleOptions = ["left", "right"];
+                        document.querySelector(".edit-toggle span").classList.remove("edit-toggle-left");
+                        document.querySelector(".edit-toggle span").classList.remove("edit-toggle-right");
+                        document.querySelector(".edit-toggle span").classList.add("edit-toggle-" + toggleOptions[idx]);
+                        document.querySelectorAll(".edit-toggle-option").forEach((opt, optIdx) => {
+                            opt.style.color = "hsl(0, 0%, 20%)";
+                            if(optIdx == idx) opt.style.color = "white";
+                        });
+                        document.querySelectorAll(".edit-content").forEach(cont => {
+                            cont.style.opacity = "0";
+                            setTimeout(() => {
+                                cont.style.display = "none";
+                                document.querySelectorAll(".edit-content")[idx].style.display = "flex";
+                                setTimeout(() => {
+                                    document.querySelectorAll(".edit-content")[idx].style.opacity = "1";
+                                }, 50);
+                            }, 300);
+                        });
+                    });
+                });
+    
+                document.querySelector(".edit-date-wrapper").addEventListener("click", (e) => {
+                    if(!document.querySelector(".edit-change").contains(e.target)){
+                        if(document.querySelector(".edit-date-chev").style.transform == "rotate(-90deg)"){
+                            document.querySelector(".edit-change").style.opacity = "0";
+                            document.querySelector(".edit-change").style.pointerEvents = "none";
+                            document.querySelector(".edit-date-chev").style.transform = "rotate(90deg)";
+                        } else {
+                            document.querySelector(".edit-change").style.opacity = "1";
+                            document.querySelector(".edit-change").style.pointerEvents = "auto";
+                            document.querySelector(".edit-date-chev").style.transform = "rotate(-90deg)";
+                        }
+                    }
+                });
+                document.querySelectorAll(".edit-change-col").forEach((col, colIdx) => {
+                    col.querySelectorAll(".edit-change-chev").forEach((chev, idx) => {
+                        chev.addEventListener("click", () => {
+                            if(idx == 0){
+                                col.querySelector(".edit-change-num").textContent = Number(col.querySelector(".edit-change-num").textContent) + 1;
+                                if(Number(col.querySelector(".edit-change-num").textContent) > 31 && colIdx == 0) col.querySelector(".edit-change-num").textContent = "1";
+                                if(Number(col.querySelector(".edit-change-num").textContent) > 12 && colIdx == 1) col.querySelector(".edit-change-num").textContent = "1";
+                                if(Number(col.querySelector(".edit-change-num").textContent) > 25 && colIdx == 2) col.querySelector(".edit-change-num").textContent = "25";
+                            } else {
+                                col.querySelector(".edit-change-num").textContent = Number(col.querySelector(".edit-change-num").textContent) - 1;
+                                if(Number(col.querySelector(".edit-change-num").textContent) < 1 && colIdx == 0) col.querySelector(".edit-change-num").textContent = "31";
+                                if(Number(col.querySelector(".edit-change-num").textContent) < 1 && colIdx == 1) col.querySelector(".edit-change-num").textContent = "12";
+                                if(Number(col.querySelector(".edit-change-num").textContent) < 10 && colIdx == 2) col.querySelector(".edit-change-num").textContent = "10";
+                            }
+                            let day = document.querySelectorAll(".edit-change-num")[0].textContent;
+                            if(day.length == 0) day = "0" + day;
+                            let month = document.querySelectorAll(".edit-change-num")[1].textContent;
+                            if(month.length == 0) month = "0" + month;
+                            let year = "20" + document.querySelectorAll(".edit-change-num")[2].textContent;
+                            date = day + "/" + month + "/" + year;
+                        });
+                    });
+                });
+                document.querySelector(".btn-change-save").addEventListener("click", () => {
+                    document.querySelector(".edit-change").style.opacity = "0";
+                    document.querySelector(".edit-change").style.pointerEvents = "none";
+                    document.querySelector(".edit-date-chev").style.transform = "rotate(90deg)";
+    
+                    let dd = document.querySelectorAll(".edit-change-num")[0].textContent;
+                    if(dd.slice(0, 1) == "0") dd = dd.slice(1);
+                    document.querySelector(".edit-date-txt").textContent = document.querySelectorAll(".edit-change-num")[0].textContent + " " + months[Number(document.querySelectorAll(".edit-change-num")[1].textContent - 1)] + " 20" + document.querySelectorAll(".edit-change-num")[2].textContent;
+                });
+                document.querySelector(".btn-change-cancel").addEventListener("click", () => {
+                    document.querySelector(".edit-change").style.opacity = "0";
+                    document.querySelector(".edit-change").style.pointerEvents = "none";
+                    document.querySelector(".edit-date-chev").style.transform = "rotate(90deg)";
+                });
+    
+                document.getElementById("photoInput").addEventListener("change", (e) => {
+                    document.querySelector(".edit-upload-img img").src = URL.createObjectURL(e.target.files[0]);
+                    document.querySelector(".edit-upload-content").style.opacity = "0";
+                    setTimeout(() => {
+                        document.querySelector(".edit-upload-content").style.display = "none";
+                        document.querySelector(".edit-upload-img").style.display = "flex";
+                        setTimeout(() => {
+                            document.querySelector("i.edit-close").style.opacity = "1";
+                            document.querySelector(".edit-upload-img").style.maxHeight = "600px";
+                            document.querySelector(".edit-upload-img").style.marginTop = "25px";
+                        }, 50);
+                    }, 300);
+                });
+                document.querySelector("i.edit-close").addEventListener("click", () => {
+                    document.querySelector(".edit-upload-img").style.opacity = "0";
+                    document.querySelector(".edit-upload-img").style.maxHeight = "0px";
+                    document.querySelector(".edit-upload-img").style.marginTop = "0px";
+                    setTimeout(() => {
+                        document.querySelector(".edit-upload-content").style.display = "flex";
+                        document.querySelector(".edit-upload-img").style.display = "none";
+                        setTimeout(() => {
+                            document.querySelector("i.edit-close").style.opacity = "0";
+                            document.querySelector(".edit-upload-content").style.opacity = "1";
+                        }, 50);
+                    }, 400);
+                });
+    
+                document.querySelectorAll(".edit-mat-selector").forEach((sel, idx) => {
+                    sel.addEventListener("click", (e) => {
+                        if(!sel.querySelector(".edit-mat-drop").contains(e.target)){
+                            if(sel.querySelector(".edit-mat-chev").style.transform == "rotate(-90deg)"){
+                                sel.style.marginBottom = "0px";
+                                sel.querySelector(".edit-mat-drop").style.opacity = "0";
+                                sel.querySelector(".edit-mat-drop").style.pointerEvents = "none";
+                                sel.querySelector(".edit-mat-chev").style.transform = "rotate(90deg)";
+                            } else {
+                                let marginBottom = sel.querySelector(".edit-mat-drop").offsetHeight + 27 + "px";
+                                sel.style.marginBottom = marginBottom;
+                                sel.querySelector(".edit-mat-drop").style.opacity = "1";
+                                sel.querySelector(".edit-mat-drop").style.pointerEvents = "auto";
+                                sel.querySelector(".edit-mat-chev").style.transform = "rotate(-90deg)";
+                            }
+                        }
+                    });
+                });
+    
+                document.querySelector(".edit-upload-btn").addEventListener("click", () => {
+                    document.getElementById("photoInput").click();
+                });
+    
+                let materials = []; // [name, value, unit]
+                let charges = [];
+                async function getMaterials() {
+                    try {
+                        const response = await fetch(`${url}/api/get-materials`, {
+                            method: 'GET',
+                            headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, },
+                            credentials: 'include'
+                        });
+                        const data = await response.json();
+                        document.querySelectorAll(".edit-mat-wrapper").forEach(wrapper => {
+                            if(wrapper.id == "chargeWrapper"){
+                                data.materials.forEach(mat => {
+                                    if(mat.area == "charges"){
+                                        let newOption = document.createElement("div");
+                                        newOption.classList.add("edit-mat-option");
+                                        newOption.id = "charge-" + mat.id;
+                                        newOption.innerHTML = mat.name + ' <i class="fa-solid fa-check"></i>';
+                                        wrapper.querySelector(".edit-mat-drop").appendChild(newOption);
+                                    }
+                                });
+                                wrapper.querySelectorAll(".edit-mat-option").forEach(option => {
+                                    option.addEventListener("click", () => {
+                                        if(!option.classList.contains("edit-mat-active")){
+                                            charges.push(option.id.split("-")[1]);
+                                            option.classList.add("edit-mat-active");
+                                            let newMaterial = document.createElement("div");
+                                            newMaterial.classList.add("edit-mat-section");
+                                            newMaterial.innerHTML = `
+                                                <div class="edit-mat-name">${option.innerHTML.slice(0, option.innerHTML.indexOf("<") - 1)}</div>
+                                                <i class="fa-solid fa-trash-can edit-charge-delete" style="display: block;"></i>
+                                            `;
+                                            wrapper.querySelector(".edit-mat-col").appendChild(newMaterial);
                                             setTimeout(() => {
-                                                wrapper.querySelector(".edit-mat-col").removeChild(newMaterial);
-                                            }, 300);
+                                                wrapper.querySelector(".edit-mat-col").style.marginTop = "25px";
+                                                newMaterial.style.maxHeight = "40px";
+                                                newMaterial.style.opacity = "1";
+                                            }, 30);
+        
+                                            newMaterial.querySelector("i.edit-charge-delete").addEventListener("click", () => {
+                                                option.classList.remove("edit-mat-active");
+                                                newMaterial.style.maxHeight = "0px";
+                                                newMaterial.style.opacity = "0";
+                                                setTimeout(() => {
+                                                    wrapper.querySelector(".edit-mat-col").removeChild(newMaterial);
+                                                }, 300);
+                                                charges.splice(charges.indexOf(option.id.split("-")[1]), 1);
+                                                if(wrapper.querySelectorAll(".edit-mat-active").length == 0){
+                                                    wrapper.querySelector(".edit-mat-col").style.marginTop = "0px";
+                                                }
+                                            });    
+                                        } else {
                                             charges.splice(charges.indexOf(option.id.split("-")[1]), 1);
+                                            option.classList.remove("edit-mat-active");
+                                            document.querySelectorAll(".edit-mat-section").forEach(section => {
+                                                if(section.querySelector(".edit-mat-name").innerHTML == option.innerHTML.slice(0, option.innerHTML.indexOf("<") - 1)){
+                                                    section.style.maxHeight = "0px";
+                                                    section.style.opacity = "0";
+                                                    setTimeout(() => {
+                                                        wrapper.querySelector(".edit-mat-col").removeChild(section);
+                                                    }, 300);
+                                                }
+                                            });
                                             if(wrapper.querySelectorAll(".edit-mat-active").length == 0){
                                                 wrapper.querySelector(".edit-mat-col").style.marginTop = "0px";
                                             }
-                                        });    
-                                    } else {
-                                        charges.splice(charges.indexOf(option.id.split("-")[1]), 1);
-                                        option.classList.remove("edit-mat-active");
-                                        document.querySelectorAll(".edit-mat-section").forEach(section => {
-                                            if(section.querySelector(".edit-mat-name").innerHTML == option.innerHTML.slice(0, option.innerHTML.indexOf("<") - 1)){
-                                                section.style.maxHeight = "0px";
-                                                section.style.opacity = "0";
-                                                setTimeout(() => {
-                                                    wrapper.querySelector(".edit-mat-col").removeChild(section);
-                                                }, 300);
-                                            }
-                                        });
-                                        if(wrapper.querySelectorAll(".edit-mat-active").length == 0){
-                                            wrapper.querySelector(".edit-mat-col").style.marginTop = "0px";
                                         }
+                                    });
+                                });
+                            } else {
+                                data.materials.forEach(mat => {
+                                    if(wrapper.querySelector(".edit-mat-label").textContent.toLowerCase() == mat.type.toLowerCase() && mat.area == "materials"){
+                                        let newOption = document.createElement("div");
+                                        newOption.classList.add("edit-mat-option");
+                                        newOption.id = mat.default_value + "-" + mat.unit + "-" + mat.default_value + "-" + mat.step; // value, unit, default, step
+                                        newOption.innerHTML = mat.name + ' <i class="fa-solid fa-check"></i>';
+                                        wrapper.querySelector(".edit-mat-drop").appendChild(newOption);
                                     }
                                 });
-                            });
-                        } else {
-                            data.materials.forEach(mat => {
-                                if(wrapper.querySelector(".edit-mat-label").textContent.toLowerCase() == mat.type.toLowerCase() && mat.area == "materials"){
-                                    let newOption = document.createElement("div");
-                                    newOption.classList.add("edit-mat-option");
-                                    newOption.id = mat.default_value + "-" + mat.unit + "-" + mat.default_value + "-" + mat.step; // value, unit, default, step
-                                    newOption.innerHTML = mat.name + ' <i class="fa-solid fa-check"></i>';
-                                    wrapper.querySelector(".edit-mat-drop").appendChild(newOption);
-                                }
-                            });
-                            wrapper.querySelectorAll(".edit-mat-option").forEach(option => {
-                                option.addEventListener("click", () => {
-                                    if(!option.classList.contains("edit-mat-active")){
-                                        option.classList.add("edit-mat-active");
-                                        let newMaterial = document.createElement("div");
-                                        newMaterial.classList.add("edit-mat-section");
-                                        newMaterial.innerHTML = `
-                                            <div class="edit-mat-name">${option.innerHTML.slice(0, option.innerHTML.indexOf("<") - 1)}</div>
-                                            <div class="edit-mat-quan">
-                                                <i class="fa-solid fa-minus edit-mat-minus"></i>
-                                                <i class="fa-solid fa-trash-can edit-mat-delete"></i>
-                                                <span>${option.id.split("-")[0]} <span>${option.id.split("-")[1]}</span></span>
-                                                <i class="fa-solid fa-plus edit-mat-plus"></i>
-                                            </div>
-                                        `;
-                                        if((Number(option.id.split("-")[0]) - Number(option.id.split("-")[3])) <= 0){
-                                            newMaterial.querySelector("i.edit-mat-minus").style.display = "none";
-                                            newMaterial.querySelector("i.edit-mat-delete").style.display = "block";
-                                        }
-                                        wrapper.querySelector(".edit-mat-col").appendChild(newMaterial);
-                                        setTimeout(() => {
-                                            wrapper.querySelector(".edit-mat-col").style.marginTop = "25px";
-                                            newMaterial.style.maxHeight = "40px";
-                                            newMaterial.style.opacity = "1";
-                                        }, 30);
-    
-                                        newMaterial.querySelector("i.edit-mat-plus").addEventListener("click", () => {
-                                            newMaterial.querySelector(".edit-mat-quan span").innerHTML = String(Number(newMaterial.querySelector(".edit-mat-quan span").innerHTML.slice(0, newMaterial.querySelector(".edit-mat-quan span").innerHTML.indexOf("<") - 1)) + Number(option.id.split("-")[3])) + newMaterial.querySelector(".edit-mat-quan span").innerHTML.slice(newMaterial.querySelector(".edit-mat-quan span").innerHTML.indexOf("<") - 1)
-                                            newMaterial.querySelector("i.edit-mat-delete").style.display = "none";
-                                            newMaterial.querySelector("i.edit-mat-minus").style.display = "block";
-                                            option.id = String(Number(option.id.split("-")[0]) + Number(option.id.split("-")[3])) + "-" + option.id.split("-")[1] + "-" + option.id.split("-")[2] + "-" + option.id.split("-")[3];
-                                            materials.forEach(material => {
-                                                if(material[0] == option.innerHTML.slice(0, option.innerHTML.indexOf("<") - 1)){
-                                                    material[1] = option.id.split("-")[0];
-                                                } 
-                                            });
-                                        });
-                                        newMaterial.querySelector("i.edit-mat-minus").addEventListener("click", () => {
-                                            newMaterial.querySelector(".edit-mat-quan span").innerHTML = String(Number(newMaterial.querySelector(".edit-mat-quan span").innerHTML.slice(0, newMaterial.querySelector(".edit-mat-quan span").innerHTML.indexOf("<") - 1)) - Number(option.id.split("-")[3])) + newMaterial.querySelector(".edit-mat-quan span").innerHTML.slice(newMaterial.querySelector(".edit-mat-quan span").innerHTML.indexOf("<") - 1)
-                                            if(Number(newMaterial.querySelector(".edit-mat-quan span").innerHTML.slice(0, newMaterial.querySelector(".edit-mat-quan span").innerHTML.indexOf("<") - 1)) == 1){
-                                                newMaterial.querySelector("i.edit-mat-delete").style.display = "block";
-                                                newMaterial.querySelector("i.edit-mat-minus").style.display = "none";
-                                            }
-                                            option.id = String(Number(option.id.split("-")[0]) - Number(option.id.split("-")[3])) + "-" + option.id.split("-")[1] + "-" + option.id.split("-")[2] + "-" + option.id.split("-")[3];
-                                            materials.forEach(material => {
-                                                if(material[0] == option.innerHTML.slice(0, option.innerHTML.indexOf("<") - 1)){
-                                                    material[1] = option.id.split("-")[0];
-                                                } 
-                                            });
-                                            console.log((Number(option.id.split("-")[0]) - Number(option.id.split("-")[3])));
+                                wrapper.querySelectorAll(".edit-mat-option").forEach(option => {
+                                    option.addEventListener("click", () => {
+                                        if(!option.classList.contains("edit-mat-active")){
+                                            option.classList.add("edit-mat-active");
+                                            let newMaterial = document.createElement("div");
+                                            newMaterial.classList.add("edit-mat-section");
+                                            newMaterial.innerHTML = `
+                                                <div class="edit-mat-name">${option.innerHTML.slice(0, option.innerHTML.indexOf("<") - 1)}</div>
+                                                <div class="edit-mat-quan">
+                                                    <i class="fa-solid fa-minus edit-mat-minus"></i>
+                                                    <i class="fa-solid fa-trash-can edit-mat-delete"></i>
+                                                    <span>${option.id.split("-")[0]} <span>${option.id.split("-")[1]}</span></span>
+                                                    <i class="fa-solid fa-plus edit-mat-plus"></i>
+                                                </div>
+                                            `;
                                             if((Number(option.id.split("-")[0]) - Number(option.id.split("-")[3])) <= 0){
                                                 newMaterial.querySelector("i.edit-mat-minus").style.display = "none";
                                                 newMaterial.querySelector("i.edit-mat-delete").style.display = "block";
                                             }
-                                        });
-                                        newMaterial.querySelector("i.edit-mat-delete").addEventListener("click", () => {
-                                            newMaterial.style.maxHeight = "0px";
-                                            newMaterial.style.opacity = "0";
+                                            wrapper.querySelector(".edit-mat-col").appendChild(newMaterial);
                                             setTimeout(() => {
-                                                wrapper.querySelector(".edit-mat-col").removeChild(newMaterial);
-                                            }, 300);
+                                                wrapper.querySelector(".edit-mat-col").style.marginTop = "25px";
+                                                newMaterial.style.maxHeight = "40px";
+                                                newMaterial.style.opacity = "1";
+                                            }, 30);
+        
+                                            newMaterial.querySelector("i.edit-mat-plus").addEventListener("click", () => {
+                                                newMaterial.querySelector(".edit-mat-quan span").innerHTML = String(Number(newMaterial.querySelector(".edit-mat-quan span").innerHTML.slice(0, newMaterial.querySelector(".edit-mat-quan span").innerHTML.indexOf("<") - 1)) + Number(option.id.split("-")[3])) + newMaterial.querySelector(".edit-mat-quan span").innerHTML.slice(newMaterial.querySelector(".edit-mat-quan span").innerHTML.indexOf("<") - 1)
+                                                newMaterial.querySelector("i.edit-mat-delete").style.display = "none";
+                                                newMaterial.querySelector("i.edit-mat-minus").style.display = "block";
+                                                option.id = String(Number(option.id.split("-")[0]) + Number(option.id.split("-")[3])) + "-" + option.id.split("-")[1] + "-" + option.id.split("-")[2] + "-" + option.id.split("-")[3];
+                                                materials.forEach(material => {
+                                                    if(material[0] == option.innerHTML.slice(0, option.innerHTML.indexOf("<") - 1)){
+                                                        material[1] = option.id.split("-")[0];
+                                                    } 
+                                                });
+                                            });
+                                            newMaterial.querySelector("i.edit-mat-minus").addEventListener("click", () => {
+                                                newMaterial.querySelector(".edit-mat-quan span").innerHTML = String(Number(newMaterial.querySelector(".edit-mat-quan span").innerHTML.slice(0, newMaterial.querySelector(".edit-mat-quan span").innerHTML.indexOf("<") - 1)) - Number(option.id.split("-")[3])) + newMaterial.querySelector(".edit-mat-quan span").innerHTML.slice(newMaterial.querySelector(".edit-mat-quan span").innerHTML.indexOf("<") - 1)
+                                                if(Number(newMaterial.querySelector(".edit-mat-quan span").innerHTML.slice(0, newMaterial.querySelector(".edit-mat-quan span").innerHTML.indexOf("<") - 1)) == 1){
+                                                    newMaterial.querySelector("i.edit-mat-delete").style.display = "block";
+                                                    newMaterial.querySelector("i.edit-mat-minus").style.display = "none";
+                                                }
+                                                option.id = String(Number(option.id.split("-")[0]) - Number(option.id.split("-")[3])) + "-" + option.id.split("-")[1] + "-" + option.id.split("-")[2] + "-" + option.id.split("-")[3];
+                                                materials.forEach(material => {
+                                                    if(material[0] == option.innerHTML.slice(0, option.innerHTML.indexOf("<") - 1)){
+                                                        material[1] = option.id.split("-")[0];
+                                                    } 
+                                                });
+                                                console.log((Number(option.id.split("-")[0]) - Number(option.id.split("-")[3])));
+                                                if((Number(option.id.split("-")[0]) - Number(option.id.split("-")[3])) <= 0){
+                                                    newMaterial.querySelector("i.edit-mat-minus").style.display = "none";
+                                                    newMaterial.querySelector("i.edit-mat-delete").style.display = "block";
+                                                }
+                                            });
+                                            newMaterial.querySelector("i.edit-mat-delete").addEventListener("click", () => {
+                                                newMaterial.style.maxHeight = "0px";
+                                                newMaterial.style.opacity = "0";
+                                                setTimeout(() => {
+                                                    wrapper.querySelector(".edit-mat-col").removeChild(newMaterial);
+                                                }, 300);
+                                                option.classList.remove("edit-mat-active");
+                                                if(wrapper.querySelectorAll(".edit-mat-active").length == 0){
+                                                    wrapper.querySelector(".edit-mat-col").style.marginTop = "0px";
+                                                }
+                                                materials.forEach((material, idx) => {
+                                                    if(material[0] == option.innerHTML.slice(0, option.innerHTML.indexOf("<") - 1)){
+                                                        materials.splice(idx, 1);
+                                                        option.id = option.id.split("-")[2] + "-" + option.id.split("-")[1] + "-" + option.id.split("-")[2] + "-" + option.id.split("-")[3];
+                                                    } 
+                                                });
+                                            });
+        
+                                            let newArray = [option.innerHTML.slice(0, option.innerHTML.indexOf("<") - 1), option.id.split("-")[0], option.id.split("-")[1]]; 
+                                            materials.push(newArray);
+                                        } else {
+                                            option.classList.remove("edit-mat-active");
+                                            document.querySelectorAll(".edit-mat-section").forEach(section => {
+                                                if(section.querySelector(".edit-mat-name").innerHTML == option.innerHTML.slice(0, option.innerHTML.indexOf("<") - 1)){
+                                                    section.style.maxHeight = "0px";
+                                                    section.style.opacity = "0";
+                                                    setTimeout(() => {
+                                                        wrapper.querySelector(".edit-mat-col").removeChild(section);
+                                                    }, 300);
+                                                }
+                                            });
                                             option.classList.remove("edit-mat-active");
                                             if(wrapper.querySelectorAll(".edit-mat-active").length == 0){
                                                 wrapper.querySelector(".edit-mat-col").style.marginTop = "0px";
                                             }
-                                            materials.forEach((material, idx) => {
-                                                if(material[0] == option.innerHTML.slice(0, option.innerHTML.indexOf("<") - 1)){
-                                                    materials.splice(idx, 1);
-                                                    option.id = option.id.split("-")[2] + "-" + option.id.split("-")[1] + "-" + option.id.split("-")[2] + "-" + option.id.split("-")[3];
-                                                } 
-                                            });
-                                        });
-    
-                                        let newArray = [option.innerHTML.slice(0, option.innerHTML.indexOf("<") - 1), option.id.split("-")[0], option.id.split("-")[1]]; 
-                                        materials.push(newArray);
-                                    } else {
-                                        option.classList.remove("edit-mat-active");
-                                        document.querySelectorAll(".edit-mat-section").forEach(section => {
-                                            if(section.querySelector(".edit-mat-name").innerHTML == option.innerHTML.slice(0, option.innerHTML.indexOf("<") - 1)){
-                                                section.style.maxHeight = "0px";
-                                                section.style.opacity = "0";
-                                                setTimeout(() => {
-                                                    wrapper.querySelector(".edit-mat-col").removeChild(section);
-                                                }, 300);
-                                            }
-                                        });
-                                        option.classList.remove("edit-mat-active");
-                                        if(wrapper.querySelectorAll(".edit-mat-active").length == 0){
-                                            wrapper.querySelector(".edit-mat-col").style.marginTop = "0px";
                                         }
-                                    }
+                                    });
                                 });
-                            });
-                        }
-
-                    });
-                } catch (error) {
-                    console.error('Error fetching data:', error);
-                }
-            }
-            getMaterials();
-
-            document.querySelector(".edit-save-btn").addEventListener("click", () => {
-                async function sendSummary() {
-                    const dataToSend = { jobId: params.get("job"), date: date, notes: document.querySelector(".edit-para-area").value, materials: materials, charges: charges };
-                    try {
-                        const response = await fetch(url + '/api/send-summary', {
-                            method: 'POST',
-                            credentials: 'include',
-                            headers: { Authorization: `Bearer ${localStorage.getItem("token")}`,
-                                'Content-Type': 'application/json', 
-                            },
-                            body: JSON.stringify(dataToSend), 
+                            }
+    
                         });
-
-                        if (!response.ok) {
-                            const errorData = await response.json();
-                            console.error('Error:', errorData.message);
-                            return;
-                        }
-
-                        const data = await response.json();
-                        if(data.message == "success") window.location.href = gitName + "/index.html?thank=true";
                     } catch (error) {
-                        console.error('Error posting data:', error);
+                        console.error('Error fetching data:', error);
                     }
                 }
-                sendSummary();
-            });
-
-            /* modal click outs */
-            document.addEventListener("click", (e) => {
-                document.querySelectorAll(".edit-mat-selector").forEach(sel => {
-                    if(!sel.contains(e.target)){
-                        sel.style.marginBottom = "0px";
-                        sel.querySelector(".edit-mat-drop").style.opacity = "0";
-                        sel.querySelector(".edit-mat-drop").style.pointerEvents = "none";
-                        sel.querySelector(".edit-mat-chev").style.transform = "rotate(90deg)";
+                getMaterials();
+    
+                document.querySelector(".edit-save-btn").addEventListener("click", () => {
+                    async function sendSummary() {
+                        const dataToSend = { jobId: jobId, date: date, notes: document.querySelector(".edit-para-area").value, materials: materials, charges: charges };
+                        try {
+                            const response = await fetch(url + '/api/send-summary', {
+                                method: 'POST',
+                                credentials: 'include',
+                                headers: { Authorization: `Bearer ${localStorage.getItem("token")}`,
+                                    'Content-Type': 'application/json', 
+                                },
+                                body: JSON.stringify(dataToSend), 
+                            });
+    
+                            if (!response.ok) {
+                                const errorData = await response.json();
+                                console.error('Error:', errorData.message);
+                                return;
+                            }
+    
+                            const data = await response.json();
+                            if(data.message == "success"){
+                                document.getElementById(jobId).style.display = "none";
+                                document.getElementById("summaryThankModal").style.opacity = "1";
+                                document.getElementById("summaryThankModal").style.pointerEvents = "auto";
+                                setTimeout(() => {
+                                    document.getElementById("summaryThankModal").querySelector(".thank-wrapper").style.opacity = "1";
+                                    document.getElementById("summaryThankModal").querySelector(".thank-wrapper").style.transform = "scale(1)";
+                                }, 300);
+                            }
+                        } catch (error) {
+                            console.error('Error posting data:', error);
+                        }
+                    }
+                    sendSummary();
+                });
+    
+                /* modal click outs */
+                document.addEventListener("click", (e) => {
+                    document.querySelectorAll(".edit-mat-selector").forEach(sel => {
+                        if(!sel.contains(e.target)){
+                            sel.style.marginBottom = "0px";
+                            sel.querySelector(".edit-mat-drop").style.opacity = "0";
+                            sel.querySelector(".edit-mat-drop").style.pointerEvents = "none";
+                            sel.querySelector(".edit-mat-chev").style.transform = "rotate(90deg)";
+                        }
+                    });
+    
+                    if(!document.querySelector(".edit-date-wrapper").contains(e.target)){
+                        document.querySelector(".edit-change").style.opacity = "0";
+                        document.querySelector(".edit-change").style.pointerEvents = "none";
+                        document.querySelector(".edit-date-chev").style.transform = "rotate(90deg)";
                     }
                 });
-
-                if(!document.querySelector(".edit-date-wrapper").contains(e.target)){
-                    document.querySelector(".edit-change").style.opacity = "0";
-                    document.querySelector(".edit-change").style.pointerEvents = "none";
-                    document.querySelector(".edit-date-chev").style.transform = "rotate(90deg)";
-                }
-            });
+            }
         }
 
         if(document.querySelector(".account")){
@@ -1043,11 +1070,12 @@ async function getUserData(){
                 document.querySelector(".acc-title").style.marginTop = "30px";
             } else {
                 document.querySelector(".acc-back").addEventListener("click", () => {
-                    window.location.href = gitName + "/index.html";
+                    changePage(0);
                 }); 
             }
 
             document.getElementById("editProfileBtn").addEventListener("click", () => {
+                document.querySelector(".home-name").value = userData.name;
                 document.getElementById("profileName").value = userData.name;
                 document.getElementById("profileEmail").value = userData.email;
                 document.getElementById("profilePhone").value = userData.phone;
@@ -1082,6 +1110,7 @@ async function getUserData(){
                         const data = await response.json();
                         if(data.message == "success"){
                             userData = data.userData;
+                            document.querySelector(".home-name").textContent = userData.name;
                             document.querySelector(".acc-name").textContent = userData.name;
                             document.querySelector(".acc-email").textContent = userData.email;
                             document.getElementById("profileModal").style.opacity = "0";
@@ -1496,23 +1525,11 @@ async function getUserData(){
                             `;
                             document.querySelector(".admin-table-col").appendChild(newRow);
                         });
-                        console.log(jobs);
                         if(validJobs == 0){
                             showNoJobs();
                         }
 
-                        if(params.get("jobId")){
-                            document.querySelectorAll(".admin-table-row").forEach(row => {
-                                if(row.id == params.get("jobId")){
-                                    row.style.backgroundColor = "hsla(222, 100%, 58%, 0.05)";
-                                    row.style.order = "1";
-                                } else {
-                                    row.style.order = "2";
-                                }
-                            });
-                        }
-
-                        document.getElementById("jobDateInput").value = todayDate;
+                        document.querySelector("#adminJobForm .jobdateinput").value = todayDate;
 
                         document.querySelector(".admin-table-btn").addEventListener("click", () => {
                             document.getElementById("calModal").style.left = "0px";
@@ -1679,7 +1696,14 @@ async function getUserData(){
                         });
                         document.querySelectorAll("i.admin-report-icon").forEach((icon, idx) => {
                             icon.addEventListener("click", () => {
-                                window.location.href = gitName + "/reports.html?admin=true&jobId=" + jobs[idx].id;
+                                jobId = jobs[idx].id;
+                                makeJobReport(jobs[idx]);
+                                changePage(3);
+                                setTimeout(() => {
+                                    document.getElementById("jobReportCol").scrollIntoView({
+                                        behavior: "smooth",
+                                    });
+                                }, 100);
                             });
                         });
 
@@ -1767,7 +1791,7 @@ async function getUserData(){
                                 });
                                 if(!disable){
                                     option.classList.add("edit-mat-active");
-                                    if(document.getElementById("newJobModal").style.opacity == "1"){
+                                    if(document.getElementById("adminJobModal").style.opacity == "1"){
                                         document.querySelector("#workerSelector div").textContent = option.innerHTML.slice(0, option.innerHTML.indexOf("<"));
                                         document.getElementById("workerInput").value = document.querySelector("#workerSelector div").textContent;
                                         document.getElementById("idInput").value = option.id;
@@ -1778,7 +1802,7 @@ async function getUserData(){
                                     }
                                 } else {
                                     option.classList.remove("edit-mat-active");
-                                    if(document.getElementById("newJobModal").style.opacity == "1"){
+                                    if(document.getElementById("adminJobModal").style.opacity == "1"){
                                         document.querySelector("#workerSelector div").textContent = "Select Worker";
                                         document.getElementById("workerInput").value = "";
                                         document.getElementById("idInput").value = "";
@@ -1854,71 +1878,71 @@ async function getUserData(){
                                 averageProfit = averageProfit / usedDates.length || 0;
 
                                 if(todayRevenue >= averageRevenue){
-                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue.toFixed(2)} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalRevenueNumAdmin").innerHTML = `£${todayRevenue.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     let percent = (((todayRevenue / averageRevenue) - 1) * 100).toFixed(0);
-                                    document.getElementById("totalRevenueText").textContent = `+${percent}% from average day`;
+                                    document.getElementById("totalRevenueTextAdmin").textContent = `+${percent}% from average day`;
                                 } else {
-                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue.toFixed(2)} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalRevenueNumAdmin").innerHTML = `£${todayRevenue.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     let percent = (((todayRevenue / averageRevenue) - 1) * 100).toFixed(0);
-                                    document.getElementById("totalRevenueText").textContent = `${percent}% from average day`;
+                                    document.getElementById("totalRevenueTextAdmin").textContent = `${percent}% from average day`;
                                 }
                                 if(todayRevenue == 0){
-                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue.toFixed(2)} <img src="images/icons/downtrend.png" />`;
-                                    document.getElementById("totalRevenueText").textContent = `No revenue earned today`;
+                                    document.getElementById("totalRevenueNumAdmin").innerHTML = `£${todayRevenue.toFixed(2)} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalRevenueTextAdmin").textContent = `No revenue earned today`;
                                 } else if(todayRevenue > 0 && averageRevenue == 0){
-                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue.toFixed(2)} <img src="images/icons/uptrend.png" />`;
-                                    document.getElementById("totalRevenueText").textContent = `Total revenue earned today`;
+                                    document.getElementById("totalRevenueNumAdmin").innerHTML = `£${todayRevenue.toFixed(2)} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalRevenueTextAdmin").textContent = `Total revenue earned today`;
                                 }
 
                                 if(todayLabour >= averageLabour){
-                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour.toFixed(2)} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalLabourNumAdmin").innerHTML = `£${todayLabour.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     let percent = (((todayLabour / averageLabour) - 1) * 100).toFixed(0);
-                                    document.getElementById("totalLabourText").textContent = `+${percent}% from average day`;
+                                    document.getElementById("totalLabourTextAdmin").textContent = `+${percent}% from average day`;
                                 } else {
                                     document.getElementById("totalLabourNum").innerHTML = `£${todayLabour.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     let percent = (((todayLabour / averageLabour) - 1) * 100).toFixed(0);
-                                    document.getElementById("totalLabourText").textContent = `${percent}% from average day`;
+                                    document.getElementById("totalLabourTextAdmin").textContent = `${percent}% from average day`;
                                 }
                                 if(todayLabour == 0){
-                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour.toFixed(2)} <img src="images/icons/downtrend.png" />`;
-                                    document.getElementById("totalLabourText").textContent = `No labour recorded today`;
+                                    document.getElementById("totalLabourNumAdmin").innerHTML = `£${todayLabour.toFixed(2)} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalLabourTextAdmin").textContent = `No labour recorded today`;
                                 } else if(todayLabour > 0 && averageLabour == 0){
-                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour.toFixed(2)} <img src="images/icons/uptrend.png" />`;
-                                    document.getElementById("totalLabourText").textContent = `Total labour today`;
+                                    document.getElementById("totalLabourNumAdmin").innerHTML = `£${todayLabour.toFixed(2)} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalLabourTextAdmin").textContent = `Total labour today`;
                                 }
 
                                 if(todayMaterial >= averageLabour){
-                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial.toFixed(2)} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalMaterialNumAdmin").innerHTML = `£${todayMaterial.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     let percent = (((todayMaterial / averageLabour) - 1) * 100).toFixed(0);
-                                    document.getElementById("totalMaterialText").textContent = `+${percent}% from average day`;
+                                    document.getElementById("totalMaterialTextAdmin").textContent = `+${percent}% from average day`;
                                 } else {
-                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial.toFixed(2)} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalMaterialNumAdmin").innerHTML = `£${todayMaterial.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     let percent = (((todayMaterial / averageLabour) - 1) * 100).toFixed(0);
-                                    document.getElementById("totalMaterialText").textContent = `${percent}% from average day`;
+                                    document.getElementById("totalMaterialTextAdmin").textContent = `${percent}% from average day`;
                                 }
                                 if(todayMaterial == 0){
-                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial.toFixed(2)} <img src="images/icons/downtrend.png" />`;
-                                    document.getElementById("totalMaterialText").textContent = `No materials used today`;
+                                    document.getElementById("totalMaterialNumAdmin").innerHTML = `£${todayMaterial.toFixed(2)} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalMaterialTextAdmin").textContent = `No materials used today`;
                                 } else if(todayMaterial > 0 && averageLabour == 0){
-                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial.toFixed(2)} <img src="images/icons/uptrend.png" />`;
-                                    document.getElementById("totalMaterialText").textContent = `Total materials used today`;
+                                    document.getElementById("totalMaterialNumAdmin").innerHTML = `£${todayMaterial.toFixed(2)} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalMaterialTextAdmin").textContent = `Total materials used today`;
                                 }
 
                                 if(todayProfit >= averageProfit){
-                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit.toFixed(2)} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalProfitNumAdmin").innerHTML = `£${todayProfit.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     let percent = (((todayProfit / averageProfit) - 1) * 100).toFixed(0);
-                                    document.getElementById("totalProfitText").textContent = `+${percent}% from average day`;
+                                    document.getElementById("totalProfitTextAdmin").textContent = `+${percent}% from average day`;
                                 } else {
-                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit.toFixed(2)} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalProfitNumAdmin").innerHTML = `£${todayProfit.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     let percent = (((todayProfit / averageProfit) - 1) * 100).toFixed(0);
-                                    document.getElementById("totalProfitText").textContent = `${percent}% from average day`;
+                                    document.getElementById("totalProfitTextAdmin").textContent = `${percent}% from average day`;
                                 }
                                 if(todayProfit == 0){
-                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit.toFixed(2)} <img src="images/icons/downtrend.png" />`;
-                                    document.getElementById("totalProfitText").textContent = `No profit today`;
+                                    document.getElementById("totalProfitNumAdmin").innerHTML = `£${todayProfit.toFixed(2)} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalProfitTextAdmin").textContent = `No profit today`;
                                 } else if(todayProfit > 0 && averageProfit == 0){
-                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit.toFixed(2)} <img src="images/icons/uptrend.png" />`;
-                                    document.getElementById("totalProfitText").textContent = `Total profit today`;
+                                    document.getElementById("totalProfitNumAdmin").innerHTML = `£${todayProfit.toFixed(2)} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalProfitTextAdmin").textContent = `Total profit today`;
                                 }
                             } else if(time == "weekly"){
                                 let currentDates = [];
@@ -1945,71 +1969,71 @@ async function getUserData(){
                                 }});
 
                                 if(todayRevenue >= averageRevenue){
-                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue.toFixed(2)} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalRevenueNumAdmin").innerHTML = `£${todayRevenue.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     let percent = (((todayRevenue / averageRevenue) - 1) * 100).toFixed(0);
-                                    document.getElementById("totalRevenueText").textContent = `+${percent}% from average week`;
+                                    document.getElementById("totalRevenueTextAdmin").textContent = `+${percent}% from average week`;
                                 } else {
-                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue.toFixed(2)} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalRevenueNumAdmin").innerHTML = `£${todayRevenue.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     let percent = (((todayRevenue / averageRevenue) - 1) * 100).toFixed(0);
-                                    document.getElementById("totalRevenueText").textContent = `${percent}% from average week`;
+                                    document.getElementById("totalRevenueTextAdmin").textContent = `${percent}% from average week`;
                                 }
                                 if(todayRevenue == 0){
-                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue.toFixed(2)} <img src="images/icons/downtrend.png" />`;
-                                    document.getElementById("totalRevenueText").textContent = `No revenue this week`;
+                                    document.getElementById("totalRevenueNumAdmin").innerHTML = `£${todayRevenue.toFixed(2)} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalRevenueTextAdmin").textContent = `No revenue this week`;
                                 } else if(todayRevenue > 0 && averageRevenue == 0){
-                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue.toFixed(2)} <img src="images/icons/uptrend.png" />`;
-                                    document.getElementById("totalRevenueText").textContent = `Total revenue this week`;
+                                    document.getElementById("totalRevenueNumAdmin").innerHTML = `£${todayRevenue.toFixed(2)} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalRevenueTextAdmin").textContent = `Total revenue this week`;
                                 }
 
                                 if(todayLabour >= averageLabour){
-                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour.toFixed(2)} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalLabourNumAdmin").innerHTML = `£${todayLabour.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     let percent = (((todayLabour / averageLabour) - 1) * 100).toFixed(0);
-                                    document.getElementById("totalLabourText").textContent = `+${percent}% from average week`;
+                                    document.getElementById("totalLabourTextAdmin").textContent = `+${percent}% from average week`;
                                 } else {
-                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour.toFixed(2)} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalLabourNumAdmin").innerHTML = `£${todayLabour.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     let percent = (((todayLabour / averageLabour) - 1) * 100).toFixed(0);
-                                    document.getElementById("totalLabourText").textContent = `${percent}% from average week`;
+                                    document.getElementById("totalLabourTextAdmin").textContent = `${percent}% from average week`;
                                 }
                                 if(todayLabour == 0){
-                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour.toFixed(2)} <img src="images/icons/downtrend.png" />`;
-                                    document.getElementById("totalLabourText").textContent = `No labour this week`;
+                                    document.getElementById("totalLabourNumAdmin").innerHTML = `£${todayLabour.toFixed(2)} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalLabourTextAdmin").textContent = `No labour this week`;
                                 } else if(todayLabour > 0 && averageLabour == 0){
-                                    document.getElementById("totalLabourNum").innerHTML = `£${todayLabour.toFixed(2)} <img src="images/icons/uptrend.png" />`;
-                                    document.getElementById("totalLabourText").textContent = `Total labour this week`;
+                                    document.getElementById("totalLabourNumAdmin").innerHTML = `£${todayLabour.toFixed(2)} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalLabourTextAdmin").textContent = `Total labour this week`;
                                 }
 
                                 if(todayMaterial >= averageLabour){
-                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial.toFixed(2)} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalMaterialNumAdmin").innerHTML = `£${todayMaterial.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     let percent = (((todayMaterial / averageLabour) - 1) * 100).toFixed(0);
-                                    document.getElementById("totalMaterialText").textContent = `+${percent}% from average week`;
+                                    document.getElementById("totalMaterialTextAdmin").textContent = `+${percent}% from average week`;
                                 } else {
-                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial.toFixed(2)} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalMaterialNumAdmin").innerHTML = `£${todayMaterial.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     let percent = (((todayMaterial / averageLabour) - 1) * 100).toFixed(0);
-                                    document.getElementById("totalMaterialText").textContent = `${percent}% from average week`;
+                                    document.getElementById("totalMaterialTextAdmin").textContent = `${percent}% from average week`;
                                 }
                                 if(todayMaterial == 0){
-                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial.toFixed(2)} <img src="images/icons/downtrend.png" />`;
-                                    document.getElementById("totalMaterialText").textContent = `No materials this week`;
+                                    document.getElementById("totalMaterialNumAdmin").innerHTML = `£${todayMaterial.toFixed(2)} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalMaterialTextAdmin").textContent = `No materials this week`;
                                 } else if(todayMaterial > 0 && averageLabour == 0){
-                                    document.getElementById("totalMaterialNum").innerHTML = `£${todayMaterial.toFixed(2)} <img src="images/icons/uptrend.png" />`;
-                                    document.getElementById("totalMaterialText").textContent = `Total materials this week`;
+                                    document.getElementById("totalMaterialNumAdmin").innerHTML = `£${todayMaterial.toFixed(2)} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalMaterialTextAdmin").textContent = `Total materials this week`;
                                 }
 
                                 if(todayProfit >= averageProfit){
-                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit.toFixed(2)} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalProfitNumAdmin").innerHTML = `£${todayProfit.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     let percent = (((todayProfit / averageProfit) - 1) * 100).toFixed(0);
-                                    document.getElementById("totalProfitText").textContent = `+${percent}% from average week`;
+                                    document.getElementById("totalProfitTextAdmin").textContent = `+${percent}% from average week`;
                                 } else {
-                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit.toFixed(2)} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalProfitNumAdmin").innerHTML = `£${todayProfit.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     let percent = (((todayProfit / averageProfit) - 1) * 100).toFixed(0);
-                                    document.getElementById("totalProfitText").textContent = `${percent}% from average week`;
+                                    document.getElementById("totalProfitTextAdmin").textContent = `${percent}% from average week`;
                                 }
                                 if(todayProfit == 0){
-                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit.toFixed(2)} <img src="images/icons/downtrend.png" />`;
-                                    document.getElementById("totalProfitText").textContent = `No profit this week`;
+                                    document.getElementById("totalProfitNumAdmin").innerHTML = `£${todayProfit.toFixed(2)} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalProfitTextAdmin").textContent = `No profit this week`;
                                 } else if(todayProfit > 0 && averageProfit == 0){
-                                    document.getElementById("totalProfitNum").innerHTML = `£${todayProfit.toFixed(2)} <img src="images/icons/uptrend.png" />`;
-                                    document.getElementById("totalProfitText").textContent = `Total profit this week`;
+                                    document.getElementById("totalProfitNumAdmin").innerHTML = `£${todayProfit.toFixed(2)} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalProfitTextAdmin").textContent = `Total profit this week`;
                                 }
                             } else if(time == "monthly"){
                                 let currentDates = [];
@@ -2045,20 +2069,20 @@ async function getUserData(){
                                 }});
 
                                 if(todayRevenue >= averageRevenue){
-                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue.toFixed(2)} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalRevenueNumAdmin").innerHTML = `£${todayRevenue.toFixed(2)} <img src="images/icons/uptrend.png" />`;
                                     let percent = (((todayRevenue / averageRevenue) - 1) * 100).toFixed(0);
-                                    document.getElementById("totalRevenueText").textContent = `+${percent}% from average month`;
+                                    document.getElementById("totalRevenueTextAdmin").textContent = `+${percent}% from average month`;
                                 } else {
-                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue.toFixed(2)} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalRevenueNumAdmin").innerHTML = `£${todayRevenue.toFixed(2)} <img src="images/icons/downtrend.png" />`;
                                     let percent = (((todayRevenue / averageRevenue) - 1) * 100).toFixed(0);
-                                    document.getElementById("totalRevenueText").textContent = `${percent}% from average month`;
+                                    document.getElementById("totalRevenueTextAdmin").textContent = `${percent}% from average month`;
                                 }
                                 if(todayRevenue == 0){
-                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue.toFixed(2)} <img src="images/icons/downtrend.png" />`;
-                                    document.getElementById("totalRevenueText").textContent = `No revenue this month`;
+                                    document.getElementById("totalRevenueNumAdmin").innerHTML = `£${todayRevenue.toFixed(2)} <img src="images/icons/downtrend.png" />`;
+                                    document.getElementById("totalRevenueTextAdmin").textContent = `No revenue this month`;
                                 } else if(todayRevenue > 0 && averageRevenue == 0){
-                                    document.getElementById("totalRevenueNum").innerHTML = `£${todayRevenue.toFixed(2)} <img src="images/icons/uptrend.png" />`;
-                                    document.getElementById("totalRevenueText").textContent = `Total revenue this month`;
+                                    document.getElementById("totalRevenueNumAdmin").innerHTML = `£${todayRevenue.toFixed(2)} <img src="images/icons/uptrend.png" />`;
+                                    document.getElementById("totalRevenueTextAdmin").textContent = `Total revenue this month`;
                                 }
 
                                 if(todayLabour >= averageLabour){
@@ -2163,61 +2187,63 @@ async function getUserData(){
                     }
 
                     if(document.querySelector(".admin") || document.querySelector(".workers")){
-                        document.getElementById("jobDateInput").value = todayDate;
+                        currentPage.querySelector(".jobdateinput").value = todayDate;
 
                         document.querySelectorAll(".new-date-selector").forEach(selector => {
                             selector.addEventListener("click", () => {
-                                document.querySelector(".date-modal").style.opacity = "1";
-                                document.querySelector(".date-modal").style.pointerEvents = "auto";
+                                currentPage.querySelector(".date-modal").style.opacity = "1";
+                                currentPage.querySelector(".date-modal").style.pointerEvents = "auto";
                             });
 
-                            document.querySelectorAll(".edit-change-col").forEach((col, colIdx) => {
+                            currentPage.querySelectorAll(".edit-change-col").forEach((col, colIdx) => {
                                 col.querySelector(".edit-change-num").textContent = todayDate.split("/")[colIdx];
                                 if(col.querySelector(".edit-change-num").textContent.length == 4) col.querySelector(".edit-change-num").textContent = col.querySelector(".edit-change-num").textContent.slice(2);
                             });
                         });
-                        document.querySelectorAll(".edit-change-col").forEach((col, colIdx) => {
-                            col.querySelectorAll(".edit-change-chev").forEach((chev, idx) => {
-                                chev.addEventListener("click", () => {
-                                    if(idx == 0){
-                                        col.querySelector(".edit-change-num").textContent = Number(col.querySelector(".edit-change-num").textContent) + 1;
-                                        if(Number(col.querySelector(".edit-change-num").textContent) > 31 && colIdx == 0) col.querySelector(".edit-change-num").textContent = "1";
-                                        if(Number(col.querySelector(".edit-change-num").textContent) > 12 && colIdx == 1) col.querySelector(".edit-change-num").textContent = "1";
-                                        if(Number(col.querySelector(".edit-change-num").textContent) < 25 && colIdx == 2) col.querySelector(".edit-change-num").textContent = "25";
-                                    } else {
-                                        col.querySelector(".edit-change-num").textContent = Number(col.querySelector(".edit-change-num").textContent) - 1;
-                                        if(Number(col.querySelector(".edit-change-num").textContent) < 1 && colIdx == 0) col.querySelector(".edit-change-num").textContent = "31";
-                                        if(Number(col.querySelector(".edit-change-num").textContent) < 1 && colIdx == 1) col.querySelector(".edit-change-num").textContent = "12";
-                                        if(Number(col.querySelector(".edit-change-num").textContent) < 10 && colIdx == 2) col.querySelector(".edit-change-num").textContent = "10";
-                                    }
+                        document.querySelectorAll(".date-modal").forEach(flex => {
+                            flex.querySelectorAll(".edit-change-col").forEach((col, colIdx) => {
+                                col.querySelectorAll(".edit-change-chev").forEach((chev, idx) => {
+                                    chev.addEventListener("click", () => {
+                                        if(idx == 0){
+                                            col.querySelector(".edit-change-num").textContent = Number(col.querySelector(".edit-change-num").textContent) + 1;
+                                            if(Number(col.querySelector(".edit-change-num").textContent) > 31 && colIdx == 0) col.querySelector(".edit-change-num").textContent = "1";
+                                            if(Number(col.querySelector(".edit-change-num").textContent) > 12 && colIdx == 1) col.querySelector(".edit-change-num").textContent = "1";
+                                            if(Number(col.querySelector(".edit-change-num").textContent) < 25 && colIdx == 2) col.querySelector(".edit-change-num").textContent = "25";
+                                        } else {
+                                            col.querySelector(".edit-change-num").textContent = Number(col.querySelector(".edit-change-num").textContent) - 1;
+                                            if(Number(col.querySelector(".edit-change-num").textContent) < 1 && colIdx == 0) col.querySelector(".edit-change-num").textContent = "31";
+                                            if(Number(col.querySelector(".edit-change-num").textContent) < 1 && colIdx == 1) col.querySelector(".edit-change-num").textContent = "12";
+                                            if(Number(col.querySelector(".edit-change-num").textContent) < 10 && colIdx == 2) col.querySelector(".edit-change-num").textContent = "10";
+                                        }
+                                    });
                                 });
+    
+                                col.querySelector(".edit-change-num").textContent = todayDate.split("/")[colIdx];
+                                if(col.querySelector(".edit-change-num").textContent.length == 4) col.querySelector(".edit-change-num").textContent = col.querySelector(".edit-change-num").textContent.slice(2);
                             });
-
-                            col.querySelector(".edit-change-num").textContent = todayDate.split("/")[colIdx];
-                            if(col.querySelector(".edit-change-num").textContent.length == 4) col.querySelector(".edit-change-num").textContent = col.querySelector(".edit-change-num").textContent.slice(2);
-                        });
-                        document.querySelector(".btn-change-save").addEventListener("click", () => {
-                            document.querySelector(".date-modal").style.opacity = "0";
-                            document.querySelector(".date-modal").style.pointerEvents = "none";
-
-                            let day = document.querySelectorAll(".edit-change-num")[0].textContent;
-                            if(day.length == 1) day = "0" + day;
-                            let month = document.querySelectorAll(".edit-change-num")[1].textContent;
-                            if(month.length == 1) month = "0" + month;
-                            if(document.getElementById("newJobModal").style.opacity == "1"){
-                                document.querySelector("#jobDateSelector div").textContent = document.querySelectorAll(".edit-change-num")[0].textContent + " " + months[Number(document.querySelectorAll(".edit-change-num")[1].textContent - 1)] + " 20" + document.querySelectorAll(".edit-change-num")[2].textContent;
-                                document.getElementById("jobDateInput").value = day + "/" + month + "/20" + document.querySelectorAll(".edit-change-num")[2].textContent;
-                            } else {
-                                document.querySelector("#editDateSelector div").textContent = document.querySelectorAll(".edit-change-num")[0].textContent + " " + months[Number(document.querySelectorAll(".edit-change-num")[1].textContent - 1)] + " 20" + document.querySelectorAll(".edit-change-num")[2].textContent;
-                                document.getElementById("editDateInput").value = day + "/" + month + "/20" + document.querySelectorAll(".edit-change-num")[2].textContent;
-                            }
-                        });
-                        document.querySelector(".btn-change-cancel").addEventListener("click", () => {
-                            document.querySelector(".date-modal").style.opacity = "0";
-                            document.querySelector(".date-modal").style.pointerEvents = "none";
+                            flex.querySelector(".btn-change-save").addEventListener("click", () => {
+                                currentPage.querySelector(".date-modal").style.opacity = "0";
+                                currentPage.querySelector(".date-modal").style.pointerEvents = "none";
+    
+                                let day = document.querySelectorAll(".edit-change-num")[0].textContent;
+                                if(day.length == 1) day = "0" + day;
+                                let month = document.querySelectorAll(".edit-change-num")[1].textContent;
+                                if(month.length == 1) month = "0" + month;
+                                if(currentPage.querySelector("#adminJobModal, #workerJobModal").style.opacity == "1"){
+                                    document.querySelector("#jobDateSelector div").textContent = document.querySelectorAll(".edit-change-num")[0].textContent + " " + months[Number(document.querySelectorAll(".edit-change-num")[1].textContent - 1)] + " 20" + document.querySelectorAll(".edit-change-num")[2].textContent;
+                                    document.getElementById("jobDateInput").value = day + "/" + month + "/20" + document.querySelectorAll(".edit-change-num")[2].textContent;
+                                } else {
+                                    document.querySelector("#editDateSelector div").textContent = document.querySelectorAll(".edit-change-num")[0].textContent + " " + months[Number(document.querySelectorAll(".edit-change-num")[1].textContent - 1)] + " 20" + document.querySelectorAll(".edit-change-num")[2].textContent;
+                                    document.getElementById("editDateInput").value = day + "/" + month + "/20" + document.querySelectorAll(".edit-change-num")[2].textContent;
+                                }
+                            });
+                            flex.querySelector(".btn-change-cancel").addEventListener("click", () => {
+                                currentPage.querySelector(".date-modal").style.opacity = "0";
+                                currentPage.querySelector(".date-modal").style.pointerEvents = "none";
+                            });
                         });
 
-                        document.getElementById("newJobForm").addEventListener("submit", async (e) => {
+                        document.querySelector("#adminJobForm").addEventListener("submit", async (e) => {
                             e.preventDefault(); 
                             const formData = new FormData(e.target);
                             const data = Object.fromEntries(formData.entries());
@@ -2236,8 +2262,37 @@ async function getUserData(){
                                     document.getElementById("workerError").style.display = "none";
                                 }, 2000);
                             } else if(responseData.message == "success") {
-                                document.getElementById("newJobModal").style.opacity = "0";
-                                document.getElementById("newJobModal").style.pointerEvents = "none";
+                                currentPage.querySelector("#adminJobModal, #workerJobModal").style.opacity = "0";
+                                currentPage.querySelector("#adminJobModal, #workerJobModal").style.pointerEvents = "none";
+                                setTimeout(() => {
+                                    document.getElementById("thankJobCreation").style.opacity = "1";
+                                    document.getElementById("thankJobCreation").style.pointerEvents = "auto";
+                                    document.getElementById("thankJobCreation").querySelector(".thank-wrapper").style.opacity = "1";
+                                    document.getElementById("thankJobCreation").querySelector(".thank-wrapper").style.transform = "scale(1)";
+                                }, 300);
+                            }
+                        });
+                        document.querySelector("#workerJobForm").addEventListener("submit", async (e) => {
+                            e.preventDefault(); 
+                            const formData = new FormData(e.target);
+                            const data = Object.fromEntries(formData.entries());
+
+                            const res = await fetch(url + "/api/create-job", {
+                                method: "POST",
+                                credentials: 'include',
+                                headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, "Content-Type": "application/json" },
+                                body: JSON.stringify(data)
+                            });
+
+                            const responseData = await res.json();
+                            if(responseData.message == "noworker"){
+                                document.getElementById("workerError").style.display = "block";
+                                setTimeout(() => {
+                                    document.getElementById("workerError").style.display = "none";
+                                }, 2000);
+                            } else if(responseData.message == "success") {
+                                currentPage.querySelector("#adminJobModal, #workerJobModal").style.opacity = "0";
+                                currentPage.querySelector("#adminJobModal, #workerJobModal").style.pointerEvents = "none";
                                 setTimeout(() => {
                                     document.getElementById("thankJobCreation").style.opacity = "1";
                                     document.getElementById("thankJobCreation").style.pointerEvents = "auto";
@@ -2248,7 +2303,13 @@ async function getUserData(){
                         });
 
                         /* MODAL CLICK OUTS */
-                        document.querySelector(".date-modal").addEventListener("click", (e) => {
+                        document.querySelectorAll(".date-modal")[0].addEventListener("click", (e) => {
+                            if(!document.querySelector(".new-change").contains(e.target)){
+                                document.querySelector(".date-modal").style.opacity = "0";
+                                document.querySelector(".date-modal").style.pointerEvents = "none";
+                            }
+                        });
+                        document.querySelectorAll(".date-modal")[1].addEventListener("click", (e) => {
                             if(!document.querySelector(".new-change").contains(e.target)){
                                 document.querySelector(".date-modal").style.opacity = "0";
                                 document.querySelector(".date-modal").style.pointerEvents = "none";
@@ -2268,6 +2329,7 @@ async function getUserData(){
                             let matchCount = 0;
                             let colours = ["48", "68", "88"];
                             let reportBtn = "";
+                            let reportBtnJob;
                             jobs.forEach(job => {
                                 if(job.user_id == worker.id && matchCount < 3 && isDateFuture(todayDate, job.job_date) && job.job_status != "Completed"){
                                     matchCount++;
@@ -2289,7 +2351,8 @@ async function getUserData(){
                                 }
 
                                 if(job.user_id == worker.id && job.job_status == "Completed"){
-                                    reportBtn = `<a href="/reports.html?admin=true&workerId=${worker.id}" class="work-btn work-report-btn">View Report</a>`;
+                                    reportBtn = `<div class="work-btn work-report-btn">View Report</div>`;
+                                    reportBtnJob = job;
                                 }
                             });
 
@@ -2333,9 +2396,28 @@ async function getUserData(){
 
                             document.querySelector(".work-col").appendChild(newWrapper);
 
+                            if(newWrapper.querySelector(".work-report-btn")){
+                                newWrapper.querySelector(".work-report-btn").addEventListener("click", () => {
+                                    makeWorkerReport(worker);
+                                    changePage(3);
+                                    setTimeout(() => {
+                                        document.getElementById("workerReportCol").scrollIntoView({
+                                        });
+                                    }, 100);
+                                });
+                            }
+
                             newWrapper.querySelectorAll(".work-up-btn").forEach(btn => {
                                 btn.addEventListener("click", () => {
-                                    window.location.href = gitName + "/admin.html?admin=true&jobId=" + newWrapper.id.split("-")[1];
+                                    document.querySelectorAll(".admin-table-row").forEach(row => {
+                                        if(row.id == newWrapper.id.split("-")[1]){
+                                            row.style.backgroundColor = "hsla(222, 100%, 58%, 0.05)";
+                                            row.style.order = "1";
+                                        } else {
+                                            row.style.order = "2";
+                                        }
+                                    });
+                                    changePage(0);
                                 });
                             });
 
@@ -2449,10 +2531,10 @@ async function getUserData(){
 
                         document.querySelectorAll(".work-assign-btn").forEach((btn, idx) => {
                             btn.addEventListener("click", () => {
-                                document.getElementById("newJobModal").style.opacity = "1";
-                                document.getElementById("newJobModal").style.pointerEvents = "auto";
-                                document.getElementById("workerInput").value = workers[idx].name;
-                                document.getElementById("idInput").value = workers[idx].id;
+                                document.getElementById("workerJobModal").style.opacity = "1";
+                                document.getElementById("workerJobModal").style.pointerEvents = "auto";
+                                document.querySelector(".workerinput").value = workers[idx].name;
+                                document.querySelector(".idinput").value = workers[idx].id;
 
                                 document.querySelectorAll(".edit-mat-option").forEach(option => {
                                     option.classList.remove("edit-mat-active");
@@ -3280,16 +3362,11 @@ async function getUserData(){
                         let reportJob;
                         let jobFound = false;
                         jobs.forEach((job, idx) => {
-                            if((!params.get("jobId")) || (params.get("jobId") && job.id == params.get("jobId"))){
+                            if(job.job_status == "Completed" && ((!params.get("jobId")) || (params.get("jobId") && job.id == params.get("jobId")))){
                                 if(!jobFound) reportJob = job;
                                 jobFound = true;
                             } 
                         });
-                        if(params.get("jobId")){
-                            document.getElementById("jobReportCol").scrollIntoView({
-                                behavior: "smooth",
-                            });
-                        }
                         function makeJobReport(job){
                             let totalCharges = 2;
                             let chargePrice;
@@ -3480,11 +3557,6 @@ async function getUserData(){
                                 }
                             } 
                         });
-                        if(params.get("workerId")){
-                            document.getElementById("workerReportCol").scrollIntoView({
-                                behavior: "smooth",
-                            });
-                        }
                         function makeWorkerReport(worker){
                             document.querySelector(".rep-worker-name").textContent = worker.name;
                             let workerJobs = [];
@@ -3509,16 +3581,16 @@ async function getUserData(){
                                 avgProfit += Number(job.job_realcharge.replace("£", "")) - Number(job.job_setback.replace("£", ""));
                             }});
                             hoursWorked += Math.floor(minsWorked / 60);
-                            avgProfit = "£" + Number(avgProfit / totalJobs).toFixed(0);
+                            avgProfit = Number(avgProfit / totalJobs) || 0;
                             avgSpeed = avgSpeed / totalJobs;
-                            let avgHours = Math.floor(avgSpeed / 60);
-                            let avgMins = avgSpeed % 60;
+                            let avgHours = Math.round(avgSpeed / 60) || 0;
+                            let avgMins = Math.round(avgSpeed % 60) || 0;
                             avgSpeed = avgHours + "h " + avgMins + "m";
 
                             document.querySelectorAll(".rep-worker-num")[0].textContent = hoursWorked;
                             document.querySelectorAll(".rep-worker-num")[1].textContent = totalJobs;
                             document.querySelectorAll(".rep-worker-num")[2].textContent = avgSpeed;
-                            document.querySelectorAll(".rep-worker-num")[3].textContent = avgProfit;
+                            document.querySelectorAll(".rep-worker-num")[3].textContent = "£" + Number(avgProfit).toFixed(2);
                         }
                         if(!reportWorker){
                             document.getElementById("repWorkerEmpty").style.display = "block";
@@ -3665,6 +3737,232 @@ async function getUserData(){
                             }
                         });
                     } 
+
+                    if(document.querySelector(".account")){
+                        document.querySelector(".acc-name").textContent = userData.name;
+                        document.querySelector(".acc-email").textContent = userData.email;
+
+                        if(params.get("admin")){
+                            document.querySelector(".acc-back").style.display = "none";
+                            document.querySelector(".acc-title").style.marginTop = "30px";
+                        } else {
+                            document.querySelector(".acc-back").addEventListener("click", () => {
+                                changePage(0);
+                            }); 
+                        }
+
+                        document.getElementById("editProfileBtn").addEventListener("click", () => {
+                            document.querySelector(".home-name").value = userData.name;
+                            document.getElementById("profileName").value = userData.name;
+                            document.getElementById("profileEmail").value = userData.email;
+                            document.getElementById("profilePhone").value = userData.phone;
+                            document.getElementById("profileModal").style.opacity = "1";
+                            document.getElementById("profileModal").style.pointerEvents = "auto";
+                            document.getElementById("profileModal").style.left = "0px";
+                        });
+                        document.getElementById("profileBack").addEventListener("click", () => {
+                            document.getElementById("profileModal").style.opacity = "0";
+                            document.getElementById("profileModal").style.pointerEvents = "none";
+                            document.getElementById("profileModal").style.left = "255px";
+                        });
+                        document.getElementById("saveProfileBtn").addEventListener("click", () => {
+                            async function saveProfile() {
+                                const dataToSend = { name: document.getElementById("profileName").value, email: document.getElementById("profileEmail").value, phone: document.getElementById("profilePhone").value };
+                                try {
+                                    const response = await fetch(url + '/api/save-profile', {
+                                        method: 'POST',
+                                        credentials: 'include',
+                                        headers: { Authorization: `Bearer ${localStorage.getItem("token")}`,
+                                            'Content-Type': 'application/json', 
+                                        },
+                                        body: JSON.stringify(dataToSend), 
+                                    });
+
+                                    if (!response.ok) {
+                                        const errorData = await response.json();
+                                        console.error('Error:', errorData.message);
+                                        return;
+                                    }
+
+                                    const data = await response.json();
+                                    if(data.message == "success"){
+                                        userData = data.userData;
+                                        document.querySelector(".home-name").textContent = userData.name;
+                                        document.querySelector(".acc-name").textContent = userData.name;
+                                        document.querySelector(".acc-email").textContent = userData.email;
+                                        document.getElementById("profileModal").style.opacity = "0";
+                                        document.getElementById("profileModal").style.pointerEvents = "none";
+                                        document.getElementById("profileModal").style.left = "255px";
+                                    }
+                                } catch (error) {
+                                    console.error('Error posting data:', error);
+                                }
+                            }
+                            saveProfile();
+                        });
+
+                        document.getElementById("newPasswordBtn").addEventListener("click", () => {
+                            document.getElementById("changePasswordModal").style.opacity = "1";
+                            document.getElementById("changePasswordModal").style.pointerEvents = "auto";
+                        });
+                        document.getElementById("changePasswordBtn").addEventListener("click", () => {
+                            async function changePassword() {
+                                const dataToSend = { currentPassword: document.getElementById("currentPassword").value, newPassword: document.getElementById("newPassword").value };
+                                try {
+                                    const response = await fetch(url + '/api/change-password', {
+                                        method: 'POST',
+                                        credentials: 'include',
+                                        headers: { Authorization: `Bearer ${localStorage.getItem("token")}`,
+                                            'Content-Type': 'application/json', 
+                                        },
+                                        body: JSON.stringify(dataToSend), 
+                                    });
+
+                                    if (!response.ok) {
+                                        const errorData = await response.json();
+                                        console.error('Error:', errorData.message);
+                                        return;
+                                    }
+
+                                    const data = await response.json();
+                                    if(data.message == "success"){
+                                        document.getElementById("changePasswordModal").style.opacity = "0";
+                                        document.getElementById("changePasswordModal").style.pointerEvents = "none";
+                                        setTimeout(() => {
+                                            document.getElementById("thankPassword").style.opacity = "1";
+                                            document.getElementById("thankPassword").style.pointerEvents = "auto";
+                                            document.getElementById("thankPassword").querySelector(".thank-wrapper").style.opacity = "1";
+                                            document.getElementById("thankPassword").querySelector(".thank-wrapper").style.transform = "scale(1)";
+                                            document.getElementById("changePasswordModal").querySelectorAll("input").forEach(input => {
+                                                input.value = "";
+                                            });
+                                        }, 300);
+                                    } else if(data.message == "failure"){
+                                        document.getElementById("randomError").style.display = "block";
+                                        setTimeout(() => {
+                                            document.getElementById("randomError").style.display = "none";
+                                        }, 2000);
+                                    } else if(data.message == "invalid password"){
+                                        document.getElementById("invalidError").style.display = "block";
+                                        setTimeout(() => {
+                                            document.getElementById("invalidError").style.display = "none";
+                                        }, 2000);
+                                    }
+                                } catch (error) {
+                                    console.error('Error posting data:', error);
+                                }
+                            }
+                            if(document.getElementById("newPassword").value == document.getElementById("confirmPassword").value){
+                                changePassword();
+                            } else {
+                                document.getElementById("diffError").style.display = "block";
+                                setTimeout(() => {
+                                    document.getElementById("diffError").style.display = "none";
+                                }, 2000);
+                            }
+                        });
+
+                        document.getElementById("newContactBtn").addEventListener("click", () => {
+                            document.getElementById("contactModal").style.opacity = "1";
+                            document.getElementById("contactModal").style.pointerEvents = "auto";
+                        });
+                        document.getElementById("contactForm").addEventListener("submit", async (e) => {
+                            e.preventDefault(); 
+                            const formData = new FormData(e.target);
+                            const data = Object.fromEntries(formData.entries());
+
+                            const res = await fetch(url + "/api/contact", {
+                                method: "POST",
+                                credentials: 'include',
+                                headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, "Content-Type": "application/json" },
+                                body: JSON.stringify(data)
+                            });
+
+                            const responseData = await res.json();
+                            if(responseData.message == "success"){
+                                document.getElementById("contactModal").style.opacity = "0";
+                                document.getElementById("contactModal").style.pointerEvents = "none";
+                                setTimeout(() => {
+                                    document.getElementById("thankContact").style.opacity = "1";
+                                    document.getElementById("thankContact").style.pointerEvents = "auto";
+                                    document.getElementById("thankContact").querySelector(".thank-wrapper").style.opacity = "1";
+                                    document.getElementById("thankContact").querySelector(".thank-wrapper").style.transform = "scale(1)";
+                                }, 300);
+                            }
+                        });
+
+                        document.getElementById("newPushBtn").addEventListener("click", () => {
+                            document.getElementById("pushModal").style.opacity = "1";
+                            document.getElementById("pushModal").style.pointerEvents = "auto";
+                            document.getElementById("pushModal").style.left = "0px";
+                        });
+                        document.getElementById("pushBack").addEventListener("click", () => {
+                            document.getElementById("pushModal").style.opacity = "0";
+                            document.getElementById("pushModal").style.pointerEvents = "none";
+                            document.getElementById("pushModal").style.left = "255px";
+                        });
+                        document.querySelectorAll(".push-toggle").forEach(toggle => {
+                            toggle.addEventListener("click", () => {
+                                if(toggle.classList.contains("push-toggle-active")){
+                                    toggle.querySelector("span").classList.remove("push-toggle-right");
+                                    toggle.querySelector("span").classList.add("push-toggle-left");
+                                    toggle.classList.remove("push-toggle-active");
+                                } else {
+                                    toggle.querySelector("span").classList.add("push-toggle-right");
+                                    toggle.querySelector("span").classList.remove("push-toggle-left");
+                                    toggle.classList.add("push-toggle-active");
+                                }
+                            });
+                        });
+
+                        document.getElementById("newLogout").addEventListener("click", () => {
+                            document.getElementById("logoutModal").style.opacity = "1";
+                            document.getElementById("logoutModal").style.pointerEvents = "auto";
+                        });
+                        document.getElementById("logoutModal").addEventListener("click", (e) => {
+                            if(!document.getElementById("logoutModal").querySelector(".book-delete-wrapper").contains(e.target)){
+                                document.getElementById("logoutModal").style.opacity = "0";
+                                document.getElementById("logoutModal").style.pointerEvents = "none";
+                            }
+                        });
+                        document.getElementById("logoutModal").querySelector(".btn-book-nodelete").addEventListener("click", () => {
+                            document.getElementById("logoutModal").style.opacity = "0";
+                            document.getElementById("logoutModal").style.pointerEvents = "none";
+                        });
+                        document.getElementById("logoutModal").querySelector(".btn-book-delete-booking").addEventListener("click", () => {
+                            async function logout() {
+                                try {
+                                    const response = await fetch(`${url}/api/logout`, {
+                                        method: 'GET',
+                                        headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, },
+                                        credentials: 'include'
+                                    });
+                                    const data = await response.json(); 
+                                    if(data.message == "success"){
+                                        localStorage.clear();
+                                        window.location.href = gitName + "/login.html";
+                                    }
+                                } catch (error) {
+                                    console.error('Error fetching data:', error);
+                                }
+                            }
+                            logout();
+                        });
+
+                        /* modal click outs */
+                        document.querySelectorAll(".new-modal").forEach(modal => {
+                            modal.addEventListener("click", (e) => {
+                                if(!modal.querySelector(".new-wrapper").contains(e.target)){
+                                    modal.style.opacity = "0";
+                                    modal.style.pointerEvents = "none";
+                                }
+                            });
+                            modal.querySelector("i.new-xmark").addEventListener("click", () => {
+                                modal.style.opacity = "0";
+                                modal.style.pointerEvents = "none";
+                            });
+                        });
+                    }
 
                     if(document.querySelector(".dashboard")){
                         function setCalendar(){
@@ -4686,7 +4984,15 @@ async function getUserData(){
         
                             newWrapper.querySelectorAll(".work-up-btn").forEach(btn => {
                                 btn.addEventListener("click", () => {
-                                    window.location.href = gitName + "/admin.html?admin=true&jobId=" + newWrapper.id.split("-")[1];
+                                    document.querySelectorAll(".admin-table-row").forEach(row => {
+                                        if(row.id == newWrapper.id.split("-")[1]){
+                                            row.style.backgroundColor = "hsla(222, 100%, 58%, 0.05)";
+                                            row.style.order = "1";
+                                        } else {
+                                            row.style.order = "2";
+                                        }
+                                    });
+                                    changePage(0);
                                 });
                             });
                             newWrapper.querySelector(".work-assign-btn").addEventListener("click", () => {
@@ -5084,7 +5390,10 @@ async function getUserData(){
                                         credentials: 'include'
                                     });
                                     const data = await response.json(); 
-                                    if(data.message == "success") window.location.href = gitName + "/login.html";
+                                    if(data.message == "success"){
+                                        localStorage.clear(); 
+                                        window.location.href = gitName + "/login.html";
+                                    } 
                                 } catch (error) {
                                     console.error('Error fetching data:', error);
                                 }
@@ -5307,11 +5616,11 @@ async function getUserData(){
                             }
 
                             newWrapper.querySelector(".work-assign-btn").addEventListener("click", () => {
-                                document.getElementById("jobDateInput").value = document.querySelector(".cal-date-active").id.split("-")[1];
-                                document.getElementById("workerInput").value = worker.name;
-                                document.getElementById("idInput").value = worker.id;
-                                document.getElementById("newJobModal").style.opacity = "1";
-                                document.getElementById("newJobModal").style.pointerEvents = "auto";
+                                document.getElementById("adminJobModal").querySelector(".jobdateinput").value = document.querySelector(".cal-date-active").id.split("-")[1];
+                                document.getElementById("adminJobModal").querySelector(".workerinput").value = worker.name;
+                                document.getElementById("adminJobModal").querySelector(".idinput").value = worker.id;
+                                document.getElementById("adminJobModal").style.opacity = "1";
+                                document.getElementById("adminJobModal").style.pointerEvents = "auto";
                             });
                         });
                         if(document.getElementById("calModal").querySelectorAll(".work-wrapper").length == 0){
@@ -5441,134 +5750,136 @@ async function getUserData(){
 
         /*/////////////// ELEMENT ONLY ////////////////*/
         if(document.querySelector("i.home-noti")){
-            document.querySelector("i.home-noti").innerHTML = `
-                <div class="noti-red">3</div>
-                <div class="noti-drop">
-                    <div class="noti-top">
-                        <div class="noti-head">Notifications</div>
-                        <div class="noti-mark">Mark as read</div>
-                    </div>
-        
-                    <div class="noti-ul">
-                        <!-- 
-                        <div class="noti-li">
-                            <div class="noti-dot"></div>
-                            <div class="noti-col">
-                                <div class="noti-txt">Your password has been successfully changed.</div>
-                                <div class="noti-date">Dec 25, 2025 at 08:32am</div>
+            document.querySelectorAll("i.home-noti").forEach(bell => {
+                bell.innerHTML = `
+                    <div class="noti-red">3</div>
+                    <div class="noti-drop">
+                        <div class="noti-top">
+                            <div class="noti-head">Notifications</div>
+                            <div class="noti-mark">Mark as read</div>
+                        </div>
+            
+                        <div class="noti-ul">
+                            <!-- 
+                            <div class="noti-li">
+                                <div class="noti-dot"></div>
+                                <div class="noti-col">
+                                    <div class="noti-txt">Your password has been successfully changed.</div>
+                                    <div class="noti-date">Dec 25, 2025 at 08:32am</div>
+                                </div>
+                                <i class="fa-solid fa-lock noti-icon"></i>
                             </div>
-                            <i class="fa-solid fa-lock noti-icon"></i>
-                        </div>
-                        <div class="noti-li">
-                            <div class="noti-dot"></div>
-                            <div class="noti-col">
-                                <div class="noti-txt">You have been assigned to a new job.</div>
-                                <div class="noti-date">Dec 12, 2025 at 11:32am</div>
+                            <div class="noti-li">
+                                <div class="noti-dot"></div>
+                                <div class="noti-col">
+                                    <div class="noti-txt">You have been assigned to a new job.</div>
+                                    <div class="noti-date">Dec 12, 2025 at 11:32am</div>
+                                </div>
+                                <i class="fa-solid fa-location-dot noti-icon"></i>
                             </div>
-                            <i class="fa-solid fa-location-dot noti-icon"></i>
-                        </div>
-                        <div class="noti-li" style="border-bottom: 0; padding-bottom: 0;">
-                            <div class="noti-dot"></div>
-                            <div class="noti-col">
-                                <div class="noti-txt">Your monthly report has been updated.</div>
-                                <div class="noti-date">Dec 01, 2025 at 04:14pm</div>
+                            <div class="noti-li" style="border-bottom: 0; padding-bottom: 0;">
+                                <div class="noti-dot"></div>
+                                <div class="noti-col">
+                                    <div class="noti-txt">Your monthly report has been updated.</div>
+                                    <div class="noti-date">Dec 01, 2025 at 04:14pm</div>
+                                </div>
+                                <i class="fa-solid fa-chart-line noti-icon"></i>
                             </div>
-                            <i class="fa-solid fa-chart-line noti-icon"></i>
-                        </div>
-                        -->
-                        <div class="emp-wrapper" id="notiEmpty">
-                            <img src="images/nodata.svg" class="emp-icon" style="width: 200px;" />
-                            <div class="emp-head">No Notifications</div>
-                            <div class="emp-para">We couldn't find any notifications<br> for you. Try again later.</div>
+                            -->
+                            <div class="emp-wrapper" id="notiEmpty">
+                                <img src="images/nodata.svg" class="emp-icon" style="width: 200px;" />
+                                <div class="emp-head">No Notifications</div>
+                                <div class="emp-para">We couldn't find any notifications<br> for you. Try again later.</div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            `;
-
-            let newNotis = 0;
-            let anyNotis = 0;
-            userData.notifications.forEach((noti, idx) => {
-                let newNoti = document.createElement("div");
-                newNoti.classList.add("noti-li");
-                let readStr = "style='display: none;'";
-                if(noti.status == "unread"){
-                    readStr = "";
-                    newNotis++;
-                }
-                let iconStr;
-                if(noti.type == "job"){
-                    iconStr = "fa-solid fa-location-dot";
-                } else if(noti.type == "finished"){
-                    iconStr = "fa-solid fa-flag-checkered";
-                } else if(noti.type == "password"){
-                    iconStr = "fa-solid fa-lock";
-                }
-                newNoti.innerHTML = `
-                    <div class="noti-dot" ${readStr}></div>
-                    <div class="noti-col">
-                        <div class="noti-txt">${noti.title}</div>
-                        <div class="noti-date">${noti.full_date}</div>
-                    </div>
-                    <i class="${iconStr} noti-icon"></i>
                 `;
-                if(idx == userData.notifications.length - 1){
-                    newNoti.style.paddingBottom = "0px";
-                    newNoti.style.borderBottom = "0px";
-                }
-                document.querySelector(".noti-ul").appendChild(newNoti);
-                anyNotis++;
-            });
-            if(newNotis == 0){
-                document.querySelector(".noti-red").style.display = "none";
-            } else {
-                document.querySelector(".noti-red").textContent = newNotis;
-            }
-            if(anyNotis == 0){
-                document.getElementById("notiEmpty").style.display = "block";
-            } else {
-                document.getElementById("notiEmpty").style.display = "none";
-            }
-            document.querySelector(".noti-mark").addEventListener("click", () => {
-                document.querySelectorAll(".noti-dot").forEach(dot => {
-                    dot.style.display = "none";
-                });
-            });
-
-            document.querySelector("i.home-noti").addEventListener("click", () => {
-                document.querySelector(".noti-drop").style.opacity = "1";
-                document.querySelector(".noti-drop").style.pointerEvents = "auto";
-
-                async function markRead() {
-                    const dataToSend = { perms: userData.perms };
-                    try {
-                        const response = await fetch(url + '/api/mark-read', {
-                            method: 'POST',
-                            credentials: 'include',
-                            headers: { Authorization: `Bearer ${localStorage.getItem("token")}`,
-                                'Content-Type': 'application/json', 
-                            },
-                            body: JSON.stringify(dataToSend), 
-                        });
-
-                        if (!response.ok) {
-                            const errorData = await response.json();
-                            console.error('Error:', errorData.message);
-                            return;
-                        }
-
-                        const data = await response.json();
-                    } catch (error) {
-                        console.error('Error posting data:', error);
+    
+                let newNotis = 0;
+                let anyNotis = 0;
+                userData.notifications.forEach((noti, idx) => {
+                    let newNoti = document.createElement("div");
+                    newNoti.classList.add("noti-li");
+                    let readStr = "style='display: none;'";
+                    if(noti.status == "unread"){
+                        readStr = "";
+                        newNotis++;
                     }
+                    let iconStr;
+                    if(noti.type == "job"){
+                        iconStr = "fa-solid fa-location-dot";
+                    } else if(noti.type == "finished"){
+                        iconStr = "fa-solid fa-flag-checkered";
+                    } else if(noti.type == "password"){
+                        iconStr = "fa-solid fa-lock";
+                    }
+                    newNoti.innerHTML = `
+                        <div class="noti-dot" ${readStr}></div>
+                        <div class="noti-col">
+                            <div class="noti-txt">${noti.title}</div>
+                            <div class="noti-date">${noti.full_date}</div>
+                        </div>
+                        <i class="${iconStr} noti-icon"></i>
+                    `;
+                    if(idx == userData.notifications.length - 1){
+                        newNoti.style.paddingBottom = "0px";
+                        newNoti.style.borderBottom = "0px";
+                    }
+                    bell.querySelector(".noti-ul").appendChild(newNoti);
+                    anyNotis++;
+                });
+                if(newNotis == 0){
+                    bell.querySelector(".noti-red").style.display = "none";
+                } else {
+                    bell.querySelector(".noti-red").textContent = newNotis;
                 }
-                markRead();
-            });
-
-            document.addEventListener("click", (e) => {
-                if(!document.querySelector(".noti-drop").contains(e.target) && !document.querySelector("i.home-noti").contains(e.target)){
-                    document.querySelector(".noti-drop").style.opacity = "0";
-                    document.querySelector(".noti-drop").style.pointerEvents = "none";
+                if(anyNotis == 0){
+                    bell.querySelector("#notiEmpty").style.display = "block";
+                } else {
+                    bell.querySelector("#notiEmpty").style.display = "none";
                 }
+                bell.querySelector(".noti-mark").addEventListener("click", () => {
+                    bell.querySelectorAll(".noti-dot").forEach(dot => {
+                        dot.style.display = "none";
+                    });
+                });
+    
+                bell.addEventListener("click", () => {
+                    bell.querySelector(".noti-drop").style.opacity = "1";
+                    bell.querySelector(".noti-drop").style.pointerEvents = "auto";
+    
+                    async function markRead() {
+                        const dataToSend = { perms: userData.perms };
+                        try {
+                            const response = await fetch(url + '/api/mark-read', {
+                                method: 'POST',
+                                credentials: 'include',
+                                headers: { Authorization: `Bearer ${localStorage.getItem("token")}`,
+                                    'Content-Type': 'application/json', 
+                                },
+                                body: JSON.stringify(dataToSend), 
+                            });
+    
+                            if (!response.ok) {
+                                const errorData = await response.json();
+                                console.error('Error:', errorData.message);
+                                return;
+                            }
+    
+                            const data = await response.json();
+                        } catch (error) {
+                            console.error('Error posting data:', error);
+                        }
+                    }
+                    markRead();
+                });
+    
+                document.addEventListener("click", (e) => {
+                    if(!bell.querySelector(".noti-drop").contains(e.target) && !bell.contains(e.target)){
+                        bell.querySelector(".noti-drop").style.opacity = "0";
+                        bell.querySelector(".noti-drop").style.pointerEvents = "none";
+                    }
+                });
             });
         }
         /*/////////////////////////////////////////////*/

@@ -16,72 +16,604 @@
 </head>
 <body>
     <div class="home"></div>
+    <div class="timer"></div>
+    <div class="summary"></div>
+    <div class="account"></div>
 
     <div class="home-bg"></div>
-    <div class="home-top padding starter">
-        <a href="account.html" class="home-pfp">
-            <i class="fa-solid fa-user"></i>
-        </a>
-        <div>
-            <div class="home-welcome">Welcome back</div>
-            <div class="home-name">David Wilson</div>
+    <div class="page-holder" id="homeHolder" style="display: block;">
+        <div class="home-top padding starter">
+            <div onclick="changePage(3)" class="home-pfp">
+                <i class="fa-solid fa-user"></i>
+            </div>
+            <div>
+                <div class="home-welcome">Welcome back</div>
+                <div class="home-name">David Wilson</div>
+            </div>
+            <i class="fa-regular fa-bell home-noti">
+            </i>
         </div>
-        <i class="fa-regular fa-bell home-noti">
-        </i>
-    </div>
-    <div class="home-mid padding starter">
-        <div class="home-title">Let's get your day started<br> the right way!</div>
-        <div class="home-search" id="homeSearch">
-            <img src="images/icons/search.png" />
-            <input type="text" placeholder="Search Jobs" />
-
-            <div class="search-drop">
+        <div class="home-mid padding starter">
+            <div class="home-title">Let's get your day started<br> the right way!</div>
+            <div class="home-search" id="homeSearch">
+                <img src="images/icons/search.png" />
+                <input type="text" placeholder="Search Jobs" />
+    
+                <div class="search-drop">
+                    <!-- 
+                        <div class="search-option">Boiler <span>Rep</span>air For Luke</div>
+                    -->
+                </div>
+            </div>
+        </div>
+    
+        <div class="job-container padding starter">
+            <div class="job-label">Your Jobs</div>
+    
+            <div class="job-ul">
                 <!-- 
-                    <div class="search-option">Boiler <span>Rep</span>air For Luke</div>
+                    <div class="job-wrapper">
+                        <div class="job-head">Boiler Repair For Luke</div>
+                        <div class="job-col">
+                            <div class="job-flex">
+                                <i class="fa-regular fa-user job-icon"></i>
+                                <div class="job-txt">Luke Smith</div>
+                            </div>
+                            <div class="job-flex">
+                                <i class="fa-regular fa-compass job-icon"></i>
+                                <div class="job-txt">North West, Burren, R93 A9R7</div>
+                            </div>
+                            <div class="job-flex">
+                                <i class="fa-regular fa-clock job-icon"></i>
+                                <div class="job-txt">25/12/2025 - 2:30pm</div>
+                            </div>
+                        </div>
+                        <a href="timer.html" class="btn-job">Start Job</a>
+                    </div>
                 -->
+            </div>
+    
+            <div class="emp-wrapper" id="jobEmpty">
+                <img src="images/nodata.svg" class="emp-icon" />
+                <div class="emp-head">No Jobs Found</div>
+                <div class="emp-para">We couldn't find any upcoming jobs<br> for you. Try again later.</div>
             </div>
         </div>
     </div>
 
-    <div class="job-container padding starter">
-        <div class="job-label">Your Jobs</div>
-
-        <div class="job-ul">
-            <!-- 
-                <div class="job-wrapper">
-                    <div class="job-head">Boiler Repair For Luke</div>
-                    <div class="job-col">
-                        <div class="job-flex">
-                            <i class="fa-regular fa-user job-icon"></i>
-                            <div class="job-txt">Luke Smith</div>
-                        </div>
-                        <div class="job-flex">
-                            <i class="fa-regular fa-compass job-icon"></i>
-                            <div class="job-txt">North West, Burren, R93 A9R7</div>
-                        </div>
-                        <div class="job-flex">
-                            <i class="fa-regular fa-clock job-icon"></i>
-                            <div class="job-txt">25/12/2025 - 2:30pm</div>
-                        </div>
-                    </div>
-                    <a href="timer.html" class="btn-job">Start Job</a>
-                </div>
-            -->
+    <div class="page-holder" id="timerHolder">
+        <div class="home-top padding">
+            <a href="index.html" style="display: flex; align-items: center; justify-content: center;">
+                <img src="images/icons/chevron.png" class="home-back" style="filter: invert(1);" />
+            </a>
+            <div class="tim-head">Work Shift</div>
         </div>
 
-        <div class="emp-wrapper" id="jobEmpty">
-            <img src="images/nodata.svg" class="emp-icon" />
-            <div class="emp-head">No Jobs Found</div>
-            <div class="emp-para">We couldn't find any upcoming jobs<br> for you. Try again later.</div>
+        <div class="tim-bg">
+            <div class="tim-bg-blue"></div>
+            <div class="tim-bg-white"></div>
+        </div>
+
+        <div class="tim-container padding">
+            <div class="tim-wrapper">
+                <div class="tim-num">0:00</div> 
+                <div class="tim-label">In Progress</div>
+            </div>
+            <div class="tim-btn-flex">
+                <div class="tim-btn tim-btn-pause">Pause</div>
+                <div class="tim-btn tim-btn-end">End Job</div>
+            </div>
         </div>
     </div>
 
-    <div class="thank-modal">
-        <div class="thank-wrapper">
-            <i class="fa-solid fa-check thank-modal-check"></i>
-            <div class="thank-modal-title">Thank You!</div>
-            <div class="thank-modal-para">Your <span class="thank-modal-para" id="thankStr"></span> job been successfully<br> saved. Thank you!</div>
-            <div class="btn-thank-modal">Okay</div>
+    <div class="page-holder" id="summaryHolder">
+        <div class="home-top padding">
+            <div class="home-head">Job Summary</div>
+            <div class="edit-save-btn">Submit</div>
+        </div>
+
+        <div class="edit-container padding">
+            <div class="edit-toggle">
+                <div class="edit-toggle-option" style="color: white;">Job Details</div>
+                <div class="edit-toggle-option">Materials Used</div>
+                <span class="edit-toggle-left"></span>
+            </div>
+
+            <div class="edit-content" id="editStory">
+                <div class="edit-date-wrapper">
+                    <img src="images/icons/calendar.png" class="edit-date-icon" />
+                    <div class="edit-date-txt">10 November 2025</div>
+                    <img src="images/icons/chevron.png" class="edit-date-chev" />
+
+                    <div class="edit-change">
+                        <div class="edit-change-flex">
+                            <div class="edit-change-col">
+                                <div class="edit-change-chev">
+                                    <img src="images/icons/chevron.png" />
+                                </div>
+                                <div class="edit-change-num">10</div>
+                                <div class="edit-change-label">Day</div>
+                                <div class="edit-change-chev edit-change-chev2">
+                                    <img src="images/icons/chevron.png" />
+                                </div>
+                            </div>
+                            <div class="edit-change-col">
+                                <div class="edit-change-chev">
+                                    <img src="images/icons/chevron.png" />
+                                </div>
+                                <div class="edit-change-num">11</div>
+                                <div class="edit-change-label">Month</div>
+                                <div class="edit-change-chev edit-change-chev2">
+                                    <img src="images/icons/chevron.png" />
+                                </div>
+                            </div>
+                            <div class="edit-change-col">
+                                <div class="edit-change-chev">
+                                    <img src="images/icons/chevron.png" />
+                                </div>
+                                <div class="edit-change-num">25</div>
+                                <div class="edit-change-label">Year</div>
+                                <div class="edit-change-chev edit-change-chev2">
+                                    <img src="images/icons/chevron.png" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="edit-change-bottom">
+                            <div class="btn-edit-change btn-change-cancel">Cancel</div>
+                            <div class="btn-edit-change btn-change-save">Save</div>
+                        </div>
+                    </div>
+                </div>
+                <input type="text" value="Boiler Repair For Luke" id="para" class="edit-title-input" readonly />
+                <textarea class="edit-para-area" placeholder="Add Notes" id="title"></textarea>
+                <div class="edit-upload">
+                    <i class="fa-solid fa-xmark edit-close"></i>
+                    <div class="edit-upload-content">
+                        <img src="images/icons/upload.png" class="edit-upload-icon" />
+                        <div class="edit-upload-btn">Upload Photo</div>
+                    </div>
+                    <div class="edit-upload-img">
+                        <img src="images/upload_temp.png" />
+                    </div>
+                </div>
+                <input type="file" accept="image/*" id="photoInput" style="display: none;" />
+            </div>
+
+            <!-- 
+            <div class="edit-content" id="editDetail">
+                <div class="edit-ques-wrapper">
+                    <div class="edit-ques-txt">What type of dream was it?</div>
+                    <div class="edit-ans-col">
+                        <div class="edit-ans"><span class="edit-span-active"></span> Lucid Dream</div>
+                        <div class="edit-ans"><span></span> Normal Dream</div>
+                        <div class="edit-ans"><span></span> Nightmare</div>
+                    </div>
+                </div>
+                <div class="edit-ques-wrapper">
+                    <div class="edit-ques-txt">How vivid was the dream?</div>
+                    <div class="edit-range">
+                        <input type="range" id="vivid" min="1" max="5" step="0.01" value="3" />
+                    </div>
+                    <div class="edit-label-flex">
+                        <div class="edit-label">Very bad</div>
+                        <div class="edit-label">Very good</div>
+                    </div>
+                </div>
+                <div class="edit-ques-wrapper">
+                    <div class="edit-ques-txt">How long was your dream?</div>
+                    <div class="edit-range">
+                        <input type="range" id="length" min="1" max="5" step="0.01" value="3" />
+                    </div>
+                    <div class="edit-label-flex">
+                        <div class="edit-label">Very short</div>
+                        <div class="edit-label">Very long</div>
+                    </div>
+                </div>
+                <div class="edit-ques-wrapper">
+                    <div class="edit-ques-txt">How was your sleep quality?</div>
+                    <div class="edit-range">
+                        <input type="range" id="sleep" min="1" max="5" step="0.01" value="3" />
+                    </div>
+                    <div class="edit-label-flex">
+                        <div class="edit-label">Very bad</div>
+                        <div class="edit-label">Very good</div>
+                    </div>
+                </div>
+                <div class="edit-ques-wrapper">
+                    <div class="edit-ques-txt">Is this a recurring dream?</div>
+                    <div class="edit-yn-flex">
+                        <div class="edit-yn edit-yn-active">No</div>
+                        <div class="edit-yn">Yes</div>
+                    </div>
+                </div>
+                <div class="edit-ques-wrapper">
+                    <div class="edit-ques-txt">What was the dominant emotion?</div>
+                    <div class="edit-ans-col">
+                        <div class="edit-ans"><span class="edit-span-active"></span> Confidence</div>
+                        <div class="edit-ans"><span></span> Fear</div>
+                        <div class="edit-ans"><span></span> Joy</div>
+                        <div class="edit-ans"><span></span> Curiosity</div>
+                        <div class="edit-ans"><span></span> Confusion</div>
+                    </div>
+                </div>
+            </div>
+            -->
+
+            <div class="edit-content" id="editSign">
+                <div class="edit-mat-ul">
+                    <div class="edit-mat-wrapper">
+                        <div class="edit-mat-label">Parts</div>
+                        <div class="edit-mat-selector">Add Parts <img src="images/icons/chevron.png" class="edit-mat-chev" />
+                            <div class="edit-mat-drop">
+                                <!-- 
+                                    <div class="edit-mat-option">Option 1 <i class="fa-solid fa-check"></i></div>
+                                    <div class="edit-mat-option">Option 2 <i class="fa-solid fa-check"></i></div>
+                                    <div class="edit-mat-option">Option 3 <i class="fa-solid fa-check"></i></div>
+                                    <div class="edit-mat-option">Option 4 <i class="fa-solid fa-check"></i></div>
+                                    <div class="edit-mat-option">Option 5 <i class="fa-solid fa-check"></i></div>
+                                -->
+                            </div>
+                        </div>
+                        <div class="edit-mat-col">
+                            <!-- 
+                                <div class="edit-mat-section">
+                                    <div class="edit-mat-name">Option 1</div>
+                                    <div class="edit-mat-quan">
+                                        <i class="fa-solid fa-trash-can"></i>
+                                        <span>1 <span>units</span></span>
+                                        <i class="fa-solid fa-plus"></i>
+                                    </div>
+                                </div>
+                            -->
+                        </div>
+                    </div>
+
+                    <div class="edit-mat-wrapper">
+                        <div class="edit-mat-label">Pipework</div>
+                        <div class="edit-mat-selector">Add Pipes <img src="images/icons/chevron.png" class="edit-mat-chev" />
+                            <div class="edit-mat-drop">
+                                <!-- 
+                                    <div class="edit-mat-option">Option 1 <i class="fa-solid fa-check"></i></div>
+                                    <div class="edit-mat-option">Option 2 <i class="fa-solid fa-check"></i></div>
+                                    <div class="edit-mat-option">Option 3 <i class="fa-solid fa-check"></i></div>
+                                    <div class="edit-mat-option">Option 4 <i class="fa-solid fa-check"></i></div>
+                                    <div class="edit-mat-option">Option 5 <i class="fa-solid fa-check"></i></div>
+                                    -->
+                            </div>
+                        </div>
+                        <div class="edit-mat-col">
+                            <!-- 
+                                <div class="edit-mat-section">
+                                    <div class="edit-mat-name">Option 1</div>
+                                    <div class="edit-mat-quan">
+                                        <i class="fa-solid fa-trash-can"></i>
+                                        <span>1 <span>units</span></span>
+                                        <i class="fa-solid fa-plus"></i>
+                                    </div>
+                                </div>
+                            -->
+                        </div>
+                    </div>
+
+                    <div class="edit-mat-wrapper">
+                        <div class="edit-mat-label">Fittings</div>
+                        <div class="edit-mat-selector">Add Items <img src="images/icons/chevron.png" class="edit-mat-chev" />
+                            <div class="edit-mat-drop">
+                                <!-- 
+                                <div class="edit-mat-option">Option 1 <i class="fa-solid fa-check"></i></div>
+                                <div class="edit-mat-option">Option 2 <i class="fa-solid fa-check"></i></div>
+                                <div class="edit-mat-option">Option 3 <i class="fa-solid fa-check"></i></div>
+                                <div class="edit-mat-option">Option 4 <i class="fa-solid fa-check"></i></div>
+                                <div class="edit-mat-option">Option 5 <i class="fa-solid fa-check"></i></div>
+                            -->
+                            </div>
+                        </div>
+                        <div class="edit-mat-col">
+                            <!-- 
+                                <div class="edit-mat-section">
+                                    <div class="edit-mat-name">Option 1</div>
+                                    <div class="edit-mat-quan">
+                                        <i class="fa-solid fa-trash-can"></i>
+                                        <span>1 <span>units</span></span>
+                                        <i class="fa-solid fa-plus"></i>
+                                    </div>
+                                </div>
+                            -->
+                        </div>
+                    </div>
+
+                    <div class="edit-mat-wrapper">
+                        <div class="edit-mat-label">Consumables</div>
+                        <div class="edit-mat-selector">Add Items <img src="images/icons/chevron.png" class="edit-mat-chev" />
+                            <div class="edit-mat-drop">
+                                <!-- 
+                                <div class="edit-mat-option">Option 1 <i class="fa-solid fa-check"></i></div>
+                                <div class="edit-mat-option">Option 2 <i class="fa-solid fa-check"></i></div>
+                                <div class="edit-mat-option">Option 3 <i class="fa-solid fa-check"></i></div>
+                                <div class="edit-mat-option">Option 4 <i class="fa-solid fa-check"></i></div>
+                                <div class="edit-mat-option">Option 5 <i class="fa-solid fa-check"></i></div>
+                            -->
+                            </div>
+                        </div>
+                        <div class="edit-mat-col">
+                            <!-- 
+                                <div class="edit-mat-section">
+                                    <div class="edit-mat-name">Option 1</div>
+                                    <div class="edit-mat-quan">
+                                        <i class="fa-solid fa-trash-can"></i>
+                                        <span>1 <span>units</span></span>
+                                        <i class="fa-solid fa-plus"></i>
+                                    </div>
+                                </div>
+                            -->
+                        </div>
+                    </div>
+
+                    <div class="edit-mat-wrapper">
+                        <div class="edit-mat-label">Other Items</div>
+                        <div class="edit-mat-selector">Add Items <img src="images/icons/chevron.png" class="edit-mat-chev" />
+                            <div class="edit-mat-drop">
+                                <!-- 
+                                <div class="edit-mat-option">Option 1 <i class="fa-solid fa-check"></i></div>
+                                <div class="edit-mat-option">Option 2 <i class="fa-solid fa-check"></i></div>
+                                <div class="edit-mat-option">Option 3 <i class="fa-solid fa-check"></i></div>
+                                <div class="edit-mat-option">Option 4 <i class="fa-solid fa-check"></i></div>
+                                <div class="edit-mat-option">Option 5 <i class="fa-solid fa-check"></i></div>
+                            -->
+                            </div>
+                        </div>
+                        <div class="edit-mat-col">
+                            <!-- 
+                                <div class="edit-mat-section">
+                                    <div class="edit-mat-name">Option 1</div>
+                                    <div class="edit-mat-quan">
+                                        <i class="fa-solid fa-trash-can"></i>
+                                        <span>1 <span>units</span></span>
+                                        <i class="fa-solid fa-plus"></i>
+                                    </div>
+                                </div>
+                            -->
+                        </div>
+                    </div>
+
+                    <div class="edit-mat-wrapper" id="chargeWrapper">
+                        <div class="edit-mat-label">Extra Charges</div>
+                        <div class="edit-mat-selector">Add Charges <img src="images/icons/chevron.png" class="edit-mat-chev" />
+                            <div class="edit-mat-drop">
+                                <!-- 
+                                    <div class="edit-mat-option">Option 1 <i class="fa-solid fa-check"></i></div>
+                                    <div class="edit-mat-option">Option 2 <i class="fa-solid fa-check"></i></div>
+                                    <div class="edit-mat-option">Option 3 <i class="fa-solid fa-check"></i></div>
+                                    <div class="edit-mat-option">Option 4 <i class="fa-solid fa-check"></i></div>
+                                    <div class="edit-mat-option">Option 5 <i class="fa-solid fa-check"></i></div>
+                                -->
+                            </div>
+                        </div>
+                        <div class="edit-mat-col">
+                            <!-- 
+                                <div class="edit-mat-section">
+                                    <div class="edit-mat-name">Option 1</div>
+                                    <div class="edit-mat-quan">
+                                        <i class="fa-solid fa-trash-can"></i>
+                                        <span>1 <span>units</span></span>
+                                        <i class="fa-solid fa-plus"></i>
+                                    </div>
+                                </div>
+                            -->
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="thank-modal" id="summaryThankModal">
+            <div class="thank-wrapper">
+                <i class="fa-solid fa-check thank-modal-check"></i>
+                <div class="thank-modal-title">Thank You!</div>
+                <div class="thank-modal-para">Your <span class="thank-modal-para" id="thankStr"></span> job been successfully<br> saved. Thank you!</div>
+                <div class="btn-thank-modal">Okay</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="page-holder" id="profileHolder">
+        <div class="acc-container padding">
+            <div class="acc-back"><img src="images/icons/chevron.png" /> Home</div>
+            <div class="acc-title">Account Settings</div>
+            <div class="acc-profile">
+                <div class="acc-pfp">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+                <div>
+                    <div class="acc-name">Harry Wilson</div>
+                    <div class="acc-email">harrywilson20@gmail.com</div>
+                </div>
+            </div>
+
+            <div class="acc-wrapper">
+                <div class="acc-head">General</div>
+                <div class="acc-ul">
+                    <div class="acc-section" id="editProfileBtn">
+                        <i class="fa-solid fa-user acc-icon"></i>
+                        <div>
+                            <div class="acc-label">Edit Profile</div>
+                            <div class="acc-txt">Change you profile info</div>
+                        </div>
+                        <img src="images/icons/chevron.png" class="acc-chevron" />
+                    </div>
+                    <div class="acc-section" id="newPasswordBtn">
+                        <i class="fa-solid fa-lock acc-icon"></i>
+                        <div>
+                            <div class="acc-label">Change Password</div>
+                            <div class="acc-txt">Update your password</div>
+                        </div>
+                        <img src="images/icons/chevron.png" class="acc-chevron" />
+                    </div>
+                    <div class="acc-section" id="newContactBtn">
+                        <i class="fa-solid fa-phone acc-icon"></i>
+                        <div>
+                            <div class="acc-label">Contact Support</div>
+                            <div class="acc-txt">Contact our support team</div>
+                        </div>
+                        <img src="images/icons/chevron.png" class="acc-chevron" />
+                    </div>
+                    <div class="acc-section" id="newPushBtn">
+                        <i class="fa-solid fa-bell acc-icon"></i>
+                        <div>
+                            <div class="acc-label">Notifications</div>
+                            <div class="acc-txt">Manage your notifications</div>
+                        </div>
+                        <img src="images/icons/chevron.png" class="acc-chevron" />
+                    </div>
+                    <div class="acc-section" id="newLogout">
+                        <i class="fa-solid fa-right-from-bracket acc-icon"></i>
+                        <div>
+                            <div class="acc-label">Log Out</div>
+                            <div class="acc-txt">log out of your account</div>
+                        </div>
+                        <img src="images/icons/chevron.png" class="acc-chevron" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="prof-modal padding" id="profileModal">
+            <div class="prof-top">
+                <img src="images/icons/chevron.png" class="prof-chev" id="profileBack" />
+                <div class="prof-title">Edit profile</div>
+            </div>
+
+            <div class="prof-pfp-holder">
+                <div class="prof-pfp">
+                    <i class="fa-solid fa-user prof-pfp-user"></i>
+                </div>
+                <i class="fa-solid fa-camera prof-pfp-camera"></i>
+            </div>
+
+            <div class="prof-wrapper">
+                <div class="prof-col">
+                    <div class="prof-label">Full name</div>
+                    <input type="text" placeholder="Enter name" class="prof-input" id="profileName" />
+                </div>
+                <div class="prof-col">
+                    <div class="prof-label">Contact email</div>
+                    <input type="text" placeholder="Enter email" class="prof-input" id="profileEmail" />
+                </div>
+                <div class="prof-col">
+                    <div class="prof-label">Phone number</div>
+                    <input type="text" placeholder="Enter phone" class="prof-input" id="profilePhone" />
+                </div>
+            </div>
+
+            <div class="prof-btn" id="saveProfileBtn">Save Changes</div>
+        </div>
+
+        <div class="new-modal padding" id="changePasswordModal">
+            <div class="new-wrapper">
+                <i class="fa-solid fa-xmark new-xmark"></i>
+                <div class="new-title">Change Password</div>
+                <div class="new-col">
+                    <div class="new-label">Current Password</div>
+                    <input type="password" placeholder="Current password" class="new-input" id="currentPassword" />
+                    <div id="invalidError" class="new-error">Incorrect password.</div>
+
+                    <div class="new-label">New Password</div>
+                    <input type="password" placeholder="New password" class="new-input" id="newPassword" />
+
+                    <div class="new-label">Confirm Password</div>
+                    <input type="password" placeholder="Confirm password" class="new-input" id="confirmPassword" style="margin-bottom: 0;" />
+                </div>
+                <div id="diffError" class="new-error">Passwords do not match.</div>
+                <div id="randomError" class="new-error">Something went wrong, try again.</div>
+                <div class="new-btn" id="changePasswordBtn">Change Password</div>
+            </div>
+        </div>
+
+        <div class="thank-modal" id="thankPassword">
+            <div class="thank-wrapper">
+                <i class="fa-solid fa-check thank-modal-check"></i>
+                <div class="thank-modal-title">Thank You!</div>
+                <div class="thank-modal-para">Your <span class="thank-modal-para" id="thankStr"></span> password been successfully<br> changed. Thank you!</div>
+                <div class="btn-thank-modal">Okay</div>
+            </div>
+        </div>
+
+        <div class="new-modal padding" id="contactModal">
+            <form id="contactForm" class="new-wrapper">
+                <i class="fa-solid fa-xmark new-xmark"></i>
+                <div class="new-title">Contact Support</div>
+                <div class="new-col">
+                    <div class="new-label">Name</div>
+                    <input name="name" type="text" placeholder="Enter name" class="new-input" id="contactName" />
+
+                    <div class="new-label">Email</div>
+                    <input name="email" type="text" placeholder="Enter email" class="new-input" id="contactEmail" />
+
+                    <div class="new-label">Message</div>
+                    <textarea name="message" id="contactMessage" placeholder="Enter message" class="new-area" style="margin-bottom: 0;"></textarea>
+                </div>
+                <button type="submit" class="new-btn" id="contactSendBtn">Send Message</button>
+            </form>
+        </div>
+
+        <div class="thank-modal" id="thankContact">
+            <div class="thank-wrapper">
+                <i class="fa-solid fa-check thank-modal-check"></i>
+                <div class="thank-modal-title">Thank You!</div>
+                <div class="thank-modal-para">Your <span class="thank-modal-para" id="thankStr"></span> message been successfully<br> delivered. Thank you!</div>
+                <div class="btn-thank-modal">Okay</div>
+            </div>
+        </div>
+
+        <div class="prof-modal padding" id="pushModal">
+            <div class="prof-top">
+                <img src="images/icons/chevron.png" class="prof-chev" id="pushBack" />
+                <div class="prof-title">Notifications</div>
+            </div>
+
+            <div class="push-wrapper">
+                <div class="push-section">
+                    <div class="push-left">
+                        <div class="push-head">New Jobs</div>
+                        <div class="push-txt">When you are assigned to a job, you will be notified.</div>
+                    </div>
+                    <div class="push-toggle push-toggle-active"><span class="push-toggle-right"></span></div>
+                </div>
+                <div class="push-section">
+                    <div class="push-left">
+                        <div class="push-head">Job Updates</div>
+                        <div class="push-txt">You will be notified if your job's details change.</div>
+                    </div>
+                    <div class="push-toggle push-toggle-active"><span class="push-toggle-right"></span></div>
+                </div>
+                <div class="push-section">
+                    <div class="push-left">
+                        <div class="push-head">System Updates</div>
+                        <div class="push-txt">If there is a software update, you will be notified.</div>
+                    </div>
+                    <div class="push-toggle"><span class="push-toggle-left"></span></div>
+                </div>
+                <div class="push-section" style="border-bottom: 0;">
+                    <div class="push-left">
+                        <div class="push-head">Weekly Reports</div>
+                        <div class="push-txt">You will be notified for job and performance reports.</div>
+                    </div>
+                    <div class="push-toggle"><span class="push-toggle-left"></span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="book-delete-modal padding" id="logoutModal">
+            <div class="book-delete-wrapper">
+                <i class="fa-solid fa-triangle-exclamation book-delete-icon"></i>
+                <div class="book-delete-title">Log Out</div>
+                <div class="book-delete-para">Are you sure you want to log<br> out of your account?</div>
+                <div class="book-delete-flex">
+                    <div class="btn-book-nodelete">No, cancel.</div>
+                    <div class="btn-book-delete-booking">Yes, log out!</div>
+                </div>
+            </div>
         </div>
     </div>
 
