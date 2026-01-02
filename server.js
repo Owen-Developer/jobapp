@@ -683,16 +683,7 @@ app.post("/api/update-labour", (req, res) => {
 });
 
 app.get("/api/logout", (req, res) => {
-    const payload = {
-        userId: null
-    };
-    const token = jwt.sign(
-        payload,
-        process.env.JWT_SECRET,
-        { expiresIn: "60m" }
-    );
-
-    return res.json({ message: 'success', token: token });
+    return res.json({ message: 'success' });
 });
 
 app.get("/api/admin-notis", (req, res) => {

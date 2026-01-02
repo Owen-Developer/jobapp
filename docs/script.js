@@ -1231,7 +1231,7 @@ async function getUserData(){
                         });
                         const data = await response.json(); 
                         if(data.message == "success"){
-                            localStorage.setItem("token", data.token);
+                            localStorage.clear();
                             window.location.href = gitName + "/login.html";
                         }
                     } catch (error) {
