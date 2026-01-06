@@ -910,6 +910,16 @@ span.lac-top-mon {
 .lac-box:hover .lac-hover-el {
     opacity: 1;
 }
+
+.white-hover, .blue-hover, .new-btn {
+    cursor: pointer;
+}
+.blue-hover:hover, .new-btn:hover {
+    background-color: hsl(211, 22%, 42%);
+}
+.white-hover:hover {
+    background-color: hsl(0, 0%, 96%);
+}
 /*//////////////////////////////////////////////////////////////*/
 
 /*/////////////////////// HOME BOTTOM NAV ///////////////////////*/
@@ -2332,6 +2342,7 @@ i.edit-charge-delete {
     transition: 0.2s ease;
 }
 .admin-table-icon {
+    cursor: pointer;
     width: 130px;
     flex-shrink: 0;
     display: flex;
@@ -2341,6 +2352,9 @@ i.edit-charge-delete {
 .admin-table-icon i {
     font-size: 20px;
     color: hsl(0, 0%, 40%);
+}
+.admin-table-icon i:hover {
+    color: hsl(0, 0%, 10%);
 }
 
 .read-modal {
@@ -3458,6 +3472,7 @@ i.work-delete {
     opacity: 1;
 }
 .pric-btn {
+    cursor: pointer;
     position: relative;
     background-color: white;
     border: 1px solid hsl(0, 0%, 84%);
@@ -3470,6 +3485,9 @@ i.work-delete {
     display: flex;
     align-items: center;
     gap: 12px;
+}
+.pric-btn:hover {
+    background-color: hsl(0, 0%, 96%);
 }
 .pric-btn i {
     font-size: 15px;

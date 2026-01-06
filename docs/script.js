@@ -2344,7 +2344,7 @@ async function getUserData(){
                                             <div class="work-up-flex">
                                                 <div class="work-up-left">
                                                     <div class="work-up-name">${job.job_name}</div>
-                                                    <div class="work-up-btn">View Details</div>
+                                                    <div class="work-up-btn blue-hover">View Details</div>
                                                 </div>
                                                 <div class="work-up-date">${job.job_date}</div>
                                             </div>
@@ -4933,7 +4933,7 @@ async function getUserData(){
                                             <div class="work-up-flex">
                                                 <div class="work-up-left">
                                                     <div class="work-up-name">${job.job_name}</div>
-                                                    <div class="work-up-btn">View Details</div>
+                                                    <div class="work-up-btn blue-hover">View Details</div>
                                                 </div>
                                                 <div class="work-up-date">${job.job_date}</div>
                                             </div>
@@ -4980,7 +4980,7 @@ async function getUserData(){
                                 </div>
     
                                 <div class="work-btn-flex">
-                                    <div class="work-btn work-assign-btn">Assign Job</div>
+                                    <div class="work-btn work-assign-btn blue-hover">Assign Job</div>
                                     ${reportBtn}
                                 </div>
                             `;
