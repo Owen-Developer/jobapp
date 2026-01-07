@@ -537,13 +537,13 @@ app.get("/api/admin-data", (req, res) => {
 });
 
 app.post("/api/create-job", (req, res) => {
-    const { jobName, customerName, customerAddress, jobDate, jobTime, jobCost, worker, workerId } = req.body;
+    const { jobName, customerName, customerAddress, jobDate, jobTime, finishTime, jobCost, worker, workerId } = req.body;
 
     if(worker == ""){
         return res.json({ message: 'noworker' });
     }
 
-    db.query("insert into jobs (job_name, job_customer, job_date, job_time, job_address, job_worker, user_id, job_status, job_progress, job_materials, job_notes, job_cost) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [jobName, customerName, jobDate, jobTime, customerAddress, worker, workerId, "Pending", "0 minutes", "No materials used", "No notes yet.", jobCost], async (err, result) => {
+    db.query("insert into jobs (job_name, job_customer, job_date, job_time, job_finish, job_address, job_worker, user_id, job_status, job_progress, job_materials, job_notes, job_cost) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [jobName, customerName, jobDate, jobTime, finishTime, customerAddress, worker, workerId, "Pending", "0 minutes", "No materials used", "No notes yet.", jobCost], async (err, result) => {
         if(err){
             console.error(err);
         }
@@ -554,13 +554,13 @@ app.post("/api/create-job", (req, res) => {
 });
 
 app.post("/api/edit-job", (req, res) => {
-    const { jobId, editName, editCustomerName, editCustomerAddress, editDate, editTime, editCost, editWorker, editWorkerId } = req.body;
+    const { jobId, editName, editCustomerName, editCustomerAddress, editDate, editTime, editFinish, editCost, editWorker, editWorkerId } = req.body;
 
     if(editWorker == ""){
         return res.json({ message: 'noworker' });
     }
 
-    db.query("update jobs set job_name = ?, job_customer = ?, job_date = ?, job_time = ?, job_address = ?, job_worker = ?, user_id = ?, job_status = ?, job_progress = ?, job_materials = ?, job_notes = ?, job_cost = ? where id = ?", [editName, editCustomerName, editDate, editTime, editCustomerAddress, editWorker, editWorkerId, "Pending", "0 minutes", "No materials used", "No notes yet.", editCost, jobId], async (err, result) => {
+    db.query("update jobs set job_name = ?, job_customer = ?, job_date = ?, job_time = ?, job_finish, job_address = ?, job_worker = ?, user_id = ?, job_status = ?, job_progress = ?, job_materials = ?, job_notes = ?, job_cost = ? where id = ?", [editName, editCustomerName, editDate, editTime, editFinish, editCustomerAddress, editWorker, editWorkerId, "Pending", "0 minutes", "No materials used", "No notes yet.", editCost, jobId], async (err, result) => {
         if(err){
             console.error(err);
         }

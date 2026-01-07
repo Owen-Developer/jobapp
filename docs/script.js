@@ -233,9 +233,6 @@ async function getUserData(){
             modal.querySelector(".btn-thank-modal").addEventListener("click", () => {
                 if(modal.id == "summaryThankModal"){
                     changePage(0);
-                } else if(document.querySelector(".dashboard")){
-                    modal.style.opacity = "0";
-                    modal.style.pointerEvents = "none";
                 } else {
                     window.location.reload();
                 }
@@ -3992,7 +3989,7 @@ async function getUserData(){
                                             newJob.classList.add("lac-job");
                                             newJob.innerHTML = `
                                                 <div class="lac-job-name">${job.job_name}</div>
-                                                <div class="lac-job-time">${job.job_time}</div>
+                                                <div class="lac-job-time">${job.job_time} - ${job.job_finish}</div>
                                             `;
                                             box.appendChild(newJob);
                                         }
