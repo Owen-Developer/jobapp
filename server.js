@@ -711,6 +711,7 @@ app.get("/api/find-admin", (req, res) => {
 });
 
 app.post("/api/delete-worker", (req, res) => {
+    console.log(req.body.id);
     db.query("delete from users where id = ?", [req.body.id], (err, result) => {
         if(err){
             console.error(err);

@@ -1640,28 +1640,28 @@ async function getUserData(){
                             document.querySelector(".exam-modal").style.pointerEvents = "none";
                         });
 
-                        document.querySelector(".admin-filter-btn").addEventListener("click", () => {
+                        document.getElementById("adminHolder").querySelector(".admin-filter-btn").addEventListener("click", () => {
                             document.querySelector(".exam-modal").style.opacity = "1";
                             document.querySelector(".exam-modal").style.pointerEvents = "auto";
                         });
-                        document.querySelector("i.exam-modal-close").addEventListener("click", () => {
+                        document.getElementById("adminHolder").querySelector("i.exam-modal-close").addEventListener("click", () => {
                             document.querySelector(".exam-modal").style.opacity = "0";
                             document.querySelector(".exam-modal").style.pointerEvents = "none";
                         });
 
-                        document.querySelectorAll(".admin-table-notes span").forEach((span, idx) => {
+                        document.getElementById("adminHolder").querySelectorAll(".admin-table-notes span").forEach((span, idx) => {
                             span.addEventListener("click", () => {
                                 document.querySelector(".read-wrapper div").textContent = jobs[idx].job_notes;
                                 document.querySelector(".read-modal").style.opacity = "1";
                                 document.querySelector(".read-modal").style.pointerEvents = "auto";
                             });
                         });
-                        document.querySelector("i.read-close").addEventListener("click", () => {
+                        document.getElementById("adminHolder").querySelector("i.read-close").addEventListener("click", () => {
                             document.querySelector(".read-modal").style.opacity = "0";
                             document.querySelector(".read-modal").style.pointerEvents = "none";
                         });
 
-                        document.querySelectorAll("i.admin-edit-icon").forEach((icon, idx) => {
+                        document.getElementById("adminHolder").querySelectorAll("i.admin-edit-icon").forEach((icon, idx) => {
                             icon.addEventListener("click", () => {
                                 let editJob = jobs[idx];
                                 document.getElementById("editName").value = editJob.job_name;
@@ -1687,25 +1687,153 @@ async function getUserData(){
                             });
                         });
                         let deleteId;
-                        document.querySelectorAll("i.admin-delete-icon").forEach((icon, idx) => {
+                        document.getElementById("adminHolder").querySelectorAll("i.admin-delete-icon").forEach((icon, idx) => {
                             icon.addEventListener("click", () => {
                                 document.getElementById("deleteJob").style.opacity = "1";
                                 document.getElementById("deleteJob").style.pointerEvents = "auto";
                                 deleteId = jobs[idx].id;
                             });
                         });
-                        document.querySelectorAll("i.admin-report-icon").forEach((icon, idx) => {
-                            icon.addEventListener("click", () => {
-                                jobId = jobs[idx].id;
-                                makeJobReport(jobs[idx]);
-                                changePage(3);
-                                setTimeout(() => {
-                                    document.getElementById("jobReportCol").scrollIntoView({
-                                        behavior: "smooth",
-                                    });
-                                }, 100);
+                        document.getElementById("adminHolder").querySelectorAll(".admin-table-icon").forEach((group, idx) => {
+                            group.querySelectorAll("i.admin-report-icon").forEach((icon) => {
+                                icon.addEventListener("click", () => {
+                                    jobId = jobs[idx].id;
+                                    makeJobReport(jobs[idx]);
+                                    changePage(3);
+                                    setTimeout(() => {
+                                        document.getElementById("jobReportCol").scrollIntoView({
+                                            behavior: "smooth",
+                                        });
+                                    }, 100);
+                                });
                             });
                         });
+                        function makeJobReport(job){
+                            let totalCharges = 2;
+                            let chargePrice;
+                            if(job.job_charges == "No charges"){
+                                totalCharges = 0;
+                                chargePrice = "£0";
+                            } else {
+                                job.job_charges.split("").forEach(letter => {
+                                    if(letter == ","){
+                                        totalCharges++;
+                                    }
+                                });
+                                if(job.job_charges.includes("£")) totalCharges = 0;
+                                totalCharges = totalCharges / 2;
+                                chargePrice = "£" + Number(Number(job.job_realcharge.replace("£", "")) - Number(job.labour_charge.replace("£", "")) - Number(job.material_charge.replace("£", "")));
+                            }
+                            let labourDesc = job.job_progress;
+                            if(!labourDesc.includes("hrs")) labourDesc = "call out fee";
+                            let jobProfit = Number(job.job_realcharge.replace("£", "")) - Number(job.job_setback.replace("£", ""));
+                            let trendImg;
+                            let trendTxt;
+    
+                            let avgProfit = 0;
+                            let usedDates = [];
+                            jobs.forEach(other => {if(other.job_status == "Completed"){
+                                if(other.id != job.id){
+                                    if(!usedDates.includes(other.job_date)){
+                                        usedDates.push(other.job_date);
+                                    }
+                                    avgProfit += Number(other.job_realcharge.replace(/£/g, "")) - Number(other.job_setback.replace(/£/g, ""));
+                                }
+                            }});
+                            avgProfit = avgProfit / usedDates.length || 0;
+    
+                            if(jobProfit >= avgProfit){
+                                let percent = (((jobProfit / avgProfit) - 1) * 100).toFixed(0);
+                                trendTxt = `+${percent}% from average day`;
+                                trendImg = "uptrend";
+                            } else {
+                                let percent = (((jobProfit / avgProfit) - 1) * 100).toFixed(0);
+                                trendTxt = `${percent}% from average day`;
+                                trendImg = "downtrend";
+                            }
+                            if(jobProfit == 0){
+                                trendTxt = `No profit earned`;
+                                trendImg = "downtrend";
+                            } else if(jobProfit > 0 && avgProfit == 0){
+                                trendTxt = `Total profit earned`;
+                                trendImg = "uptrend";
+                            }
+                            document.querySelector(".rep-job-wrapper").innerHTML = `
+                                <div class="rep-job-name">${job.job_name}</div>
+                                <div class="rep-job-date">Completed ${job.job_date}</div>
+                                <div class="rep-circ-container">
+                                    <div class="rep-circ circ-fill" id="circLabour"></div>
+                                    <div class="rep-circ circ-fill" id="circMaterials"></div>
+                                    <div class="rep-circ circ-fill" id="circExtra"></div>
+                                    <div class="rep-circ-mid"></div>
+                                    <div class="rep-circ-content">
+                                        <div class="rep-circ-head">${job.job_setback}</div>
+                                        <div class="rep-circ-txt">Total Cost</div>
+                                    </div>
+                                </div>
+                                <div class="rep-job-legend">
+                                    <div><span style="background-color: hsl(211, 22%, 34%);"></span> Labour ${job.labour_cost}</div>
+                                    <div><span style="background-color: hsl(211, 22%, 54%);"></span> Materials ${job.material_cost}</div>
+                                </div>
+    
+                                <div class="rep-exp">
+                                    <div class="rep-exp-top">
+                                        <div class="rep-exp-head">End Charge: <span class="rep-exp-head">${job.job_realcharge}</span></div>
+                                        <img src="images/icons/chevron.png" class="rep-exp-chev" />
+                                    </div>
+    
+                                    <div class="rep-exp-drop">
+                                        <div class="rep-exp-section">
+                                            <div>
+                                                <div class="rep-exp-name">Labour Charge</div>
+                                                <div class="rep-exp-txt">${labourDesc}</div>
+                                            </div>
+                                            <div class="rep-exp-num">${job.labour_charge}</div>
+                                        </div>
+                                        <div class="rep-exp-section">
+                                            <div>
+                                                <div class="rep-exp-name">Materials Charge</div>
+                                                <div class="rep-exp-txt">${job.material_cost} worth used</div>
+                                            </div>
+                                            <div class="rep-exp-num">${job.material_charge}</div>
+                                        </div>
+                                        <div class="rep-exp-section" style="padding-bottom: 5px;">
+                                            <div>
+                                                <div class="rep-exp-name">Extra Charges</div>
+                                                <div class="rep-exp-txt">${totalCharges} charges applied</div>
+                                            </div>
+                                            <div class="rep-exp-num">${chargePrice}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="rep-prof">
+                                    <div class="rep-prof-head"><span style="background-color: var(--primary);"></span> Job Profit</div>
+                                    <div class="rep-prof-num">£${jobProfit} <img src="images/icons/${trendImg}.png" /></div>
+                                    <div class="rep-prof-txt">${trendTxt}</div>
+                                </div>
+                            `;
+                            let labourPercent = 360 * (Number(job.labour_cost.replace("£", "")) / Number(job.job_setback.replace("£", "")));
+                            document.getElementById("circLabour").style.background = `
+                                conic-gradient(
+                                    from 0deg,
+                                    hsl(211, 22%, 34%) 0deg ${labourPercent}deg,
+                                    transparent ${labourPercent + 0.5}deg  360deg 
+                                )
+                            `;
+                            document.querySelector(".rep-exp").addEventListener("click", () => {
+                                if(document.querySelector(".rep-exp-chev").style.transform == "rotate(90deg)"){
+                                    document.querySelector(".rep-exp-drop").style.opacity = "0";
+                                    document.querySelector(".rep-exp-drop").style.marginTop = "0px";
+                                    document.querySelector(".rep-exp-drop").style.maxHeight = "0px";
+                                    document.querySelector(".rep-exp-chev").style.transform = "rotate(0deg)";
+                                } else {
+                                    document.querySelector(".rep-exp-drop").style.opacity = "1";
+                                    document.querySelector(".rep-exp-drop").style.marginTop = "25px";
+                                    document.querySelector(".rep-exp-drop").style.maxHeight = "200px";
+                                    document.querySelector(".rep-exp-chev").style.transform = "rotate(90deg)";
+                                }
+                            });
+                        }
 
                         document.querySelector(".btn-book-delete-booking").addEventListener("click", () => {
                             async function deleteJob() {
@@ -2318,6 +2446,7 @@ async function getUserData(){
                     }
 
                     if(document.querySelector(".workers")){
+                        let deleteWokerId;
                         workers.forEach(worker => {
                             let newWrapper = document.createElement("div");
                             newWrapper.classList.add("work-wrapper");
@@ -2424,10 +2553,11 @@ async function getUserData(){
                             newWrapper.querySelector("i.work-delete").addEventListener("click", () => {
                                 document.getElementById("deleteWorkerModal").style.opacity = "1";
                                 document.getElementById("deleteWorkerModal").style.pointerEvents = "auto";
+                                deleteWokerId = worker.id;
                             });
-                            document.getElementById("deleteWorkerModal").querySelector(".btn-book-delete-booking").addEventListener("click", () => {
+                            document.getElementById("deleteWorkerModal").querySelector(".btn-book-delete-booking").onclick = () => {
                                 async function deleteWorker() {
-                                    const dataToSend = { id: worker.id };
+                                    const dataToSend = { id: deleteWokerId };
                                     try {
                                         const response = await fetch(url + '/api/delete-worker', {
                                             method: 'POST',
@@ -2453,7 +2583,7 @@ async function getUserData(){
                                     }
                                 }
                                 deleteWorker();
-                            });
+                            }
 
                             document.getElementById("deleteWorkerModal").addEventListener("click", (e) => {
                                 if(!document.querySelector(".book-delete-wrapper").contains(e.target)){
@@ -2466,12 +2596,12 @@ async function getUserData(){
                                 document.getElementById("deleteWorkerModal").style.pointerEvents = "none";
                             });
                         });
-                        if(document.querySelectorAll(".work-wrapper").length == 0){
-                            document.getElementById("workerEmpty").style.display = "block";
+                        if(document.getElementById("workersHolder").querySelectorAll(".work-wrapper").length == 0){
+                            document.getElementById("workersHolder").querySelector("#workerEmpty").style.display = "block";
                         }
 
                         document.querySelector("#workSearch").addEventListener("input", () => {
-                            document.querySelector(".search-drop").innerHTML = "";
+                            document.querySelector("#workSearch").querySelector(".search-drop").innerHTML = "";
                             let newValue = document.querySelector("#workSearch input").value;
                             if(newValue.length > 0 && jobs){
                                 workers.forEach(worker => {
@@ -2485,7 +2615,7 @@ async function getUserData(){
                                         let higherJob = lowerJob.split(" ").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
                                         let finalOption = higherJob.slice(0, firstIdx) + "<span>" + higherJob.slice(firstIdx, lastIdx + 1) + "</span>" + higherJob.slice(lastIdx + 1);
                                         newOption.innerHTML = finalOption;
-                                        document.querySelector(".search-drop").appendChild(newOption);
+                                        document.querySelector("#workSearch").querySelector(".search-drop").appendChild(newOption);
 
                                         newOption.addEventListener("click", () => {
                                             let jobWrapper;
@@ -2495,7 +2625,7 @@ async function getUserData(){
                                                 }
                                             });
                                             if(jobWrapper){
-                                                document.getElementById("workerEmpty").style.display = "none";
+                                                document.getElementById("workersHolder").querySelector("#workerEmpty").style.display = "none";
                                                 jobWrapper.style.display = "block";
                                                 jobWrapper.scrollIntoView({
                                                     behavior: "smooth",
@@ -2503,24 +2633,24 @@ async function getUserData(){
                                                 });
                                             }
                                             document.querySelector("#workSearch").classList.remove("search-selector-dropped");
-                                            document.querySelector(".search-drop").style.opacity = "0";
-                                            document.querySelector(".search-drop").style.pointerEvents = "none";
+                                            document.querySelector("#workSearch").querySelector(".search-drop").style.opacity = "0";
+                                            document.querySelector("#workSearch").querySelector(".search-drop").style.pointerEvents = "none";
                                         });
                                     }
                                 });
-                                if(document.querySelector(".search-drop").innerHTML != ""){
+                                if(document.querySelector("#workSearch").querySelector(".search-drop").innerHTML != ""){
                                     document.querySelector("#workSearch").classList.add("search-selector-dropped");
-                                    document.querySelector(".search-drop").style.opacity = "1";
-                                    document.querySelector(".search-drop").style.pointerEvents = "auto";
+                                    document.querySelector("#workSearch").querySelector(".search-drop").style.opacity = "1";
+                                    document.querySelector("#workSearch").querySelector(".search-drop").style.pointerEvents = "auto";
                                 } else {
                                     document.querySelector("#workSearch").classList.remove("search-selector-dropped");
-                                    document.querySelector(".search-drop").style.opacity = "0";
-                                    document.querySelector(".search-drop").style.pointerEvents = "none";
+                                    document.querySelector("#workSearch").querySelector(".search-drop").style.opacity = "0";
+                                    document.querySelector("#workSearch").querySelector(".search-drop").style.pointerEvents = "none";
                                 }
                             } else {
                                 document.querySelector("#workSearch").classList.remove("search-selector-dropped");
-                                document.querySelector(".search-drop").style.opacity = "0";
-                                document.querySelector(".search-drop").style.pointerEvents = "none";
+                                document.querySelector("#workSearch").querySelector(".search-drop").style.opacity = "0";
+                                document.querySelector("#workSearch").querySelector(".search-drop").style.pointerEvents = "none";
                             }
                         });
 
@@ -2603,7 +2733,7 @@ async function getUserData(){
                             }
                         });
                         document.querySelector("#workSearch input").addEventListener("focus", () => {
-                            document.querySelector(".search-drop").innerHTML = "";
+                            document.querySelector("#workSearch").querySelector(".search-drop").innerHTML = "";
                             let newValue = document.querySelector("#workSearch input").value;
                             if(newValue.length > 0 && jobs){
                                 workers.forEach(worker => {
@@ -2617,7 +2747,7 @@ async function getUserData(){
                                         let higherJob = lowerJob.split(" ").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
                                         let finalOption = higherJob.slice(0, firstIdx) + "<span>" + higherJob.slice(firstIdx, lastIdx + 1) + "</span>" + higherJob.slice(lastIdx + 1);
                                         newOption.innerHTML = finalOption;
-                                        document.querySelector(".search-drop").appendChild(newOption);
+                                        document.querySelector("#workSearch").querySelector(".search-drop").appendChild(newOption);
 
                                         newOption.addEventListener("click", () => {
                                             let jobWrapper;
@@ -2627,7 +2757,7 @@ async function getUserData(){
                                                 }
                                             });
                                             if(jobWrapper){
-                                                document.getElementById("workerEmpty").style.display = "none";
+                                                document.getElementById("workersHolder").querySelector("#workerEmpty").style.display = "none";
                                                 jobWrapper.style.display = "block";
                                                 jobWrapper.scrollIntoView({
                                                     behavior: "smooth",
@@ -2635,24 +2765,24 @@ async function getUserData(){
                                                 });
                                             }
                                             document.querySelector("#workSearch").classList.remove("search-selector-dropped");
-                                            document.querySelector(".search-drop").style.opacity = "0";
-                                            document.querySelector(".search-drop").style.pointerEvents = "none";
+                                            document.querySelector("#workSearch").querySelector(".search-drop").style.opacity = "0";
+                                            document.querySelector("#workSearch").querySelector(".search-drop").style.pointerEvents = "none";
                                         });
                                     }
                                 });
-                                if(document.querySelector(".search-drop").innerHTML != ""){
+                                if(document.querySelector("#workSearch").querySelector(".search-drop").innerHTML != ""){
                                     document.querySelector("#workSearch").classList.add("search-selector-dropped");
-                                    document.querySelector(".search-drop").style.opacity = "1";
-                                    document.querySelector(".search-drop").style.pointerEvents = "auto";
+                                    document.querySelector("#workSearch").querySelector(".search-drop").style.opacity = "1";
+                                    document.querySelector("#workSearch").querySelector(".search-drop").style.pointerEvents = "auto";
                                 } else {
                                     document.querySelector("#workSearch").classList.remove("search-selector-dropped");
-                                    document.querySelector(".search-drop").style.opacity = "0";
-                                    document.querySelector(".search-drop").style.pointerEvents = "none";
+                                    document.querySelector("#workSearch").querySelector(".search-drop").style.opacity = "0";
+                                    document.querySelector("#workSearch").querySelector(".search-drop").style.pointerEvents = "none";
                                 }
                             } else {
                                 document.querySelector("#workSearch").classList.remove("search-selector-dropped");
-                                document.querySelector(".search-drop").style.opacity = "0";
-                                document.querySelector(".search-drop").style.pointerEvents = "none";
+                                document.querySelector("#workSearch").querySelector(".search-drop").style.opacity = "0";
+                                document.querySelector("#workSearch").querySelector(".search-drop").style.pointerEvents = "none";
                             }
                         });
                     }
@@ -3036,7 +3166,7 @@ async function getUserData(){
                         });
                         document.querySelectorAll(".new-modal").forEach(modal => {
                             modal.addEventListener("click", (e) => {
-                                if(!modal.querySelector(".new-wrapper").contains(e.target)){
+                                if(!modal.querySelector(".new-wrapper")?.contains(e.target)){
                                     modal.style.opacity = "0";
                                     modal.style.pointerEvents = "none";
                                 }
@@ -3965,6 +4095,7 @@ async function getUserData(){
                     }
 
                     if(document.querySelector(".dashboard")){
+                        let deleteWorkerId;
                         function setCalendar(){
                             let daysAhead = calendarIdx * 6;
                             let firstDate = getSpecificDate(daysAhead * -1);
@@ -4397,7 +4528,7 @@ async function getUserData(){
                             showNoJobs();
                         }
 
-                        function makeJobReport(job){
+                        function dashMakeJobReport(job){
                             let totalCharges = 2;
                             job.job_charges.split("").forEach(letter => {
                                 if(letter == ","){
@@ -5018,10 +5149,11 @@ async function getUserData(){
                             newWrapper.querySelector("i.work-delete").addEventListener("click", () => {
                                 document.getElementById("deleteWorkerModal").style.opacity = "1";
                                 document.getElementById("deleteWorkerModal").style.pointerEvents = "auto";
+                                deleteWorkerId = worker.id;
                             });
-                            document.getElementById("deleteWorkerModal").querySelector(".btn-book-delete-booking").addEventListener("click", () => {
+                            document.getElementById("deleteWorkerModal").querySelector(".btn-book-delete-booking").onclick = () => {
                                 async function deleteWorker() {
-                                    const dataToSend = { id: worker.id };
+                                    const dataToSend = { id: deleteWorkerId };
                                     try {
                                         const response = await fetch(url + '/api/delete-worker', {
                                             method: 'POST',
@@ -5047,7 +5179,7 @@ async function getUserData(){
                                     }
                                 }
                                 deleteWorker();
-                            });
+                            }
 
                             document.getElementById("deleteWorkerModal").addEventListener("click", (e) => {
                                 if(!document.querySelector(".book-delete-wrapper").contains(e.target)){
@@ -5157,11 +5289,13 @@ async function getUserData(){
                                 deleteId = jobs[idx].id;
                             });
                         });
-                        document.querySelectorAll("i.admin-report-icon").forEach((icon, idx) => {
-                            icon.addEventListener("click", () => {
-                                makeJobReport(jobs[idx]);
-                                document.getElementById("jobReportModal").style.opacity = "1";
-                                document.getElementById("jobReportModal").style.pointerEvents = "auto";
+                        document.querySelectorAll(".admin-table-icon").forEach((group, idx) => {
+                            group.querySelectorAll("i.admin-report-icon").forEach((icon) => {
+                                icon.addEventListener("click", () => {
+                                    dashMakeJobReport(jobs[idx]);
+                                    document.getElementById("jobReportModal").style.opacity = "1";
+                                    document.getElementById("jobReportModal").style.pointerEvents = "auto";
+                                });
                             });
                         });
 
