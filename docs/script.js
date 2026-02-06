@@ -5189,7 +5189,7 @@ async function getUserData(){
                         document.querySelector(".quo-btn").addEventListener("click", () => {
                             async function getQuote(){
                                 let profitMargin = 1.3;
-                                if(document.getElementById("quoProfit").value.replace("%", "") != "") profitMargin = Number(document.getElementById("quoProfit").value.replace("%", "")) / 100;
+                                if(document.getElementById("quoProfit").value.replace("%", "") != "") profitMargin = (Number(document.getElementById("quoProfit").value.replace("%", "")) / 100) + 1;
                                 const dataToSend = { profit: document.getElementById("quoProfit").value.replace("%", ""), time: document.getElementById("quoTime").value.replace("h", ""), materials: materials, charges: charges };
                                 try {
                                     const response = await fetch(url + `/api/get-quote`, {
