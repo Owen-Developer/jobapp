@@ -4,7 +4,10 @@ if ("serviceWorker" in navigator) {
     .catch(err => console.error("Service Worker registration failed:", err));
 }
 
+// remove url == "" from updates
+
 let url = "";
+//url = "https://google.com";
 let gitName = "";
 if(!window.location.href.includes("localhost")){
     url = "https://servers.nextdesignwebsite.com/job";
@@ -123,6 +126,22 @@ function getSpecificDate(daysAgo) {
     return `${dd}/${mm}/${yyyy}`;
 }
 
+function isDateBetween(target, start, end) {
+    function parse(dateStr) {
+        const parts = dateStr.split("/");
+        const month = Number(parts[0]) - 1; // JS months 0-11
+        const day = Number(parts[1]);
+        const year = Number(parts[2]);
+        return new Date(year, month, day).getTime();
+    }
+
+    const t = parse(target);
+    const s = parse(start);
+    const e = parse(end);
+
+    return t >= s && t <= e; // inclusive
+}
+
 function getDay(dateStr){
     const realStr = dateStr.split("/")[2] + "-" + dateStr.split("/")[1] + "-" + dateStr.split("/")[0];
     const date = new Date(realStr);
@@ -157,13 +176,14 @@ function isDateFuture(other, test){
 }
 
 function sortChronologically(array){
+    console.log(array);
     array.forEach((arr, arrIdx) => {
         let date = arr.job_date;
         let amountBefore = 0;
 
         array.forEach((other, otherIdx) => {
             if(arrIdx != otherIdx){
-                if(isDateFuture(other.job_date, date)){
+                if(isDateFuture(other.job_date || getCurrentDate(), date || getCurrentDate())){
                     amountBefore++;
                 }
             }
@@ -205,17 +225,27 @@ function changePage(pageIdx){
     });
 }
 
+console.log(JSON.stringify(localStorage.getItem("summaryUpdates")));
+
 async function getUserData(){
     try {
-        const response = await fetch(`${url}/api/get-user`, {
-            method: 'GET',
-            headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, },
-            credentials: 'include'
-        });
-        const data = await response.json(); 
+        let data = {};
         let userData;
+        try {
+            const response = await fetch(`${url}/api/get-user`, {
+                method: 'GET',
+                headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, },
+                credentials: 'include'
+            });
+            data = await response.json(); 
+        } catch(err){
+            data.userData = JSON.parse(localStorage.getItem("userData"));
+            userData = data.userData;
+        }
+
         if(data.message == "success"){
             userData = data.userData;
+            localStorage.setItem("userData", JSON.stringify(userData));
         } else if(data.message == "nouser") {
             userData = "nouser";
             if(!document.querySelector(".login") && !document.querySelector(".setup")) window.location.href = gitName + "/login.html";
@@ -239,6 +269,48 @@ async function getUserData(){
             });
         }); 
 
+        async function publishOfflineData(){
+            if(navigator.onLine && url == ""){
+                if(localStorage.getItem("jobUpdates") && localStorage.getItem("jobUpdates").includes("[")){
+                    let jobUpdates = JSON.parse(localStorage.getItem("jobUpdates"));
+                    for(update of jobUpdates){
+                        const dataToSend = { time: update[1], jobId: update[0] };
+                        try {
+                            await fetch(url + "/api/end-job", {
+                                method: "POST",
+                                credentials: 'include',
+                                headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, "Content-Type": "application/json" },
+                                body: JSON.stringify(dataToSend)
+                            });
+                        } catch(err){
+                            console.error(err);
+                        }
+                    }
+                }
+
+                if(localStorage.getItem("summaryUpdates") && localStorage.getItem("summaryUpdates").includes("[")){
+                    let summaryUpdates = JSON.parse(localStorage.getItem("summaryUpdates"));
+                    for(update of summaryUpdates){
+                        const dataToSend = update;
+                        try {
+                            await fetch(url + "/api/send-summary", {
+                                method: "POST",
+                                credentials: 'include',
+                                headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, "Content-Type": "application/json" },
+                                body: JSON.stringify(dataToSend)
+                            });
+                        } catch(err){
+                            console.error(err);
+                        }
+                    }
+                }
+
+                localStorage.setItem("jobUpdates", "");
+                localStorage.setItem("summaryUpdates", "");
+            }
+        }
+        publishOfflineData();
+
         /*/////////////// PAGES ////////////////*/
         if(document.querySelector(".home")){
             document.querySelector(".home-name").textContent = userData.name;
@@ -246,14 +318,21 @@ async function getUserData(){
             let jobs;
             async function getHomeJobs() {
                 try {
-                    const response = await fetch(`${url}/api/get-jobs`, {
-                        method: 'GET',
-                        headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, },
-                        credentials: 'include'
-                    });
-                    const data = await response.json(); 
+                    let data = {};
+                    try{
+                        const response = await fetch(`${url}/api/get-jobs`, {
+                            method: 'GET',
+                            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+                            credentials: 'include'
+                        });
+                        data = await response.json(); 
+                    } catch(err){
+                        data.jobs = JSON.parse(localStorage.getItem("jobs"));
+                        data.messageFound = true;
+                    }
                     if(data.messageFound){
                         jobs = data.jobs;
+                        localStorage.setItem("jobs", JSON.stringify(jobs));
                         let validJobs = 0;
                         data.jobs.forEach(job => {
                             let newJob = document.createElement("div");
@@ -440,6 +519,7 @@ async function getUserData(){
             function timerLogic(){
                 async function updateProgress(time, jobId){
                     const dataToSend = { time: time, jobId: jobId };
+                    console.log("try");
                     try {
                         const response = await fetch(url + '/api/update-progress', {
                             method: 'POST',
@@ -457,6 +537,22 @@ async function getUserData(){
                         }
                     } catch (error) {
                         console.error('Error posting data:', error);
+                        let jobUpdates = [];
+                        if(localStorage.getItem("jobUpdates") && localStorage.getItem("jobUpdates").includes("[")){
+                            jobUpdates = JSON.parse(localStorage.getItem("jobUpdates"));
+                        }
+                        let newUpdate = [jobId, time];
+                        let isUpdate = false;
+                        jobUpdates.forEach((update, idx) => {
+                            if(update[0] == newUpdate[0]){
+                                update = newUpdate;
+                                isUpdate = true;
+                            }
+                        });
+                        if(!isUpdate){
+                            jobUpdates.push(newUpdate);
+                        }
+                        localStorage.setItem("jobUpdates", JSON.stringify(jobUpdates));
                     }
                 }
     
@@ -655,11 +751,15 @@ async function getUserData(){
     
                             const data = await response.json();
                             if(data.message == "success"){
+                                clearInterval(timeInt);
                                 changePage(2);
                                 summaryLogic();
                             }
                         } catch (error) {
+                            clearInterval(timeInt);
                             console.error('Error posting data:', error);
+                            changePage(2);
+                            summaryLogic();
                         }
                     }
                     endJob();
@@ -827,187 +927,195 @@ async function getUserData(){
                 let materials = []; // [name, value, unit]
                 let charges = [];
                 async function getMaterials() {
+                    let data = {};
                     try {
                         const response = await fetch(`${url}/api/get-materials`, {
                             method: 'GET',
                             headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, },
                             credentials: 'include'
                         });
-                        const data = await response.json();
-                        document.querySelectorAll(".edit-mat-wrapper").forEach(wrapper => {
-                            if(wrapper.id == "chargeWrapper"){
-                                data.materials.forEach(mat => {
-                                    if(mat.area == "charges"){
-                                        let newOption = document.createElement("div");
-                                        newOption.classList.add("edit-mat-option");
-                                        newOption.id = "charge-" + mat.id;
-                                        newOption.innerHTML = mat.name + ' <i class="fa-solid fa-check"></i>';
-                                        wrapper.querySelector(".edit-mat-drop").appendChild(newOption);
-                                    }
-                                });
-                                wrapper.querySelectorAll(".edit-mat-option").forEach(option => {
-                                    option.addEventListener("click", () => {
-                                        if(!option.classList.contains("edit-mat-active")){
-                                            charges.push(option.id.split("-")[1]);
-                                            option.classList.add("edit-mat-active");
-                                            let newMaterial = document.createElement("div");
-                                            newMaterial.classList.add("edit-mat-section");
-                                            newMaterial.innerHTML = `
-                                                <div class="edit-mat-name">${option.innerHTML.slice(0, option.innerHTML.indexOf("<") - 1)}</div>
-                                                <i class="fa-solid fa-trash-can edit-charge-delete" style="display: block;"></i>
-                                            `;
-                                            wrapper.querySelector(".edit-mat-col").appendChild(newMaterial);
-                                            setTimeout(() => {
-                                                wrapper.querySelector(".edit-mat-col").style.marginTop = "25px";
-                                                newMaterial.style.maxHeight = "40px";
-                                                newMaterial.style.opacity = "1";
-                                            }, 30);
-        
-                                            newMaterial.querySelector("i.edit-charge-delete").addEventListener("click", () => {
-                                                option.classList.remove("edit-mat-active");
-                                                newMaterial.style.maxHeight = "0px";
-                                                newMaterial.style.opacity = "0";
-                                                setTimeout(() => {
-                                                    wrapper.querySelector(".edit-mat-col").removeChild(newMaterial);
-                                                }, 300);
-                                                charges.splice(charges.indexOf(option.id.split("-")[1]), 1);
-                                                if(wrapper.querySelectorAll(".edit-mat-active").length == 0){
-                                                    wrapper.querySelector(".edit-mat-col").style.marginTop = "0px";
-                                                }
-                                            });    
-                                        } else {
-                                            charges.splice(charges.indexOf(option.id.split("-")[1]), 1);
+                        data = await response.json();
+
+                        localStorage.setItem("materials", JSON.stringify(data.materials));
+                    } catch (error) {
+                        console.error('Error fetching data:', error);
+                        if(localStorage.getItem("materials") && localStorage.getItem("materials").includes("[")){
+                            data.materials = JSON.parse(localStorage.getItem("materials"));
+                        } else {
+                            data.materials = [];
+                        }
+                    }
+                    document.querySelectorAll(".edit-mat-wrapper").forEach(wrapper => {
+                        if(wrapper.id == "chargeWrapper"){
+                            data.materials.forEach(mat => {
+                                if(mat.area == "charges"){
+                                    let newOption = document.createElement("div");
+                                    newOption.classList.add("edit-mat-option");
+                                    newOption.id = "charge-" + mat.id;
+                                    newOption.innerHTML = mat.name + ' <i class="fa-solid fa-check"></i>';
+                                    wrapper.querySelector(".edit-mat-drop").appendChild(newOption);
+                                }
+                            });
+                            wrapper.querySelectorAll(".edit-mat-option").forEach(option => {
+                                option.addEventListener("click", () => {
+                                    if(!option.classList.contains("edit-mat-active")){
+                                        charges.push(option.id.split("-")[1]);
+                                        option.classList.add("edit-mat-active");
+                                        let newMaterial = document.createElement("div");
+                                        newMaterial.classList.add("edit-mat-section");
+                                        newMaterial.innerHTML = `
+                                            <div class="edit-mat-name">${option.innerHTML.slice(0, option.innerHTML.indexOf("<") - 1)}</div>
+                                            <i class="fa-solid fa-trash-can edit-charge-delete" style="display: block;"></i>
+                                        `;
+                                        wrapper.querySelector(".edit-mat-col").appendChild(newMaterial);
+                                        setTimeout(() => {
+                                            wrapper.querySelector(".edit-mat-col").style.marginTop = "25px";
+                                            newMaterial.style.maxHeight = "40px";
+                                            newMaterial.style.opacity = "1";
+                                        }, 30);
+    
+                                        newMaterial.querySelector("i.edit-charge-delete").addEventListener("click", () => {
                                             option.classList.remove("edit-mat-active");
-                                            document.querySelectorAll(".edit-mat-section").forEach(section => {
-                                                if(section.querySelector(".edit-mat-name").innerHTML == option.innerHTML.slice(0, option.innerHTML.indexOf("<") - 1)){
-                                                    section.style.maxHeight = "0px";
-                                                    section.style.opacity = "0";
-                                                    setTimeout(() => {
-                                                        wrapper.querySelector(".edit-mat-col").removeChild(section);
-                                                    }, 300);
-                                                }
-                                            });
+                                            newMaterial.style.maxHeight = "0px";
+                                            newMaterial.style.opacity = "0";
+                                            setTimeout(() => {
+                                                wrapper.querySelector(".edit-mat-col").removeChild(newMaterial);
+                                            }, 300);
+                                            charges.splice(charges.indexOf(option.id.split("-")[1]), 1);
                                             if(wrapper.querySelectorAll(".edit-mat-active").length == 0){
                                                 wrapper.querySelector(".edit-mat-col").style.marginTop = "0px";
                                             }
+                                        });    
+                                    } else {
+                                        charges.splice(charges.indexOf(option.id.split("-")[1]), 1);
+                                        option.classList.remove("edit-mat-active");
+                                        document.querySelectorAll(".edit-mat-section").forEach(section => {
+                                            if(section.querySelector(".edit-mat-name").innerHTML == option.innerHTML.slice(0, option.innerHTML.indexOf("<") - 1)){
+                                                section.style.maxHeight = "0px";
+                                                section.style.opacity = "0";
+                                                setTimeout(() => {
+                                                    wrapper.querySelector(".edit-mat-col").removeChild(section);
+                                                }, 300);
+                                            }
+                                        });
+                                        if(wrapper.querySelectorAll(".edit-mat-active").length == 0){
+                                            wrapper.querySelector(".edit-mat-col").style.marginTop = "0px";
                                         }
-                                    });
-                                });
-                            } else {
-                                data.materials.forEach(mat => {
-                                    if(wrapper.querySelector(".edit-mat-label").textContent.toLowerCase() == mat.type.toLowerCase() && mat.area == "materials"){
-                                        let newOption = document.createElement("div");
-                                        newOption.classList.add("edit-mat-option");
-                                        newOption.id = mat.default_value + "-" + mat.unit + "-" + mat.default_value + "-" + mat.step; // value, unit, default, step
-                                        newOption.innerHTML = mat.name + ' <i class="fa-solid fa-check"></i>';
-                                        wrapper.querySelector(".edit-mat-drop").appendChild(newOption);
                                     }
                                 });
-                                wrapper.querySelectorAll(".edit-mat-option").forEach(option => {
-                                    option.addEventListener("click", () => {
-                                        if(!option.classList.contains("edit-mat-active")){
-                                            option.classList.add("edit-mat-active");
-                                            let newMaterial = document.createElement("div");
-                                            newMaterial.classList.add("edit-mat-section");
-                                            newMaterial.innerHTML = `
-                                                <div class="edit-mat-name">${option.innerHTML.slice(0, option.innerHTML.indexOf("<") - 1)}</div>
-                                                <div class="edit-mat-quan">
-                                                    <i class="fa-solid fa-minus edit-mat-minus"></i>
-                                                    <i class="fa-solid fa-trash-can edit-mat-delete"></i>
-                                                    <span>${option.id.split("-")[0]} <span>${option.id.split("-")[1]}</span></span>
-                                                    <i class="fa-solid fa-plus edit-mat-plus"></i>
-                                                </div>
-                                            `;
+                            });
+                        } else {
+                            data.materials.forEach(mat => {
+                                if(wrapper.querySelector(".edit-mat-label").textContent.toLowerCase() == mat.type.toLowerCase() && mat.area == "materials"){
+                                    let newOption = document.createElement("div");
+                                    newOption.classList.add("edit-mat-option");
+                                    newOption.id = mat.default_value + "-" + mat.unit + "-" + mat.default_value + "-" + mat.step; // value, unit, default, step
+                                    newOption.innerHTML = mat.name + ' <i class="fa-solid fa-check"></i>';
+                                    wrapper.querySelector(".edit-mat-drop").appendChild(newOption);
+                                }
+                            });
+                            wrapper.querySelectorAll(".edit-mat-option").forEach(option => {
+                                option.addEventListener("click", () => {
+                                    if(!option.classList.contains("edit-mat-active")){
+                                        option.classList.add("edit-mat-active");
+                                        let newMaterial = document.createElement("div");
+                                        newMaterial.classList.add("edit-mat-section");
+                                        newMaterial.innerHTML = `
+                                            <div class="edit-mat-name">${option.innerHTML.slice(0, option.innerHTML.indexOf("<") - 1)}</div>
+                                            <div class="edit-mat-quan">
+                                                <i class="fa-solid fa-minus edit-mat-minus"></i>
+                                                <i class="fa-solid fa-trash-can edit-mat-delete"></i>
+                                                <span>${option.id.split("-")[0]} <span>${option.id.split("-")[1]}</span></span>
+                                                <i class="fa-solid fa-plus edit-mat-plus"></i>
+                                            </div>
+                                        `;
+                                        if((Number(option.id.split("-")[0]) - Number(option.id.split("-")[3])) <= 0){
+                                            newMaterial.querySelector("i.edit-mat-minus").style.display = "none";
+                                            newMaterial.querySelector("i.edit-mat-delete").style.display = "block";
+                                        }
+                                        wrapper.querySelector(".edit-mat-col").appendChild(newMaterial);
+                                        setTimeout(() => {
+                                            wrapper.querySelector(".edit-mat-col").style.marginTop = "25px";
+                                            newMaterial.style.maxHeight = "40px";
+                                            newMaterial.style.opacity = "1";
+                                        }, 30);
+    
+                                        newMaterial.querySelector("i.edit-mat-plus").addEventListener("click", () => {
+                                            newMaterial.querySelector(".edit-mat-quan span").innerHTML = String(Number(newMaterial.querySelector(".edit-mat-quan span").innerHTML.slice(0, newMaterial.querySelector(".edit-mat-quan span").innerHTML.indexOf("<") - 1)) + Number(option.id.split("-")[3])) + newMaterial.querySelector(".edit-mat-quan span").innerHTML.slice(newMaterial.querySelector(".edit-mat-quan span").innerHTML.indexOf("<") - 1)
+                                            newMaterial.querySelector("i.edit-mat-delete").style.display = "none";
+                                            newMaterial.querySelector("i.edit-mat-minus").style.display = "block";
+                                            option.id = String(Number(option.id.split("-")[0]) + Number(option.id.split("-")[3])) + "-" + option.id.split("-")[1] + "-" + option.id.split("-")[2] + "-" + option.id.split("-")[3];
+                                            materials.forEach(material => {
+                                                if(material[0] == option.innerHTML.slice(0, option.innerHTML.indexOf("<") - 1)){
+                                                    material[1] = option.id.split("-")[0];
+                                                } 
+                                            });
+                                        });
+                                        newMaterial.querySelector("i.edit-mat-minus").addEventListener("click", () => {
+                                            newMaterial.querySelector(".edit-mat-quan span").innerHTML = String(Number(newMaterial.querySelector(".edit-mat-quan span").innerHTML.slice(0, newMaterial.querySelector(".edit-mat-quan span").innerHTML.indexOf("<") - 1)) - Number(option.id.split("-")[3])) + newMaterial.querySelector(".edit-mat-quan span").innerHTML.slice(newMaterial.querySelector(".edit-mat-quan span").innerHTML.indexOf("<") - 1)
+                                            if(Number(newMaterial.querySelector(".edit-mat-quan span").innerHTML.slice(0, newMaterial.querySelector(".edit-mat-quan span").innerHTML.indexOf("<") - 1)) == 1){
+                                                newMaterial.querySelector("i.edit-mat-delete").style.display = "block";
+                                                newMaterial.querySelector("i.edit-mat-minus").style.display = "none";
+                                            }
+                                            option.id = String(Number(option.id.split("-")[0]) - Number(option.id.split("-")[3])) + "-" + option.id.split("-")[1] + "-" + option.id.split("-")[2] + "-" + option.id.split("-")[3];
+                                            materials.forEach(material => {
+                                                if(material[0] == option.innerHTML.slice(0, option.innerHTML.indexOf("<") - 1)){
+                                                    material[1] = option.id.split("-")[0];
+                                                } 
+                                            });
+                                            console.log((Number(option.id.split("-")[0]) - Number(option.id.split("-")[3])));
                                             if((Number(option.id.split("-")[0]) - Number(option.id.split("-")[3])) <= 0){
                                                 newMaterial.querySelector("i.edit-mat-minus").style.display = "none";
                                                 newMaterial.querySelector("i.edit-mat-delete").style.display = "block";
                                             }
-                                            wrapper.querySelector(".edit-mat-col").appendChild(newMaterial);
+                                        });
+                                        newMaterial.querySelector("i.edit-mat-delete").addEventListener("click", () => {
+                                            newMaterial.style.maxHeight = "0px";
+                                            newMaterial.style.opacity = "0";
                                             setTimeout(() => {
-                                                wrapper.querySelector(".edit-mat-col").style.marginTop = "25px";
-                                                newMaterial.style.maxHeight = "40px";
-                                                newMaterial.style.opacity = "1";
-                                            }, 30);
-        
-                                            newMaterial.querySelector("i.edit-mat-plus").addEventListener("click", () => {
-                                                newMaterial.querySelector(".edit-mat-quan span").innerHTML = String(Number(newMaterial.querySelector(".edit-mat-quan span").innerHTML.slice(0, newMaterial.querySelector(".edit-mat-quan span").innerHTML.indexOf("<") - 1)) + Number(option.id.split("-")[3])) + newMaterial.querySelector(".edit-mat-quan span").innerHTML.slice(newMaterial.querySelector(".edit-mat-quan span").innerHTML.indexOf("<") - 1)
-                                                newMaterial.querySelector("i.edit-mat-delete").style.display = "none";
-                                                newMaterial.querySelector("i.edit-mat-minus").style.display = "block";
-                                                option.id = String(Number(option.id.split("-")[0]) + Number(option.id.split("-")[3])) + "-" + option.id.split("-")[1] + "-" + option.id.split("-")[2] + "-" + option.id.split("-")[3];
-                                                materials.forEach(material => {
-                                                    if(material[0] == option.innerHTML.slice(0, option.innerHTML.indexOf("<") - 1)){
-                                                        material[1] = option.id.split("-")[0];
-                                                    } 
-                                                });
-                                            });
-                                            newMaterial.querySelector("i.edit-mat-minus").addEventListener("click", () => {
-                                                newMaterial.querySelector(".edit-mat-quan span").innerHTML = String(Number(newMaterial.querySelector(".edit-mat-quan span").innerHTML.slice(0, newMaterial.querySelector(".edit-mat-quan span").innerHTML.indexOf("<") - 1)) - Number(option.id.split("-")[3])) + newMaterial.querySelector(".edit-mat-quan span").innerHTML.slice(newMaterial.querySelector(".edit-mat-quan span").innerHTML.indexOf("<") - 1)
-                                                if(Number(newMaterial.querySelector(".edit-mat-quan span").innerHTML.slice(0, newMaterial.querySelector(".edit-mat-quan span").innerHTML.indexOf("<") - 1)) == 1){
-                                                    newMaterial.querySelector("i.edit-mat-delete").style.display = "block";
-                                                    newMaterial.querySelector("i.edit-mat-minus").style.display = "none";
-                                                }
-                                                option.id = String(Number(option.id.split("-")[0]) - Number(option.id.split("-")[3])) + "-" + option.id.split("-")[1] + "-" + option.id.split("-")[2] + "-" + option.id.split("-")[3];
-                                                materials.forEach(material => {
-                                                    if(material[0] == option.innerHTML.slice(0, option.innerHTML.indexOf("<") - 1)){
-                                                        material[1] = option.id.split("-")[0];
-                                                    } 
-                                                });
-                                                console.log((Number(option.id.split("-")[0]) - Number(option.id.split("-")[3])));
-                                                if((Number(option.id.split("-")[0]) - Number(option.id.split("-")[3])) <= 0){
-                                                    newMaterial.querySelector("i.edit-mat-minus").style.display = "none";
-                                                    newMaterial.querySelector("i.edit-mat-delete").style.display = "block";
-                                                }
-                                            });
-                                            newMaterial.querySelector("i.edit-mat-delete").addEventListener("click", () => {
-                                                newMaterial.style.maxHeight = "0px";
-                                                newMaterial.style.opacity = "0";
-                                                setTimeout(() => {
-                                                    wrapper.querySelector(".edit-mat-col").removeChild(newMaterial);
-                                                }, 300);
-                                                option.classList.remove("edit-mat-active");
-                                                if(wrapper.querySelectorAll(".edit-mat-active").length == 0){
-                                                    wrapper.querySelector(".edit-mat-col").style.marginTop = "0px";
-                                                }
-                                                materials.forEach((material, idx) => {
-                                                    if(material[0] == option.innerHTML.slice(0, option.innerHTML.indexOf("<") - 1)){
-                                                        materials.splice(idx, 1);
-                                                        option.id = option.id.split("-")[2] + "-" + option.id.split("-")[1] + "-" + option.id.split("-")[2] + "-" + option.id.split("-")[3];
-                                                    } 
-                                                });
-                                            });
-        
-                                            let newArray = [option.innerHTML.slice(0, option.innerHTML.indexOf("<") - 1), option.id.split("-")[0], option.id.split("-")[1]]; 
-                                            materials.push(newArray);
-                                        } else {
-                                            option.classList.remove("edit-mat-active");
-                                            document.querySelectorAll(".edit-mat-section").forEach(section => {
-                                                if(section.querySelector(".edit-mat-name").innerHTML == option.innerHTML.slice(0, option.innerHTML.indexOf("<") - 1)){
-                                                    section.style.maxHeight = "0px";
-                                                    section.style.opacity = "0";
-                                                    setTimeout(() => {
-                                                        wrapper.querySelector(".edit-mat-col").removeChild(section);
-                                                    }, 300);
-                                                }
-                                            });
+                                                wrapper.querySelector(".edit-mat-col").removeChild(newMaterial);
+                                            }, 300);
                                             option.classList.remove("edit-mat-active");
                                             if(wrapper.querySelectorAll(".edit-mat-active").length == 0){
                                                 wrapper.querySelector(".edit-mat-col").style.marginTop = "0px";
                                             }
-                                        }
-                                    });
-                                });
-                            }
+                                            materials.forEach((material, idx) => {
+                                                if(material[0] == option.innerHTML.slice(0, option.innerHTML.indexOf("<") - 1)){
+                                                    materials.splice(idx, 1);
+                                                    option.id = option.id.split("-")[2] + "-" + option.id.split("-")[1] + "-" + option.id.split("-")[2] + "-" + option.id.split("-")[3];
+                                                } 
+                                            });
+                                        });
     
-                        });
-                    } catch (error) {
-                        console.error('Error fetching data:', error);
-                    }
+                                        let newArray = [option.innerHTML.slice(0, option.innerHTML.indexOf("<") - 1), option.id.split("-")[0], option.id.split("-")[1]]; 
+                                        materials.push(newArray);
+                                    } else {
+                                        option.classList.remove("edit-mat-active");
+                                        document.querySelectorAll(".edit-mat-section").forEach(section => {
+                                            if(section.querySelector(".edit-mat-name").innerHTML == option.innerHTML.slice(0, option.innerHTML.indexOf("<") - 1)){
+                                                section.style.maxHeight = "0px";
+                                                section.style.opacity = "0";
+                                                setTimeout(() => {
+                                                    wrapper.querySelector(".edit-mat-col").removeChild(section);
+                                                }, 300);
+                                            }
+                                        });
+                                        option.classList.remove("edit-mat-active");
+                                        if(wrapper.querySelectorAll(".edit-mat-active").length == 0){
+                                            wrapper.querySelector(".edit-mat-col").style.marginTop = "0px";
+                                        }
+                                    }
+                                });
+                            });
+                        }
+
+                    });
                 }
                 getMaterials();
     
                 document.querySelector(".edit-save-btn").addEventListener("click", () => {
                     async function sendSummary() {
-                        const dataToSend = { jobId: jobId, date: date, notes: document.querySelector(".edit-para-area").value, materials: materials, charges: charges };
+                        const dataToSend = { jobId: jobId, date: date || getCurrentDate(), notes: document.querySelector(".edit-para-area").value, materials: materials, charges: charges };
                         try {
                             const response = await fetch(url + '/api/send-summary', {
                                 method: 'POST',
@@ -1036,6 +1144,20 @@ async function getUserData(){
                             }
                         } catch (error) {
                             console.error('Error posting data:', error);
+                            let summaryUpdates = [];
+                            if(localStorage.getItem("summaryUpdates") && localStorage.getItem("summaryUpdates").includes("[")){
+                                summaryUpdates = JSON.parse(localStorage.getItem("summaryUpdates"));
+                            }
+                            summaryUpdates.push(dataToSend);
+                            localStorage.setItem("summaryUpdates", JSON.stringify(summaryUpdates));
+
+                            document.getElementById(jobId).style.display = "none";
+                            document.getElementById("summaryThankModal").style.opacity = "1";
+                            document.getElementById("summaryThankModal").style.pointerEvents = "auto";
+                            setTimeout(() => {
+                                document.getElementById("summaryThankModal").querySelector(".thank-wrapper").style.opacity = "1";
+                                document.getElementById("summaryThankModal").querySelector(".thank-wrapper").style.transform = "scale(1)";
+                            }, 300);
                         }
                     }
                     sendSummary();
@@ -1327,6 +1449,43 @@ async function getUserData(){
                     }
                 }
             });
+
+            document.getElementById("photoInput").addEventListener("change", async (e) => {
+                document.querySelector(".edit-upload-img img").src = URL.createObjectURL(e.target.files[0]);
+                document.querySelector(".edit-upload-content").style.opacity = "0";
+                setTimeout(() => {
+                    document.querySelector(".edit-upload-content").style.display = "none";
+                    document.querySelector(".edit-upload-img").style.display = "flex";
+                    setTimeout(() => {
+                        document.querySelector("i.edit-close").style.opacity = "1";
+                        document.querySelector(".edit-upload-img").style.opacity = "1";
+                        document.querySelector(".edit-upload-img").style.maxHeight = "600px";
+                        document.querySelector(".edit-upload-img").style.marginTop = "25px";
+                    }, 50);
+                }, 300);
+
+                const formData = new FormData();
+                formData.append("pfp", e.target.files[0]);
+
+                const res = await fetch(`${url}/api/upload-pfp`, {
+                    method: "POST",
+                    credentials: 'include',
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`
+                    },
+                    body: formData,
+                });
+
+                const data = await res.json();
+                localStorage.setItem("logo", data.url);
+                console.log(data.url);
+                if (data.success) {
+                    console.log("PFP uploaded successfully!");
+                }
+            });
+            document.querySelector(".edit-upload-btn").addEventListener("click", () => {
+                document.getElementById("photoInput").click();
+            });
         }
 
         if(document.querySelector(".login")){
@@ -1459,16 +1618,66 @@ async function getUserData(){
 
             async function getAdminData(){
                 try {
-                    const response = await fetch(`${url}/api/admin-data`, {
-                        method: 'GET',
-                        headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, },
-                        credentials: 'include'
-                    });
-                    const data = await response.json(); 
+                    let data = {}
+                    try {
+                        const response = await fetch(`${url}/api/admin-data`, {
+                            method: 'GET',
+                            headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, },
+                            credentials: 'include'
+                        });
+                        data = await response.json(); 
+                    } catch(err){
+                        data.jobs = JSON.parse(localStorage.getItem("jobs"));
+                        data.users = JSON.parse(localStorage.getItem("users"));
+                        data.prices = JSON.parse(localStorage.getItem("prices"));
+                    }
+
+                    localStorage.setItem("jobs", JSON.stringify(data.jobs));
+                    localStorage.setItem("users", JSON.stringify(data.users));
+                    localStorage.setItem("prices", JSON.stringify(data.prices));
                     let jobs = sortChronologically(data.jobs);
                     let workers = data.users;
                     let prices = data.prices;
 
+                    async function publishOfflineData(){
+                        if(navigator.onLine && url == ""){
+                            if(localStorage.getItem("pendingJobs") && localStorage.getItem("pendingJobs").includes("[")){
+                                let pendingJobs = JSON.parse(localStorage.getItem("pendingJobs"));
+                                for(data of pendingJobs){
+                                    try {
+                                        await fetch(url + "/api/create-job", {
+                                            method: "POST",
+                                            credentials: 'include',
+                                            headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, "Content-Type": "application/json" },
+                                            body: JSON.stringify(data)
+                                        });
+                                    } catch(err){
+                                        console.error(err);
+                                    }
+                                }
+                            }
+
+                            if(localStorage.getItem("pendingWorkers") && localStorage.getItem("pendingWorkers").includes("[")){
+                                let pendingWorkers = JSON.parse(localStorage.getItem("pendingWorkers"));
+                                for(data of pendingWorkers){
+                                    try {
+                                        await fetch(url + "/api/create-worker", {
+                                            method: "POST",
+                                            credentials: 'include',
+                                            headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, "Content-Type": "application/json" },
+                                            body: JSON.stringify(data)
+                                        });
+                                    } catch(err){
+                                        console.error(err);
+                                    }
+                                }
+                            }
+    
+                            localStorage.setItem("pendingJobs", undefined);
+                            localStorage.setItem("pendingWorkers", undefined);
+                        }
+                    }
+                    publishOfflineData();
                     
                     if(document.querySelector(".admin")){
                         function showNoJobs(){
@@ -2371,19 +2580,32 @@ async function getUserData(){
                             });
                         });
 
+
                         document.querySelector("#adminJobForm").addEventListener("submit", async (e) => {
                             e.preventDefault(); 
                             const formData = new FormData(e.target);
                             const data = Object.fromEntries(formData.entries());
 
-                            const res = await fetch(url + "/api/create-job", {
-                                method: "POST",
-                                credentials: 'include',
-                                headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, "Content-Type": "application/json" },
-                                body: JSON.stringify(data)
-                            });
+                            let responseData = {};
+                            try {
+                                const res = await fetch(url + "/api/create-job", {
+                                    method: "POST",
+                                    credentials: 'include',
+                                    headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, "Content-Type": "application/json" },
+                                    body: JSON.stringify(data)
+                                });
+    
+                                responseData = await res.json();
+                            } catch(err){
+                                let pendingJobs = [];
+                                if(localStorage.getItem("pendingJobs") && localStorage.getItem("pendingJobs").includes("[")){
+                                    pendingJobs = JSON.parse(localStorage.getItem("pendingJobs"));
+                                }
+                                pendingJobs.push(data);
+                                localStorage.setItem("pendingJobs", JSON.stringify(pendingJobs));
+                                responseData.message = "success";
+                            }
 
-                            const responseData = await res.json();
                             if(responseData.message == "noworker"){
                                 document.getElementById("workerError").style.display = "block";
                                 setTimeout(() => {
@@ -2405,14 +2627,26 @@ async function getUserData(){
                             const formData = new FormData(e.target);
                             const data = Object.fromEntries(formData.entries());
 
-                            const res = await fetch(url + "/api/create-job", {
-                                method: "POST",
-                                credentials: 'include',
-                                headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, "Content-Type": "application/json" },
-                                body: JSON.stringify(data)
-                            });
+                            let responseData = {};
+                            try {
+                                const res = await fetch(url + "/api/create-job", {
+                                    method: "POST",
+                                    credentials: 'include',
+                                    headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, "Content-Type": "application/json" },
+                                    body: JSON.stringify(data)
+                                });
 
-                            const responseData = await res.json();
+                                responseData = await res.json();
+                            } catch(err){
+                                let pendingJobs = [];
+                                if(localStorage.getItem("pendingJobs") && localStorage.getItem("pendingJobs").includes("[")){
+                                    pendingJobs = JSON.parse(localStorage.getItem("pendingJobs"));
+                                }
+                                pendingJobs.push(data);
+                                localStorage.setItem("pendingJobs", JSON.stringify(pendingJobs));
+                                responseData.message = "success";
+                            }
+
                             if(responseData.message == "noworker"){
                                 document.getElementById("workerError").style.display = "block";
                                 setTimeout(() => {
@@ -2518,12 +2752,60 @@ async function getUserData(){
                                 </div>
 
                                 <div class="work-btn-flex">
-                                    <div class="work-btn work-assign-btn">Assign Job</div>
+                                    <div class="work-btn work-rate-btn">Edit Rate</div>
                                     ${reportBtn}
                                 </div>
                             `;
 
                             document.querySelector(".work-col").appendChild(newWrapper);
+
+                            newWrapper.querySelector(".work-rate-btn").addEventListener("click", () => {
+                                document.getElementById("newRateModal").style.opacity = "1";
+                                document.getElementById("newRateModal").style.pointerEvents = "auto";
+                            });
+                            document.getElementById("newRateBtn").addEventListener("click", () => {
+                                if(document.getElementById("newRateCharge").value == "" || document.getElementById("newRateCost").value == ""){
+                                    document.getElementById("newRateError").style.display = "block";
+                                    setTimeout(() => {
+                                        document.getElementById("newRateError").style.display = "none";
+                                    }, 2000);
+                                } else {
+                                    async function newRate() {
+                                        const dataToSend = { charge: document.getElementById("newRateCharge").value.replace("£", ""), cost: document.getElementById("newRateCost").value.replace("£", ""), id: worker.id };
+                                        try {
+                                            const response = await fetch(url + '/api/new-rate', {
+                                                method: 'POST',
+                                                credentials: 'include',
+                                                headers: { Authorization: `Bearer ${localStorage.getItem("token")}`,
+                                                    'Content-Type': 'application/json', 
+                                                },
+                                                body: JSON.stringify(dataToSend), 
+                                            });
+        
+                                            if (!response.ok) {
+                                                const errorData = await response.json();
+                                                console.error('Error:', errorData.message);
+                                                return;
+                                            }
+        
+                                            const data = await response.json();
+                                            if(data.message == "success"){
+                                                document.getElementById("newRateModal").style.opacity = "0";
+                                                document.getElementById("newRateModal").style.pointerEvents = "none";
+                                                setTimeout(() => {
+                                                    document.getElementById("thankPrice").style.opacity = "1";
+                                                    document.getElementById("thankPrice").style.pointerEvents = "auto";
+                                                    document.getElementById("thankPrice").querySelector(".thank-wrapper").style.opacity = "1";
+                                                    document.getElementById("thankPrice").querySelector(".thank-wrapper").style.transform = "scale(1)";
+                                                }, 300);
+                                            }
+                                        } catch (error) {
+                                            console.error('Error posting data:', error);
+                                        }
+                                    }
+                                    newRate();
+                                }
+                            });
 
                             if(newWrapper.querySelector(".work-report-btn")){
                                 newWrapper.querySelector(".work-report-btn").addEventListener("click", () => {
@@ -2677,14 +2959,26 @@ async function getUserData(){
                             const formData = new FormData(e.target);
                             const data = Object.fromEntries(formData.entries());
 
-                            const res = await fetch(url + "/api/create-worker", {
-                                method: "POST",
-                                credentials: 'include',
-                                headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, "Content-Type": "application/json" },
-                                body: JSON.stringify(data)
-                            });
+                            let responseData = {};
+                            try {
+                                const res = await fetch(url + "/api/create-worker", {
+                                    method: "POST",
+                                    credentials: 'include',
+                                    headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, "Content-Type": "application/json" },
+                                    body: JSON.stringify(data)
+                                });
 
-                            const responseData = await res.json();
+                                responseData = await res.json();
+                            } catch(err){
+                                let pendingWorkers = [];
+                                if(localStorage.getItem("pendingWorkers") && localStorage.getItem("pendingWorkers").includes("[")){
+                                    pendingWorkers = JSON.parse(localStorage.getItem("pendingWorkers"));
+                                }
+                                pendingWorkers.push(data);
+                                localStorage.setItem("pendingWorkers", JSON.stringify(pendingWorkers));
+                                responseData.message = "success";
+                            }
+
                             if(responseData.message == "email taken"){
                                 document.getElementById("emailError").style.display = "block";
                                 setTimeout(() => {
@@ -3687,11 +3981,21 @@ async function getUserData(){
                                 }
                             } 
                         });
+                        document.querySelector(".dash-perf-btn").addEventListener("click", () => {
+                            currentFrom = document.getElementById("dashPerfFrom").value;
+                            currentTo = document.getElementById("dashPerfTo").value;
+                            if(currentFrom.length == 10 && currentFrom.includes("/") && currentTo != ""){
+                                makeWorkerReport(currentWorker);
+                            }
+                        });
+                        let currentWorker;
+                        let currentFrom;
+                        let currentTo;
                         function makeWorkerReport(worker){
-                            document.querySelector(".rep-worker-name").textContent = worker.name;
+                            currentWorker = worker;
                             let workerJobs = [];
                             jobs.forEach(job => {
-                                if(job.user_id == worker.id && job.job_status == "Completed") workerJobs.push(job);
+                                if(job.user_id == worker.id && job.job_status == "Completed" && (!currentFrom || isDateBetween(job.job_date, currentFrom, currentTo))) workerJobs.push(job);
                             });
 
                             let hoursWorked = 0;
@@ -3699,6 +4003,7 @@ async function getUserData(){
                             let totalJobs = workerJobs.length;
                             let avgSpeed = 0;
                             let avgProfit = 0;
+                            let totalProfit = 0;
                             workerJobs.forEach(job => {if(job.job_status == "Completed"){
                                 if(job.job_progress.includes("hrs")){
                                     hoursWorked += Number(job.job_progress.slice(0, job.job_progress.indexOf("h") - 1));
@@ -3708,10 +4013,10 @@ async function getUserData(){
                                     minsWorked += Number(job.job_progress.slice(0, job.job_progress.indexOf("m") - 1));
                                     avgSpeed += Number(job.job_progress.slice(0, job.job_progress.indexOf("m") - 1));
                                 }
-                                avgProfit += Number(job.job_realcharge.replace("£", "")) - Number(job.job_setback.replace("£", ""));
+                                totalProfit += Number(job.job_realcharge.replace("£", "")) - Number(job.job_setback.replace("£", ""));
                             }});
                             hoursWorked += Math.floor(minsWorked / 60);
-                            avgProfit = Number(avgProfit / totalJobs) || 0;
+                            avgProfit = Number(totalProfit / totalJobs) || 0;
                             avgSpeed = avgSpeed / totalJobs;
                             let avgHours = Math.round(avgSpeed / 60) || 0;
                             let avgMins = Math.round(avgSpeed % 60) || 0;
@@ -3719,7 +4024,7 @@ async function getUserData(){
 
                             document.querySelectorAll(".rep-worker-num")[0].textContent = hoursWorked;
                             document.querySelectorAll(".rep-worker-num")[1].textContent = totalJobs;
-                            document.querySelectorAll(".rep-worker-num")[2].textContent = avgSpeed;
+                            document.querySelectorAll(".rep-worker-num")[2].textContent = "£" + totalProfit.toFixed(2);
                             document.querySelectorAll(".rep-worker-num")[3].textContent = "£" + Number(avgProfit).toFixed(2);
                         }
                         if(!reportWorker){
@@ -4095,6 +4400,10 @@ async function getUserData(){
                     }
 
                     if(document.querySelector(".dashboard")){
+                        if(localStorage.getItem("logo")){
+                            document.querySelector(".header-logo").src = localStorage.getItem("logo");
+                        }
+
                         let deleteWorkerId;
                         function setCalendar(){
                             let daysAhead = calendarIdx * 6;
@@ -4654,7 +4963,279 @@ async function getUserData(){
                             });
                         }
 
+
+                        document.querySelectorAll(".edit-mat-selector").forEach((sel, idx) => {
+                            sel.addEventListener("click", (e) => {
+                                if(!sel.querySelector(".edit-mat-drop").contains(e.target)){
+                                    if(sel.querySelector(".edit-mat-chev").style.transform == "rotate(-90deg)"){
+                                        sel.style.marginBottom = "0px";
+                                        sel.querySelector(".edit-mat-drop").style.opacity = "0";
+                                        sel.querySelector(".edit-mat-drop").style.pointerEvents = "none";
+                                        sel.querySelector(".edit-mat-chev").style.transform = "rotate(90deg)";
+                                    } else {
+                                        let marginBottom = sel.querySelector(".edit-mat-drop").offsetHeight + 27 + "px";
+                                        sel.style.marginBottom = marginBottom;
+                                        sel.querySelector(".edit-mat-drop").style.opacity = "1";
+                                        sel.querySelector(".edit-mat-drop").style.pointerEvents = "auto";
+                                        sel.querySelector(".edit-mat-chev").style.transform = "rotate(-90deg)";
+                                    }
+                                }
+                            });
+                        });
+    
+                        let materials = []; // [name, value, unit]
+                        let charges = [];
+                        async function getMaterials() {
+                            let data = {};
+                            try {
+                                const response = await fetch(`${url}/api/get-materials`, {
+                                    method: 'GET',
+                                    headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, },
+                                    credentials: 'include'
+                                });
+                                data = await response.json();
+
+                                localStorage.setItem("materials", JSON.stringify(data.materials));
+                            } catch (error) {
+                                console.error('Error fetching data:', error);
+                                if(localStorage.getItem("materials") && localStorage.getItem("materials").includes("[")){
+                                    data.materials = JSON.parse(localStorage.getItem("materials"));
+                                } else {
+                                    data.materials = [];
+                                }
+                            }
+                            document.querySelectorAll(".edit-mat-wrapper").forEach(wrapper => {
+                                if(wrapper.id == "chargeWrapper"){
+                                    data.materials.forEach(mat => {
+                                        if(mat.area == "charges"){
+                                            let newOption = document.createElement("div");
+                                            newOption.classList.add("edit-mat-option");
+                                            newOption.id = "charge-" + mat.id;
+                                            newOption.innerHTML = mat.name + ' <i class="fa-solid fa-check"></i>';
+                                            wrapper.querySelector(".edit-mat-drop").appendChild(newOption);
+                                        }
+                                    });
+                                    wrapper.querySelectorAll(".edit-mat-option").forEach(option => {
+                                        option.addEventListener("click", () => {
+                                            if(!option.classList.contains("edit-mat-active")){
+                                                charges.push(option.id.split("-")[1]);
+                                                option.classList.add("edit-mat-active");
+                                                let newMaterial = document.createElement("div");
+                                                newMaterial.classList.add("edit-mat-section");
+                                                newMaterial.innerHTML = `
+                                                    <div class="edit-mat-name">${option.innerHTML.slice(0, option.innerHTML.indexOf("<") - 1)}</div>
+                                                    <i class="fa-solid fa-trash-can edit-charge-delete" style="display: block;"></i>
+                                                `;
+                                                wrapper.querySelector(".edit-mat-col").appendChild(newMaterial);
+                                                setTimeout(() => {
+                                                    wrapper.querySelector(".edit-mat-col").style.marginTop = "25px";
+                                                    newMaterial.style.maxHeight = "40px";
+                                                    newMaterial.style.opacity = "1";
+                                                }, 30);
+            
+                                                newMaterial.querySelector("i.edit-charge-delete").addEventListener("click", () => {
+                                                    option.classList.remove("edit-mat-active");
+                                                    newMaterial.style.maxHeight = "0px";
+                                                    newMaterial.style.opacity = "0";
+                                                    setTimeout(() => {
+                                                        wrapper.querySelector(".edit-mat-col").removeChild(newMaterial);
+                                                    }, 300);
+                                                    charges.splice(charges.indexOf(option.id.split("-")[1]), 1);
+                                                    if(wrapper.querySelectorAll(".edit-mat-active").length == 0){
+                                                        wrapper.querySelector(".edit-mat-col").style.marginTop = "0px";
+                                                    }
+                                                });    
+                                            } else {
+                                                charges.splice(charges.indexOf(option.id.split("-")[1]), 1);
+                                                option.classList.remove("edit-mat-active");
+                                                document.querySelectorAll(".edit-mat-section").forEach(section => {
+                                                    if(section.querySelector(".edit-mat-name").innerHTML == option.innerHTML.slice(0, option.innerHTML.indexOf("<") - 1)){
+                                                        section.style.maxHeight = "0px";
+                                                        section.style.opacity = "0";
+                                                        setTimeout(() => {
+                                                            wrapper.querySelector(".edit-mat-col").removeChild(section);
+                                                        }, 300);
+                                                    }
+                                                });
+                                                if(wrapper.querySelectorAll(".edit-mat-active").length == 0){
+                                                    wrapper.querySelector(".edit-mat-col").style.marginTop = "0px";
+                                                }
+                                            }
+                                        });
+                                    });
+                                } else {
+                                    data.materials.forEach(mat => {
+                                        if(wrapper.querySelector(".edit-mat-label").textContent.toLowerCase() == mat.type.toLowerCase() && mat.area == "materials"){
+                                            let newOption = document.createElement("div");
+                                            newOption.classList.add("edit-mat-option");
+                                            newOption.id = mat.default_value + "-" + mat.unit + "-" + mat.default_value + "-" + mat.step; // value, unit, default, step
+                                            newOption.innerHTML = mat.name + ' <i class="fa-solid fa-check"></i>';
+                                            wrapper.querySelector(".edit-mat-drop").appendChild(newOption);
+                                        }
+                                    });
+                                    wrapper.querySelectorAll(".edit-mat-option").forEach(option => {
+                                        option.addEventListener("click", () => {
+                                            if(!option.classList.contains("edit-mat-active")){
+                                                option.classList.add("edit-mat-active");
+                                                let newMaterial = document.createElement("div");
+                                                newMaterial.classList.add("edit-mat-section");
+                                                newMaterial.innerHTML = `
+                                                    <div class="edit-mat-name">${option.innerHTML.slice(0, option.innerHTML.indexOf("<") - 1)}</div>
+                                                    <div class="edit-mat-quan">
+                                                        <i class="fa-solid fa-minus edit-mat-minus"></i>
+                                                        <i class="fa-solid fa-trash-can edit-mat-delete"></i>
+                                                        <span>${option.id.split("-")[0]} <span>${option.id.split("-")[1]}</span></span>
+                                                        <i class="fa-solid fa-plus edit-mat-plus"></i>
+                                                    </div>
+                                                `;
+                                                if((Number(option.id.split("-")[0]) - Number(option.id.split("-")[3])) <= 0){
+                                                    newMaterial.querySelector("i.edit-mat-minus").style.display = "none";
+                                                    newMaterial.querySelector("i.edit-mat-delete").style.display = "block";
+                                                }
+                                                wrapper.querySelector(".edit-mat-col").appendChild(newMaterial);
+                                                setTimeout(() => {
+                                                    wrapper.querySelector(".edit-mat-col").style.marginTop = "25px";
+                                                    newMaterial.style.maxHeight = "40px";
+                                                    newMaterial.style.opacity = "1";
+                                                }, 30);
+            
+                                                newMaterial.querySelector("i.edit-mat-plus").addEventListener("click", () => {
+                                                    newMaterial.querySelector(".edit-mat-quan span").innerHTML = String(Number(newMaterial.querySelector(".edit-mat-quan span").innerHTML.slice(0, newMaterial.querySelector(".edit-mat-quan span").innerHTML.indexOf("<") - 1)) + Number(option.id.split("-")[3])) + newMaterial.querySelector(".edit-mat-quan span").innerHTML.slice(newMaterial.querySelector(".edit-mat-quan span").innerHTML.indexOf("<") - 1)
+                                                    newMaterial.querySelector("i.edit-mat-delete").style.display = "none";
+                                                    newMaterial.querySelector("i.edit-mat-minus").style.display = "block";
+                                                    option.id = String(Number(option.id.split("-")[0]) + Number(option.id.split("-")[3])) + "-" + option.id.split("-")[1] + "-" + option.id.split("-")[2] + "-" + option.id.split("-")[3];
+                                                    materials.forEach(material => {
+                                                        if(material[0] == option.innerHTML.slice(0, option.innerHTML.indexOf("<") - 1)){
+                                                            material[1] = option.id.split("-")[0];
+                                                        } 
+                                                    });
+                                                });
+                                                newMaterial.querySelector("i.edit-mat-minus").addEventListener("click", () => {
+                                                    newMaterial.querySelector(".edit-mat-quan span").innerHTML = String(Number(newMaterial.querySelector(".edit-mat-quan span").innerHTML.slice(0, newMaterial.querySelector(".edit-mat-quan span").innerHTML.indexOf("<") - 1)) - Number(option.id.split("-")[3])) + newMaterial.querySelector(".edit-mat-quan span").innerHTML.slice(newMaterial.querySelector(".edit-mat-quan span").innerHTML.indexOf("<") - 1)
+                                                    if(Number(newMaterial.querySelector(".edit-mat-quan span").innerHTML.slice(0, newMaterial.querySelector(".edit-mat-quan span").innerHTML.indexOf("<") - 1)) == 1){
+                                                        newMaterial.querySelector("i.edit-mat-delete").style.display = "block";
+                                                        newMaterial.querySelector("i.edit-mat-minus").style.display = "none";
+                                                    }
+                                                    option.id = String(Number(option.id.split("-")[0]) - Number(option.id.split("-")[3])) + "-" + option.id.split("-")[1] + "-" + option.id.split("-")[2] + "-" + option.id.split("-")[3];
+                                                    materials.forEach(material => {
+                                                        if(material[0] == option.innerHTML.slice(0, option.innerHTML.indexOf("<") - 1)){
+                                                            material[1] = option.id.split("-")[0];
+                                                        } 
+                                                    });
+                                                    console.log((Number(option.id.split("-")[0]) - Number(option.id.split("-")[3])));
+                                                    if((Number(option.id.split("-")[0]) - Number(option.id.split("-")[3])) <= 0){
+                                                        newMaterial.querySelector("i.edit-mat-minus").style.display = "none";
+                                                        newMaterial.querySelector("i.edit-mat-delete").style.display = "block";
+                                                    }
+                                                });
+                                                newMaterial.querySelector("i.edit-mat-delete").addEventListener("click", () => {
+                                                    newMaterial.style.maxHeight = "0px";
+                                                    newMaterial.style.opacity = "0";
+                                                    setTimeout(() => {
+                                                        wrapper.querySelector(".edit-mat-col").removeChild(newMaterial);
+                                                    }, 300);
+                                                    option.classList.remove("edit-mat-active");
+                                                    if(wrapper.querySelectorAll(".edit-mat-active").length == 0){
+                                                        wrapper.querySelector(".edit-mat-col").style.marginTop = "0px";
+                                                    }
+                                                    materials.forEach((material, idx) => {
+                                                        if(material[0] == option.innerHTML.slice(0, option.innerHTML.indexOf("<") - 1)){
+                                                            materials.splice(idx, 1);
+                                                            option.id = option.id.split("-")[2] + "-" + option.id.split("-")[1] + "-" + option.id.split("-")[2] + "-" + option.id.split("-")[3];
+                                                        } 
+                                                    });
+                                                });
+            
+                                                let newArray = [option.innerHTML.slice(0, option.innerHTML.indexOf("<") - 1), option.id.split("-")[0], option.id.split("-")[1]]; 
+                                                materials.push(newArray);
+                                            } else {
+                                                option.classList.remove("edit-mat-active");
+                                                document.querySelectorAll(".edit-mat-section").forEach(section => {
+                                                    if(section.querySelector(".edit-mat-name").innerHTML == option.innerHTML.slice(0, option.innerHTML.indexOf("<") - 1)){
+                                                        section.style.maxHeight = "0px";
+                                                        section.style.opacity = "0";
+                                                        setTimeout(() => {
+                                                            wrapper.querySelector(".edit-mat-col").removeChild(section);
+                                                        }, 300);
+                                                    }
+                                                });
+                                                option.classList.remove("edit-mat-active");
+                                                if(wrapper.querySelectorAll(".edit-mat-active").length == 0){
+                                                    wrapper.querySelector(".edit-mat-col").style.marginTop = "0px";
+                                                }
+                                            }
+                                        });
+                                    });
+                                }
+
+                            });
+                        }
+                        getMaterials();
+
+                        document.getElementById("sideQuote").addEventListener("click", () => {
+                            document.querySelector(".active-section").classList.remove("active-section");
+                            document.getElementById("sideQuote").classList.add("active-section");
+                            document.querySelector(".dash-container").style.opacity = "0";
+                            document.querySelector(".lac-container").style.opacity = "0";
+                            setTimeout(() => {
+                                document.querySelector(".quo-container").style.display = "flex";
+                                document.querySelector(".dash-container").style.display = "none";
+                                document.querySelector(".lac-container").style.display = "none";
+                                setTimeout(() => {
+                                    document.querySelector(".quo-container").style.opacity = "1";
+                                }, 50);
+                            }, 300);
+                        });
+                        document.querySelector(".quo-btn").addEventListener("click", () => {
+                            async function getQuote(){
+                                let profitMargin = 1.3;
+                                if(document.getElementById("quoProfit").value.replace("%", "") != "") profitMargin = Number(document.getElementById("quoProfit").value.replace("%", "")) / 100;
+                                const dataToSend = { profit: document.getElementById("quoProfit").value.replace("%", ""), time: document.getElementById("quoTime").value.replace("h", ""), materials: materials, charges: charges };
+                                try {
+                                    const response = await fetch(url + `/api/get-quote`, {
+                                        method: 'POST',
+                                        credentials: 'include',
+                                        headers: { 
+                                            Authorization: `Bearer ${localStorage.getItem("token")}`,
+                                            'Content-Type': 'application/json', 
+                                        },
+                                        body: JSON.stringify(dataToSend), 
+                                    });
+    
+                                    if (!response.ok) {
+                                        const errorData = await response.json();
+                                        console.error('Error:', errorData.message);
+                                        return;
+                                    }
+    
+                                    const data = await response.json();
+                                    document.querySelectorAll(".quo-right-value").forEach((value, idx) => {
+                                        if(idx == 0){
+                                            value.textContent = "£" + data.labourCost;
+                                        }
+                                        if(idx == 1){
+                                            value.textContent = "£" + Number(data.labourCost * profitMargin).toFixed(2);
+                                        }
+                                        if(idx == 2){
+                                            value.textContent = "£" + data.materialCost;
+                                        }
+                                        if(idx == 3){
+                                            value.textContent = "£" + Number(data.materialCost * profitMargin).toFixed(2);
+                                        }
+                                        if(idx == 4){
+                                            value.textContent = "£" + Number((data.materialCharge + data.labourCost) * profitMargin);
+                                        }
+                                    });
+                                } catch (error) {
+                                    console.error('Error posting data:', error);
+                                }
+                            }
+                            getQuote();
+                        });
+
                         document.getElementById("newJobBtn").addEventListener("click", () => {
+                            document.querySelector(".active-section").classList.remove("active-section");
+                            document.getElementById("sideNewJob").classList.add("active-section");
                             document.querySelector(".dash-container").style.opacity = "0";
                             setTimeout(() => {
                                 document.querySelector(".lac-container").style.display = "block";
@@ -4665,6 +5246,8 @@ async function getUserData(){
                             }, 300);
                         });
                         document.querySelector(".lac-back").addEventListener("click", () => {
+                            document.querySelector(".active-section").classList.remove("active-section");
+                            document.getElementById("sideHome").classList.add("active-section");
                             document.querySelector(".lac-container").style.opacity = "0";
                             setTimeout(() => {
                                 document.querySelector(".dash-container").style.display = "block";
@@ -4675,6 +5258,8 @@ async function getUserData(){
                             }, 300);
                         });
                         document.getElementById("sideNewJob").addEventListener("click", () => {
+                            document.querySelector(".active-section").classList.remove("active-section");
+                            document.getElementById("sideNewJob").classList.add("active-section");
                             document.querySelector(".dash-container").style.opacity = "0";
                             setTimeout(() => {
                                 document.querySelector(".lac-container").style.display = "block";
@@ -4752,14 +5337,26 @@ async function getUserData(){
                             const formData = new FormData(e.target);
                             const data = Object.fromEntries(formData.entries());
 
-                            const res = await fetch(url + "/api/create-job", {
-                                method: "POST",
-                                credentials: 'include',
-                                headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, "Content-Type": "application/json" },
-                                body: JSON.stringify(data)
-                            });
+                            let responseData = {};
+                            try {
+                                const res = await fetch(url + "/api/create-job", {
+                                    method: "POST",
+                                    credentials: 'include',
+                                    headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, "Content-Type": "application/json" },
+                                    body: JSON.stringify(data)
+                                });
 
-                            const responseData = await res.json();
+                                responseData = await res.json();
+                            } catch(err){
+                                let pendingJobs = [];
+                                if(localStorage.getItem("pendingJobs") && localStorage.getItem("pendingJobs").includes("[")){
+                                    pendingJobs = JSON.parse(localStorage.getItem("pendingJobs"));
+                                }
+                                pendingJobs.push(data);
+                                localStorage.setItem("pendingJobs", JSON.stringify(pendingJobs));
+                                responseData.message = "success";
+                            }
+
                             if(responseData.message == "noworker"){
                                 document.getElementById("workerError").style.display = "block";
                                 setTimeout(() => {
@@ -4810,14 +5407,26 @@ async function getUserData(){
                             const formData = new FormData(e.target);
                             const data = Object.fromEntries(formData.entries());
 
-                            const res = await fetch(url + "/api/create-worker", {
-                                method: "POST",
-                                credentials: 'include',
-                                headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, "Content-Type": "application/json" },
-                                body: JSON.stringify(data)
-                            });
+                            let responseData = {};
+                            try {
+                                const res = await fetch(url + "/api/create-worker", {
+                                    method: "POST",
+                                    credentials: 'include',
+                                    headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, "Content-Type": "application/json" },
+                                    body: JSON.stringify(data)
+                                });
 
-                            const responseData = await res.json();
+                                responseData = await res.json();
+                            } catch(err){
+                                let pendingWorkers = [];
+                                if(localStorage.getItem("pendingWorkers") && localStorage.getItem("pendingWorkers").includes("[")){
+                                    pendingWorkers = JSON.parse(localStorage.getItem("pendingWorkers"));
+                                }
+                                pendingWorkers.push(data);
+                                localStorage.setItem("pendingWorkers", JSON.stringify(pendingWorkers));
+                                responseData.message = "success";
+                            }
+
                             if(responseData.message == "email taken"){
                                 document.getElementById("emailError").style.display = "block";
                                 setTimeout(() => {
@@ -5006,10 +5615,21 @@ async function getUserData(){
                             document.getElementById("filterModal").style.pointerEvents = "none";
                         });
 
+                        document.querySelector(".dash-perf-btn").addEventListener("click", () => {
+                            currentFrom = document.getElementById("dashPerfFrom").value;
+                            currentTo = document.getElementById("dashPerfTo").value;
+                            if(currentFrom.length == 10 && currentFrom.includes("/") && currentTo != ""){
+                                makeWorkerReport(currentWorker);
+                            }
+                        });
+                        let currentWorker;
+                        let currentFrom;
+                        let currentTo;
                         function makeWorkerReport(worker){
+                            currentWorker = worker;
                             let workerJobs = [];
                             jobs.forEach(job => {
-                                if(job.user_id == worker.id && job.job_status == "Completed") workerJobs.push(job);
+                                if(job.user_id == worker.id && job.job_status == "Completed" && (!currentFrom || isDateBetween(job.job_date, currentFrom, currentTo))) workerJobs.push(job);
                             });
 
                             let hoursWorked = 0;
@@ -5017,6 +5637,7 @@ async function getUserData(){
                             let totalJobs = workerJobs.length;
                             let avgSpeed = 0;
                             let avgProfit = 0;
+                            let totalProfit = 0;
                             workerJobs.forEach(job => {if(job.job_status == "Completed"){
                                 if(job.job_progress.includes("hrs")){
                                     hoursWorked += Number(job.job_progress.slice(0, job.job_progress.indexOf("h") - 1));
@@ -5026,10 +5647,10 @@ async function getUserData(){
                                     minsWorked += Number(job.job_progress.slice(0, job.job_progress.indexOf("m") - 1));
                                     avgSpeed += Number(job.job_progress.slice(0, job.job_progress.indexOf("m") - 1));
                                 }
-                                avgProfit += Number(job.job_realcharge.replace("£", "")) - Number(job.job_setback.replace("£", ""));
+                                totalProfit += Number(job.job_realcharge.replace("£", "")) - Number(job.job_setback.replace("£", ""));
                             }});
                             hoursWorked += Math.floor(minsWorked / 60);
-                            avgProfit = "£" + Number(avgProfit / totalJobs).toFixed(0);
+                            avgProfit = "£" + Number(totalProfit / totalJobs).toFixed(0);
                             avgSpeed = avgSpeed / totalJobs;
                             let avgHours = Math.floor(avgSpeed / 60);
                             let avgMins = avgSpeed % 60;
@@ -5037,7 +5658,7 @@ async function getUserData(){
 
                             document.querySelectorAll(".rep-worker-num")[0].textContent = hoursWorked;
                             document.querySelectorAll(".rep-worker-num")[1].textContent = totalJobs;
-                            document.querySelectorAll(".rep-worker-num")[2].textContent = avgSpeed;
+                            document.querySelectorAll(".rep-worker-num")[2].textContent = "£" + totalProfit;
                             document.querySelectorAll(".rep-worker-num")[3].textContent = avgProfit;
                         }
                         function showWorker(worker){
@@ -5108,7 +5729,7 @@ async function getUserData(){
                                 </div>
     
                                 <div class="work-btn-flex">
-                                    <div class="work-btn work-assign-btn blue-hover">Assign Job</div>
+                                    <div class="work-btn work-rate-btn">Edit Rate</div>
                                     ${reportBtn}
                                 </div>
                             `;
@@ -5126,6 +5747,54 @@ async function getUserData(){
                                     changePage(0);
                                 });
                             });
+                            newWrapper.querySelector(".work-rate-btn").addEventListener("click", () => {
+                                document.getElementById("newRateModal").style.opacity = "1";
+                                document.getElementById("newRateModal").style.pointerEvents = "auto";
+                            });
+                            document.getElementById("newRateBtn").addEventListener("click", () => {
+                                if(document.getElementById("newRateCharge").value == "" || document.getElementById("newRateCost").value == ""){
+                                    document.getElementById("newRateError").style.display = "block";
+                                    setTimeout(() => {
+                                        document.getElementById("newRateError").style.display = "none";
+                                    }, 2000);
+                                } else {
+                                    async function newRate() {
+                                        const dataToSend = { charge: document.getElementById("newRateCharge").value.replace("£", ""), cost: document.getElementById("newRateCost").value.replace("£", ""), id: worker.id };
+                                        try {
+                                            const response = await fetch(url + '/api/new-rate', {
+                                                method: 'POST',
+                                                credentials: 'include',
+                                                headers: { Authorization: `Bearer ${localStorage.getItem("token")}`,
+                                                    'Content-Type': 'application/json', 
+                                                },
+                                                body: JSON.stringify(dataToSend), 
+                                            });
+        
+                                            if (!response.ok) {
+                                                const errorData = await response.json();
+                                                console.error('Error:', errorData.message);
+                                                return;
+                                            }
+        
+                                            const data = await response.json();
+                                            if(data.message == "success"){
+                                                document.getElementById("newRateModal").style.opacity = "0";
+                                                document.getElementById("newRateModal").style.pointerEvents = "none";
+                                                setTimeout(() => {
+                                                    document.getElementById("thankPrice").style.opacity = "1";
+                                                    document.getElementById("thankPrice").style.pointerEvents = "auto";
+                                                    document.getElementById("thankPrice").querySelector(".thank-wrapper").style.opacity = "1";
+                                                    document.getElementById("thankPrice").querySelector(".thank-wrapper").style.transform = "scale(1)";
+                                                }, 300);
+                                            }
+                                        } catch (error) {
+                                            console.error('Error posting data:', error);
+                                        }
+                                    }
+                                    newRate();
+                                }
+                            });
+                            /*
                             newWrapper.querySelector(".work-assign-btn").addEventListener("click", () => {
                                 document.getElementById("newJobModal").style.opacity = "1";
                                 document.getElementById("newJobModal").style.pointerEvents = "auto";
@@ -5138,6 +5807,7 @@ async function getUserData(){
                                     option.classList.remove("edit-mat-active");
                                 });
                             });
+                            */
                             if(reportBtn != ""){
                                 newWrapper.querySelector(".work-report-btn").addEventListener("click", () => {
                                     makeWorkerReport(worker);
@@ -5738,10 +6408,6 @@ async function getUserData(){
                                         <div class="work-txt">${nextJob}</div>
                                     </div>
                                 </div>
-
-                                <div class="work-btn-flex">
-                                    <div class="work-btn work-assign-btn">Assign Job</div>
-                                </div>
                             `;
                             document.querySelector(".cal-work-col").appendChild(newWrapper);
                             workerCount++;
@@ -5749,6 +6415,7 @@ async function getUserData(){
                                 newWrapper.style.display = "none";
                             }
 
+                            /*
                             newWrapper.querySelector(".work-assign-btn").addEventListener("click", () => {
                                 document.getElementById("adminJobModal").querySelector(".jobdateinput").value = document.querySelector(".cal-date-active").id.split("-")[1];
                                 document.getElementById("adminJobModal").querySelector(".workerinput").value = worker.name;
@@ -5756,6 +6423,7 @@ async function getUserData(){
                                 document.getElementById("adminJobModal").style.opacity = "1";
                                 document.getElementById("adminJobModal").style.pointerEvents = "auto";
                             });
+                            */
                         });
                         if(document.getElementById("calModal").querySelectorAll(".work-wrapper").length == 0){
                             document.getElementById("workerEmpty").style.display = "block";
@@ -5866,6 +6534,7 @@ async function getUserData(){
                     }
                     /*/////////////////////////////////////////////*/
                 } catch (error) {
+                    console.log("www!");
                     console.error('Error fetching data:', error);
                 }
             }

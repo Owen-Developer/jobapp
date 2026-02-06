@@ -397,6 +397,7 @@ button {
     justify-content: center;
 }
 .dash-container {
+    display: block;
     transition: 0.3s ease;
     width: 1300px;
     max-width: calc(100% - 60px);
@@ -656,8 +657,45 @@ button {
     display: flex;
     gap: 10px;
 }
+.dash-perf-filter {
+    width: 100%;
+    display: flex;
+    gap: 20px;
+}
+.dash-perf-filter div {
+    width: 100%;
+}
+.dash-perf-label {
+    font-size: 15px;
+    font-weight: 500;
+    color: hsl(0, 0%, 20%);
+}
+.dash-perf-filter div input {
+    margin-top: 8px;
+    width: 100%;
+    border: 0;
+    outline: 0;
+    background-color: white;
+    border: 1px solid hsl(0, 0%, 80%);
+    color: hsl(0, 0%, 20%);
+    border-radius: 10px;
+    padding: 12px 18px;
+    font-size: 16px;
+    transition: 0.2s ease;
+}
+.dash-perf-btn {
+    width: 100%;
+    background-color: var(--primary);
+    border-radius: 10px;
+    text-align: center;
+    padding: 10px 0;
+    font-size: 17px;
+    font-weight: 500;
+    color: white;
+    transition: 0.2s ease;
+}
 
-.lac-container {
+.lac-container, .quo-container {
     position: relative;
     display: none;
     transition: 0.3s ease;
@@ -909,6 +947,89 @@ span.lac-top-mon {
 }
 .lac-box:hover .lac-hover-el {
     opacity: 1;
+}
+
+.quo-container {
+    display: none;
+    gap: 40px;
+}
+.quo-col {
+    flex-shrink: 0;
+    width: 550px;
+}
+.quo-section {
+    width: 100%;
+    display: flex;
+    gap: 30px;
+}
+.quo-input {
+    width: 100%;
+    border: 0;
+    border-bottom: 1px solid hsl(0, 0%, 70%);
+    background-color: transparent;
+    font-size: 17px;
+    color: hsl(0, 0%, 20%);
+    margin-bottom: 20px;
+    outline: 0;
+}
+.quo-input:focus {
+    border-bottom: 1px solid hsl(0, 0%, 60%);
+}
+.quo-btn {
+    margin: 12px 0 20px;
+    background-color: var(--primary);
+    color: white;
+    width: 100%;
+    text-align: center;
+    padding: 12px 0;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: 0.2s ease;
+}
+
+.quo-right {
+    display: flex;
+    flex-direction: column;
+    align-self: flex-start;
+    width: 100%;
+    background-color: hsl(0, 0%, 94%);
+    padding: 20px 18px;
+    border-radius: 20px;
+}
+
+.quo-title {
+    font-size: 24px;
+    font-weight: 500;
+    color: hsl(0, 0%, 20%);
+    margin-bottom: 10px;
+}
+
+.quo-hr {
+    margin: 10px 0 20px;
+    height: 1px;
+    width: 100%;
+    background-color: hsl(0, 0%, 80%);
+}
+
+.quo-right-flex {
+    padding: 4px 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between; /* optional */
+    align-items: center; /* optional */
+}
+
+.quo-right-label {
+    font-size: 16px;
+    color: hsl(0, 0%, 30%);
+}
+
+.quo-right-value {
+    font-size: 16px;
+    font-weight: 500;
+    color: hsl(0, 0%, 20%);
 }
 
 .white-hover, .blue-hover, .new-btn {
@@ -1935,6 +2056,7 @@ i.thank-modal-check {
 .edit-upload {
     position: relative;
     width: 100%;
+    max-width: 100%;
     background-color: white;
     box-shadow: 0 0 15px hsla(0, 0%, 0%, 0.15);
     text-align: center;
@@ -4358,6 +4480,9 @@ body.log-body {
     align-items: center;
     justify-content: center;
     transition: 0.3s ease;
+}
+.log-container .edit-upload {
+    max-width: 450px;
 }
 .log-logo {
     filter: invert(0.8);

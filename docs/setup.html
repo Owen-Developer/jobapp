@@ -31,6 +31,20 @@
             <div class="log-label">Password</div>
             <input type="password" name="password" placeholder="Password" class="log-input" required>
 
+            <div style="height: 18px;"></div>
+
+            <input type="file" accept="image/*" id="photoInput" style="display: none;" />
+            <div class="edit-upload">
+                <i class="fa-solid fa-xmark edit-close"></i>
+                <div class="edit-upload-content">
+                    <img src="images/icons/upload.png" class="edit-upload-icon" />
+                    <div class="edit-upload-btn">Upload Logo</div>
+                </div>
+                <div class="edit-upload-img">
+                    <img src="images/upload_temp.png" />
+                </div>
+            </div>
+
             <button style="display: block;" type="submit" class="btn-log">Register as admin</button>
         </form>
     </div>
