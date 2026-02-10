@@ -51,6 +51,7 @@ const shortMonths = [
   "Nov",
   "Dec"
 ];
+if(localStorage.getItem("color")) document.documentElement.style.setProperty("--primary", localStorage.getItem("color"));
 
 let params = new URLSearchParams(window.location.search);
 
@@ -224,8 +225,6 @@ function changePage(pageIdx){
         top: 0,
     });
 }
-
-console.log(JSON.stringify(localStorage.getItem("summaryUpdates")));
 
 async function getUserData(){
     try {
@@ -1485,6 +1484,11 @@ async function getUserData(){
             });
             document.querySelector(".edit-upload-btn").addEventListener("click", () => {
                 document.getElementById("photoInput").click();
+            });
+
+            document.getElementById("colorPicker").addEventListener("input", e => {
+                document.documentElement.style.setProperty("--primary", e.target.value);
+                localStorage.setItem("color", e.target.value);
             });
         }
 

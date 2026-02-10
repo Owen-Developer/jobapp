@@ -4640,6 +4640,11 @@ body.log-body {
     overflow: auto;
     scrollbar-width: thin;
 }
+.log-color {
+    cursor: pointer;
+    width: 100px;
+    height: 100px;
+}
 /*///////////////////////////////////////////////////////////////////////////////////*/
 
 
