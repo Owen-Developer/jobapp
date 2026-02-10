@@ -312,7 +312,9 @@ async function getUserData(){
 
         /*/////////////// PAGES ////////////////*/
         if(document.querySelector(".home")){
-            document.querySelector(".home-name").textContent = userData.name;
+                            document.querySelectorAll(".home-name").forEach(name => {
+                                name.textContent = userData.name;
+                            });
 
             let jobs;
             async function getHomeJobs() {
@@ -1196,7 +1198,9 @@ async function getUserData(){
             }
 
             document.getElementById("editProfileBtn").addEventListener("click", () => {
-                document.querySelector(".home-name").value = userData.name;
+                            document.querySelectorAll(".home-name").forEach(name => {
+                                name.textContent = userData.name;
+                            });
                 document.getElementById("profileName").value = userData.name;
                 document.getElementById("profileEmail").value = userData.email;
                 document.getElementById("profilePhone").value = userData.phone;
@@ -1620,7 +1624,11 @@ async function getUserData(){
 
         if(params.get("admin")){
             if(!userData || userData.perms != "admin") window.location.href = gitName + "/";
-            if(document.querySelector(".home-name") && userData) document.querySelector(".home-name").textContent = userData.name;
+            if(document.querySelector(".home-name") && userData){
+                                            document.querySelectorAll(".home-name").forEach(name => {
+                                name.textContent = userData.name;
+                            });
+            }
 
             async function getAdminData(){
                 try {
@@ -4456,7 +4464,9 @@ async function getUserData(){
                         }
 
                         document.getElementById("editProfileBtn").addEventListener("click", () => {
-                            document.querySelector(".home-name").value = userData.name;
+                            document.querySelectorAll(".home-name").forEach(name => {
+                                name.textContent = userData.name;
+                            });
                             document.getElementById("profileName").value = userData.name;
                             document.getElementById("profileEmail").value = userData.email;
                             document.getElementById("profilePhone").value = userData.phone;
@@ -4491,7 +4501,9 @@ async function getUserData(){
                                     const data = await response.json();
                                     if(data.message == "success"){
                                         userData = data.userData;
-                                        document.querySelector(".home-name").textContent = userData.name;
+                            document.querySelectorAll(".home-name").forEach(name => {
+                                name.textContent = userData.name;
+                            });
                                         document.querySelector(".acc-name").textContent = userData.name;
                                         document.querySelector(".acc-email").textContent = userData.email;
                                         document.getElementById("profileModal").style.opacity = "0";
