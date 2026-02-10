@@ -2121,6 +2121,269 @@ async function getUserData(){
                             }
                         });
 
+                        
+                        document.querySelector("#adminQuoOpen").addEventListener("click", () => {
+                            document.querySelector(".admin-quo").style.opacity = "1";
+                            document.querySelector(".admin-quo").style.pointerEvents = "auto";
+                        });
+                        document.querySelector("#adminQuoBack").addEventListener("click", () => {
+                            document.querySelector(".admin-quo").style.opacity = "0";
+                            document.querySelector(".admin-quo").style.pointerEvents = "none";
+                        });
+                        document.querySelector(".quo-btn").addEventListener("click", () => {
+                            async function getQuote(){
+                                let profitMargin = 1.3;
+                                if(document.getElementById("quoProfit").value.replace("%", "") != "") profitMargin = (Number(document.getElementById("quoProfit").value.replace("%", "")) / 100) + 1;
+                                const dataToSend = { profit: document.getElementById("quoProfit").value.replace("%", ""), time: document.getElementById("quoTime").value.replace("h", ""), materials: materials, charges: charges };
+                                try {
+                                    const response = await fetch(url + `/api/get-quote`, {
+                                        method: 'POST',
+                                        credentials: 'include',
+                                        headers: { 
+                                            Authorization: `Bearer ${localStorage.getItem("token")}`,
+                                            'Content-Type': 'application/json', 
+                                        },
+                                        body: JSON.stringify(dataToSend), 
+                                    });
+    
+                                    if (!response.ok) {
+                                        const errorData = await response.json();
+                                        console.error('Error:', errorData.message);
+                                        return;
+                                    }
+    
+                                    const data = await response.json();
+                                    document.querySelectorAll(".quo-right-value").forEach((value, idx) => {
+                                        if(idx == 0){
+                                            value.textContent = "£" + data.labourCost;
+                                        }
+                                        if(idx == 1){
+                                            value.textContent = "£" + Number(data.labourCost * profitMargin).toFixed(2);
+                                        }
+                                        if(idx == 2){
+                                            value.textContent = "£" + data.materialCost;
+                                        }
+                                        if(idx == 3){
+                                            value.textContent = "£" + Number(data.materialCost * profitMargin).toFixed(2);
+                                        }
+                                        if(idx == 4){
+                                            value.textContent = "£" + Number((data.materialCharge + data.labourCost) * profitMargin);
+                                        }
+                                    });
+                                } catch (error) {
+                                    console.error('Error posting data:', error);
+                                }
+                            }
+                            getQuote();
+                        });
+                        document.querySelectorAll(".edit-mat-selector").forEach((sel, idx) => {
+                            sel.addEventListener("click", (e) => {
+                                if(!sel.querySelector(".edit-mat-drop").contains(e.target)){
+                                    if(sel.querySelector(".edit-mat-chev").style.transform == "rotate(-90deg)"){
+                                        sel.style.marginBottom = "0px";
+                                        sel.querySelector(".edit-mat-drop").style.opacity = "0";
+                                        sel.querySelector(".edit-mat-drop").style.pointerEvents = "none";
+                                        sel.querySelector(".edit-mat-chev").style.transform = "rotate(90deg)";
+                                    } else {
+                                        let marginBottom = sel.querySelector(".edit-mat-drop").offsetHeight + 27 + "px";
+                                        sel.style.marginBottom = marginBottom;
+                                        sel.querySelector(".edit-mat-drop").style.opacity = "1";
+                                        sel.querySelector(".edit-mat-drop").style.pointerEvents = "auto";
+                                        sel.querySelector(".edit-mat-chev").style.transform = "rotate(-90deg)";
+                                    }
+                                }
+                            });
+                        });
+    
+                        let materials = []; // [name, value, unit]
+                        let charges = [];
+                        async function getMaterials() {
+                            let data = {};
+                            try {
+                                const response = await fetch(`${url}/api/get-materials`, {
+                                    method: 'GET',
+                                    headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, },
+                                    credentials: 'include'
+                                });
+                                data = await response.json();
+
+                                localStorage.setItem("materials", JSON.stringify(data.materials));
+                            } catch (error) {
+                                console.error('Error fetching data:', error);
+                                if(localStorage.getItem("materials") && localStorage.getItem("materials").includes("[")){
+                                    data.materials = JSON.parse(localStorage.getItem("materials"));
+                                } else {
+                                    data.materials = [];
+                                }
+                            }
+                            document.querySelectorAll(".edit-mat-wrapper").forEach(wrapper => {
+                                if(wrapper.id == "chargeWrapper"){
+                                    data.materials.forEach(mat => {
+                                        if(mat.area == "charges"){
+                                            let newOption = document.createElement("div");
+                                            newOption.classList.add("edit-mat-option");
+                                            newOption.id = "charge-" + mat.id;
+                                            newOption.innerHTML = mat.name + ' <i class="fa-solid fa-check"></i>';
+                                            wrapper.querySelector(".edit-mat-drop").appendChild(newOption);
+                                        }
+                                    });
+                                    wrapper.querySelectorAll(".edit-mat-option").forEach(option => {
+                                        option.addEventListener("click", () => {
+                                            if(!option.classList.contains("edit-mat-active")){
+                                                charges.push(option.id.split("-")[1]);
+                                                option.classList.add("edit-mat-active");
+                                                let newMaterial = document.createElement("div");
+                                                newMaterial.classList.add("edit-mat-section");
+                                                newMaterial.innerHTML = `
+                                                    <div class="edit-mat-name">${option.innerHTML.slice(0, option.innerHTML.indexOf("<") - 1)}</div>
+                                                    <i class="fa-solid fa-trash-can edit-charge-delete" style="display: block;"></i>
+                                                `;
+                                                wrapper.querySelector(".edit-mat-col").appendChild(newMaterial);
+                                                setTimeout(() => {
+                                                    wrapper.querySelector(".edit-mat-col").style.marginTop = "25px";
+                                                    newMaterial.style.maxHeight = "40px";
+                                                    newMaterial.style.opacity = "1";
+                                                }, 30);
+            
+                                                newMaterial.querySelector("i.edit-charge-delete").addEventListener("click", () => {
+                                                    option.classList.remove("edit-mat-active");
+                                                    newMaterial.style.maxHeight = "0px";
+                                                    newMaterial.style.opacity = "0";
+                                                    setTimeout(() => {
+                                                        wrapper.querySelector(".edit-mat-col").removeChild(newMaterial);
+                                                    }, 300);
+                                                    charges.splice(charges.indexOf(option.id.split("-")[1]), 1);
+                                                    if(wrapper.querySelectorAll(".edit-mat-active").length == 0){
+                                                        wrapper.querySelector(".edit-mat-col").style.marginTop = "0px";
+                                                    }
+                                                });    
+                                            } else {
+                                                charges.splice(charges.indexOf(option.id.split("-")[1]), 1);
+                                                option.classList.remove("edit-mat-active");
+                                                document.querySelectorAll(".edit-mat-section").forEach(section => {
+                                                    if(section.querySelector(".edit-mat-name").innerHTML == option.innerHTML.slice(0, option.innerHTML.indexOf("<") - 1)){
+                                                        section.style.maxHeight = "0px";
+                                                        section.style.opacity = "0";
+                                                        setTimeout(() => {
+                                                            wrapper.querySelector(".edit-mat-col").removeChild(section);
+                                                        }, 300);
+                                                    }
+                                                });
+                                                if(wrapper.querySelectorAll(".edit-mat-active").length == 0){
+                                                    wrapper.querySelector(".edit-mat-col").style.marginTop = "0px";
+                                                }
+                                            }
+                                        });
+                                    });
+                                } else {
+                                    data.materials.forEach(mat => {
+                                        if(wrapper.querySelector(".edit-mat-label").textContent.toLowerCase() == mat.type.toLowerCase() && mat.area == "materials"){
+                                            let newOption = document.createElement("div");
+                                            newOption.classList.add("edit-mat-option");
+                                            newOption.id = mat.default_value + "-" + mat.unit + "-" + mat.default_value + "-" + mat.step; // value, unit, default, step
+                                            newOption.innerHTML = mat.name + ' <i class="fa-solid fa-check"></i>';
+                                            wrapper.querySelector(".edit-mat-drop").appendChild(newOption);
+                                        }
+                                    });
+                                    wrapper.querySelectorAll(".edit-mat-option").forEach(option => {
+                                        option.addEventListener("click", () => {
+                                            if(!option.classList.contains("edit-mat-active")){
+                                                option.classList.add("edit-mat-active");
+                                                let newMaterial = document.createElement("div");
+                                                newMaterial.classList.add("edit-mat-section");
+                                                newMaterial.innerHTML = `
+                                                    <div class="edit-mat-name">${option.innerHTML.slice(0, option.innerHTML.indexOf("<") - 1)}</div>
+                                                    <div class="edit-mat-quan">
+                                                        <i class="fa-solid fa-minus edit-mat-minus"></i>
+                                                        <i class="fa-solid fa-trash-can edit-mat-delete"></i>
+                                                        <span>${option.id.split("-")[0]} <span>${option.id.split("-")[1]}</span></span>
+                                                        <i class="fa-solid fa-plus edit-mat-plus"></i>
+                                                    </div>
+                                                `;
+                                                if((Number(option.id.split("-")[0]) - Number(option.id.split("-")[3])) <= 0){
+                                                    newMaterial.querySelector("i.edit-mat-minus").style.display = "none";
+                                                    newMaterial.querySelector("i.edit-mat-delete").style.display = "block";
+                                                }
+                                                wrapper.querySelector(".edit-mat-col").appendChild(newMaterial);
+                                                setTimeout(() => {
+                                                    wrapper.querySelector(".edit-mat-col").style.marginTop = "25px";
+                                                    newMaterial.style.maxHeight = "40px";
+                                                    newMaterial.style.opacity = "1";
+                                                }, 30);
+            
+                                                newMaterial.querySelector("i.edit-mat-plus").addEventListener("click", () => {
+                                                    newMaterial.querySelector(".edit-mat-quan span").innerHTML = String(Number(newMaterial.querySelector(".edit-mat-quan span").innerHTML.slice(0, newMaterial.querySelector(".edit-mat-quan span").innerHTML.indexOf("<") - 1)) + Number(option.id.split("-")[3])) + newMaterial.querySelector(".edit-mat-quan span").innerHTML.slice(newMaterial.querySelector(".edit-mat-quan span").innerHTML.indexOf("<") - 1)
+                                                    newMaterial.querySelector("i.edit-mat-delete").style.display = "none";
+                                                    newMaterial.querySelector("i.edit-mat-minus").style.display = "block";
+                                                    option.id = String(Number(option.id.split("-")[0]) + Number(option.id.split("-")[3])) + "-" + option.id.split("-")[1] + "-" + option.id.split("-")[2] + "-" + option.id.split("-")[3];
+                                                    materials.forEach(material => {
+                                                        if(material[0] == option.innerHTML.slice(0, option.innerHTML.indexOf("<") - 1)){
+                                                            material[1] = option.id.split("-")[0];
+                                                        } 
+                                                    });
+                                                });
+                                                newMaterial.querySelector("i.edit-mat-minus").addEventListener("click", () => {
+                                                    newMaterial.querySelector(".edit-mat-quan span").innerHTML = String(Number(newMaterial.querySelector(".edit-mat-quan span").innerHTML.slice(0, newMaterial.querySelector(".edit-mat-quan span").innerHTML.indexOf("<") - 1)) - Number(option.id.split("-")[3])) + newMaterial.querySelector(".edit-mat-quan span").innerHTML.slice(newMaterial.querySelector(".edit-mat-quan span").innerHTML.indexOf("<") - 1)
+                                                    if(Number(newMaterial.querySelector(".edit-mat-quan span").innerHTML.slice(0, newMaterial.querySelector(".edit-mat-quan span").innerHTML.indexOf("<") - 1)) == 1){
+                                                        newMaterial.querySelector("i.edit-mat-delete").style.display = "block";
+                                                        newMaterial.querySelector("i.edit-mat-minus").style.display = "none";
+                                                    }
+                                                    option.id = String(Number(option.id.split("-")[0]) - Number(option.id.split("-")[3])) + "-" + option.id.split("-")[1] + "-" + option.id.split("-")[2] + "-" + option.id.split("-")[3];
+                                                    materials.forEach(material => {
+                                                        if(material[0] == option.innerHTML.slice(0, option.innerHTML.indexOf("<") - 1)){
+                                                            material[1] = option.id.split("-")[0];
+                                                        } 
+                                                    });
+                                                    console.log((Number(option.id.split("-")[0]) - Number(option.id.split("-")[3])));
+                                                    if((Number(option.id.split("-")[0]) - Number(option.id.split("-")[3])) <= 0){
+                                                        newMaterial.querySelector("i.edit-mat-minus").style.display = "none";
+                                                        newMaterial.querySelector("i.edit-mat-delete").style.display = "block";
+                                                    }
+                                                });
+                                                newMaterial.querySelector("i.edit-mat-delete").addEventListener("click", () => {
+                                                    newMaterial.style.maxHeight = "0px";
+                                                    newMaterial.style.opacity = "0";
+                                                    setTimeout(() => {
+                                                        wrapper.querySelector(".edit-mat-col").removeChild(newMaterial);
+                                                    }, 300);
+                                                    option.classList.remove("edit-mat-active");
+                                                    if(wrapper.querySelectorAll(".edit-mat-active").length == 0){
+                                                        wrapper.querySelector(".edit-mat-col").style.marginTop = "0px";
+                                                    }
+                                                    materials.forEach((material, idx) => {
+                                                        if(material[0] == option.innerHTML.slice(0, option.innerHTML.indexOf("<") - 1)){
+                                                            materials.splice(idx, 1);
+                                                            option.id = option.id.split("-")[2] + "-" + option.id.split("-")[1] + "-" + option.id.split("-")[2] + "-" + option.id.split("-")[3];
+                                                        } 
+                                                    });
+                                                });
+            
+                                                let newArray = [option.innerHTML.slice(0, option.innerHTML.indexOf("<") - 1), option.id.split("-")[0], option.id.split("-")[1]]; 
+                                                materials.push(newArray);
+                                            } else {
+                                                option.classList.remove("edit-mat-active");
+                                                document.querySelectorAll(".edit-mat-section").forEach(section => {
+                                                    if(section.querySelector(".edit-mat-name").innerHTML == option.innerHTML.slice(0, option.innerHTML.indexOf("<") - 1)){
+                                                        section.style.maxHeight = "0px";
+                                                        section.style.opacity = "0";
+                                                        setTimeout(() => {
+                                                            wrapper.querySelector(".edit-mat-col").removeChild(section);
+                                                        }, 300);
+                                                    }
+                                                });
+                                                option.classList.remove("edit-mat-active");
+                                                if(wrapper.querySelectorAll(".edit-mat-active").length == 0){
+                                                    wrapper.querySelector(".edit-mat-col").style.marginTop = "0px";
+                                                }
+                                            }
+                                        });
+                                    });
+                                }
+
+                            });
+                        }
+                        getMaterials();
+
                         document.querySelectorAll(".edit-mat-option").forEach(option => {
                             option.addEventListener("click", () => {
                                 let disable = false;

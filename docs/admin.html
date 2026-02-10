@@ -32,7 +32,10 @@
             <div class="" style="display: flex; flex-direction: column;">
                 <div class="admin-head">Admin Dashboard</div>
                 <div class="admin-para">Manage and track your workers' jobs.</div>
-                <div class="admin-table-btn"><i class="fa-solid fa-plus"></i> New Job</div>
+                <div style="display: flex; gap: 12px;">
+                    <div class="admin-table-btn"><i class="fa-solid fa-plus"></i> New Job</div>
+                    <div class="admin-table-btn" id="adminQuoOpen" style="background-color: white; border: 1px solid hsl(0, 0%, 80%); color: hsl(0, 0%, 20%);">Generate Quote</div>
+                </div>
             </div>
     
             <div class="admin-table ">
@@ -148,6 +151,209 @@
                 </div>
             </div>
             <div onclick="changePage(3)" class="btn-admin-rep">All Reports</div>
+        </div>
+
+
+        <div class="admin-quo">
+            <i class="fa-solid fa-chevron-left" id="adminQuoBack"></i>
+            <div class="quo-right" style="margin-bottom: 30px;">
+                <div class="quo-title">Summary</div>
+                <div class="quo-hr"></div>
+                <div class="quo-right-flex">
+                    <div class="quo-right-label">Labour cost</div>
+                    <div class="quo-right-value">£0</div>
+                </div>
+                <div class="quo-right-flex">    
+                    <div class="quo-right-label">Labour charge</div>
+                    <div class="quo-right-value">£0</div>
+                </div>
+                <div class="quo-right-flex">
+                    <div class="quo-right-label">Material cost</div>
+                    <div class="quo-right-value">£0</div>
+                </div>
+                <div class="quo-right-flex">
+                    <div class="quo-right-label">Material charge</div>
+                    <div class="quo-right-value">£0</div>
+                </div>
+                <div class="quo-hr"></div>
+                <div class="quo-right-flex">
+                    <div class="quo-right-label" style="font-weight: 500;">Total</div>
+                    <div class="quo-right-value">£0</div>
+                </div>
+            </div>
+            <div class="quo-col">
+                <div class="quo-section" style="flex-direction: column; gap: 10px;">
+                    <input type="text" placeholder="Profit %" class="quo-input" id="quoProfit" />
+                    <input type="text" placeholder="Labour time (e.g. 2:10h)" class="quo-input" id="quoTime" />
+                </div>
+
+                <div class="quo-btn" id="adminQuote">Generate Quote</div>
+
+                <div class="edit-mat-ul">
+                    <div class="edit-mat-wrapper">
+                        <div class="edit-mat-label">Parts</div>
+                        <div class="edit-mat-selector">Add Parts <img src="images/icons/chevron.png" class="edit-mat-chev" />
+                            <div class="edit-mat-drop">
+                                <!-- 
+                                    <div class="edit-mat-option">Option 1 <i class="fa-solid fa-check"></i></div>
+                                    <div class="edit-mat-option">Option 2 <i class="fa-solid fa-check"></i></div>
+                                    <div class="edit-mat-option">Option 3 <i class="fa-solid fa-check"></i></div>
+                                    <div class="edit-mat-option">Option 4 <i class="fa-solid fa-check"></i></div>
+                                    <div class="edit-mat-option">Option 5 <i class="fa-solid fa-check"></i></div>
+                                -->
+                            </div>
+                        </div>
+                        <div class="edit-mat-col">
+                            <!-- 
+                                <div class="edit-mat-section">
+                                    <div class="edit-mat-name">Option 1</div>
+                                    <div class="edit-mat-quan">
+                                        <i class="fa-solid fa-trash-can"></i>
+                                        <span>1 <span>units</span></span>
+                                        <i class="fa-solid fa-plus"></i>
+                                    </div>
+                                </div>
+                            -->
+                        </div>
+                    </div>
+    
+                    <div class="edit-mat-wrapper">
+                        <div class="edit-mat-label">Pipework</div>
+                        <div class="edit-mat-selector">Add Pipes <img src="images/icons/chevron.png" class="edit-mat-chev" />
+                            <div class="edit-mat-drop">
+                                <!-- 
+                                    <div class="edit-mat-option">Option 1 <i class="fa-solid fa-check"></i></div>
+                                    <div class="edit-mat-option">Option 2 <i class="fa-solid fa-check"></i></div>
+                                    <div class="edit-mat-option">Option 3 <i class="fa-solid fa-check"></i></div>
+                                    <div class="edit-mat-option">Option 4 <i class="fa-solid fa-check"></i></div>
+                                    <div class="edit-mat-option">Option 5 <i class="fa-solid fa-check"></i></div>
+                                    -->
+                            </div>
+                        </div>
+                        <div class="edit-mat-col">
+                            <!-- 
+                                <div class="edit-mat-section">
+                                    <div class="edit-mat-name">Option 1</div>
+                                    <div class="edit-mat-quan">
+                                        <i class="fa-solid fa-trash-can"></i>
+                                        <span>1 <span>units</span></span>
+                                        <i class="fa-solid fa-plus"></i>
+                                    </div>
+                                </div>
+                            -->
+                        </div>
+                    </div>
+    
+                    <div class="edit-mat-wrapper">
+                        <div class="edit-mat-label">Fittings</div>
+                        <div class="edit-mat-selector">Add Items <img src="images/icons/chevron.png" class="edit-mat-chev" />
+                            <div class="edit-mat-drop">
+                                <!-- 
+                                <div class="edit-mat-option">Option 1 <i class="fa-solid fa-check"></i></div>
+                                <div class="edit-mat-option">Option 2 <i class="fa-solid fa-check"></i></div>
+                                <div class="edit-mat-option">Option 3 <i class="fa-solid fa-check"></i></div>
+                                <div class="edit-mat-option">Option 4 <i class="fa-solid fa-check"></i></div>
+                                <div class="edit-mat-option">Option 5 <i class="fa-solid fa-check"></i></div>
+                            -->
+                            </div>
+                        </div>
+                        <div class="edit-mat-col">
+                            <!-- 
+                                <div class="edit-mat-section">
+                                    <div class="edit-mat-name">Option 1</div>
+                                    <div class="edit-mat-quan">
+                                        <i class="fa-solid fa-trash-can"></i>
+                                        <span>1 <span>units</span></span>
+                                        <i class="fa-solid fa-plus"></i>
+                                    </div>
+                                </div>
+                            -->
+                        </div>
+                    </div>
+    
+                    <div class="edit-mat-wrapper">
+                        <div class="edit-mat-label">Consumables</div>
+                        <div class="edit-mat-selector">Add Items <img src="images/icons/chevron.png" class="edit-mat-chev" />
+                            <div class="edit-mat-drop">
+                                <!-- 
+                                <div class="edit-mat-option">Option 1 <i class="fa-solid fa-check"></i></div>
+                                <div class="edit-mat-option">Option 2 <i class="fa-solid fa-check"></i></div>
+                                <div class="edit-mat-option">Option 3 <i class="fa-solid fa-check"></i></div>
+                                <div class="edit-mat-option">Option 4 <i class="fa-solid fa-check"></i></div>
+                                <div class="edit-mat-option">Option 5 <i class="fa-solid fa-check"></i></div>
+                            -->
+                            </div>
+                        </div>
+                        <div class="edit-mat-col">
+                            <!-- 
+                                <div class="edit-mat-section">
+                                    <div class="edit-mat-name">Option 1</div>
+                                    <div class="edit-mat-quan">
+                                        <i class="fa-solid fa-trash-can"></i>
+                                        <span>1 <span>units</span></span>
+                                        <i class="fa-solid fa-plus"></i>
+                                    </div>
+                                </div>
+                            -->
+                        </div>
+                    </div>
+    
+                    <div class="edit-mat-wrapper">
+                        <div class="edit-mat-label">Other Items</div>
+                        <div class="edit-mat-selector">Add Items <img src="images/icons/chevron.png" class="edit-mat-chev" />
+                            <div class="edit-mat-drop">
+                                <!-- 
+                                <div class="edit-mat-option">Option 1 <i class="fa-solid fa-check"></i></div>
+                                <div class="edit-mat-option">Option 2 <i class="fa-solid fa-check"></i></div>
+                                <div class="edit-mat-option">Option 3 <i class="fa-solid fa-check"></i></div>
+                                <div class="edit-mat-option">Option 4 <i class="fa-solid fa-check"></i></div>
+                                <div class="edit-mat-option">Option 5 <i class="fa-solid fa-check"></i></div>
+                            -->
+                            </div>
+                        </div>
+                        <div class="edit-mat-col">
+                            <!-- 
+                                <div class="edit-mat-section">
+                                    <div class="edit-mat-name">Option 1</div>
+                                    <div class="edit-mat-quan">
+                                        <i class="fa-solid fa-trash-can"></i>
+                                        <span>1 <span>units</span></span>
+                                        <i class="fa-solid fa-plus"></i>
+                                    </div>
+                                </div>
+                            -->
+                        </div>
+                    </div>
+    
+                    <div class="edit-mat-wrapper" id="chargeWrapper">
+                        <div class="edit-mat-label">Extra Charges</div>
+                        <div class="edit-mat-selector">Add Charges <img src="images/icons/chevron.png" class="edit-mat-chev" />
+                            <div class="edit-mat-drop">
+                                <!-- 
+                                    <div class="edit-mat-option">Option 1 <i class="fa-solid fa-check"></i></div>
+                                    <div class="edit-mat-option">Option 2 <i class="fa-solid fa-check"></i></div>
+                                    <div class="edit-mat-option">Option 3 <i class="fa-solid fa-check"></i></div>
+                                    <div class="edit-mat-option">Option 4 <i class="fa-solid fa-check"></i></div>
+                                    <div class="edit-mat-option">Option 5 <i class="fa-solid fa-check"></i></div>
+                                -->
+                            </div>
+                        </div>
+                        <div class="edit-mat-col">
+                            <!-- 
+                                <div class="edit-mat-section">
+                                    <div class="edit-mat-name">Option 1</div>
+                                    <div class="edit-mat-quan">
+                                        <i class="fa-solid fa-trash-can"></i>
+                                        <span>1 <span>units</span></span>
+                                        <i class="fa-solid fa-plus"></i>
+                                    </div>
+                                </div>
+                            -->
+                        </div>
+                    </div>
+    
+                </div>
+            </div>
         </div>
     
         <div class="read-modal padding">
