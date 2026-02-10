@@ -1231,7 +1231,9 @@ async function getUserData(){
                         const data = await response.json();
                         if(data.message == "success"){
                             userData = data.userData;
-                            document.querySelector(".home-name").textContent = userData.name;
+                            document.querySelectorAll(".home-name").forEach(name => {
+                                name.textContent = userData.name;
+                            });
                             document.querySelector(".acc-name").textContent = userData.name;
                             document.querySelector(".acc-email").textContent = userData.email;
                             document.getElementById("profileModal").style.opacity = "0";
